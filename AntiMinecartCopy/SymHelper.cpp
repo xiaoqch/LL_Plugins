@@ -37,3 +37,9 @@ LevelChunk* getChunkByXZ(BlockSource* bs, int x, int z) {
 void setChunkUnsaved(LevelChunk* lc) {
 	SymCall("?setUnsaved@LevelChunk@@QEAAXXZ", void, LevelChunk*)(lc);
 }
+
+bool isDirty(LevelChunk* lc) {
+	unsigned short result = SymCall("?isDirty@LevelChunk@@QEBA_NXZ", unsigned short, LevelChunk*)(lc);
+	//std::cout << "[AntiMinecartCopy] isDirty: " << result << std::endl;
+	return result != 0;
+}

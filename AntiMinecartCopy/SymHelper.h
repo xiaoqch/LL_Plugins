@@ -5,3 +5,4 @@
 BlockSource* getBlockSourceByDim(int dimid);
 LevelChunk* getChunkByXZ(BlockSource* bs, int x, int z);
 void setChunkUnsaved(LevelChunk* lc);
+bool isDirty(LevelChunk* lc);

@@ -20,7 +20,7 @@ using namespace std;
 void entry()
 {
 	//QueryPerformanceFrequency(&tc);
-	std::cout << "[AntiMinecartCopy] AntiMinecartCopy Loaded. Version: 1.0" << endl;
+	std::cout << "[AntiMinecartCopy] AntiMinecartCopy Loaded. Version: 1.1" << endl;
 }
 
 THook(short, "?pullInItems@HopperComponent@@QEAA_NAEAVActor@@@Z", void* a1, Actor* at)
@@ -34,7 +34,9 @@ THook(short, "?pullInItems@HopperComponent@@QEAA_NAEAVActor@@@Z", void* a1, Acto
 		BlockSource* bs = getBlockSourceByDim(at->getDimensionId());
 		Vec3 pos = at->getPos();
 		LevelChunk* lc = getChunkByXZ(bs, floor(pos.x / 16), floor(pos.z / 16));
-		setChunkUnsaved(lc);
+		if (!isDirty(lc)) {
+			setChunkUnsaved(lc);
+		}
 		//QueryPerformanceCounter(&t2);
 		//printf("[AntiMinecartCopy] %-10s %.5fms\n", "fix time:", deltaTime(t1, t2, tc) * 1000);
 		//std::cout << "[AntiMinecartCopy] dimid: " << at->getDimensionId() <<", pos: " << pos.toString() << endl;
