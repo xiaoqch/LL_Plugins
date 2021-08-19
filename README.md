@@ -9,7 +9,7 @@
 适用于 Minecraft LiteLoader 加载器的插件
 
 ## 插件目录
-* [AntiMinecartCopy](https://github.com/xiaoqch/LL_Plugins/blob/main/AntiMinecartCopy/README.md)
+* [AntiMinecartCopy](https://github.com/xiaoqch/LL_Plugins/tree/master/AntiMinecartCopy#readme)
 
 ## 安装及使用
 1. 前往 [MineBBS](https://www.minebbs.com/resources/authors/xiaoqch.21476/) 寻找并下载需要的插件
