@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="nbt-cpp">
+      <UniqueIdentifier>{541c3bb6-2a71-4832-8d43-e984ba04e01e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="seh_exception">
+      <UniqueIdentifier>{e665811d-4c44-417a-a303-f43475bd458e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LLCheckBag">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{619f0589-52ac-4aef-b8d3-d7be3a9171f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\third-party\nbt-cpp\include\nbt.hpp">
+      <Filter>nbt-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\nbt-cpp\include\nbt_internal.hpp">
+      <Filter>nbt-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\seh_exception\seh_exception.hpp">
+      <Filter>seh_exception</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>LLCheckBag</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>LLCheckBag</Filter>
+    </ClInclude>
+    <ClInclude Include="FormHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DataHelepr.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>LLCheckBag</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>LLCheckBag</Filter>
+    </ClCompile>
+    <ClCompile Include="LLCheckBag.cpp">
+      <Filter>LLCheckBag</Filter>
+    </ClCompile>
+    <ClCompile Include="FormHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DataHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib">
+      <Filter>nbt-cpp</Filter>
+    </Library>
+    <Library Include="..\lib\LiteLoader.lib" />
+  </ItemGroup>
+</Project>
