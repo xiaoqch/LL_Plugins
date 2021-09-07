@@ -1,0 +1,255 @@
+{
+    "minecraft:stone:5": {
+        "minecraft:double_stone_slab3:3": 2,
+        "minecraft:andesite_stairs:0": 1,
+        "minecraft:cobblestone_wall:4": 1,
+        "minecraft:stone:6": 1,
+        "minecraft:double_stone_slab3:2": 2,
+        "minecraft:polished_andesite_stairs:0": 1
+    },
+    "minecraft:brick_block:0": {
+        "minecraft:double_stone_slab:4": 2,
+        "minecraft:brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:6": 1
+    },
+    "minecraft:cobblestone:0": {
+        "minecraft:double_stone_slab:3": 2,
+        "minecraft:stone_stairs:0": 1,
+        "minecraft:cobblestone_wall:0": 1
+    },
+    "minecraft:prismarine:1": {
+        "minecraft:double_stone_slab2:3": 2,
+        "minecraft:dark_prismarine_stairs:0": 1
+    },
+    "minecraft:stone:3": {
+        "minecraft:double_stone_slab3:4": 2,
+        "minecraft:diorite_stairs:0": 1,
+        "minecraft:cobblestone_wall:3": 1,
+        "minecraft:stone:4": 1,
+        "minecraft:double_stone_slab3:5": 2,
+        "minecraft:polished_diorite_stairs:0": 1
+    },
+    "minecraft:end_stone:0": {
+        "minecraft:end_bricks:0": 1,
+        "minecraft:double_stone_slab3:0": 2,
+        "minecraft:end_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:10": 1
+    },
+    "minecraft:end_bricks:0": {
+        "minecraft:double_stone_slab3:0": 2,
+        "minecraft:end_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:10": 1
+    },
+    "minecraft:stone:1": {
+        "minecraft:double_stone_slab3:6": 2,
+        "minecraft:granite_stairs:0": 1,
+        "minecraft:cobblestone_wall:2": 1,
+        "minecraft:stone:2": 1,
+        "minecraft:double_stone_slab3:7": 2,
+        "minecraft:polished_granite_stairs:0": 1
+    },
+    "minecraft:mossy_cobblestone:0": {
+        "minecraft:double_stone_slab2:5": 2,
+        "minecraft:mossy_cobblestone_stairs:0": 1,
+        "minecraft:cobblestone_wall:1": 1
+    },
+    "minecraft:stonebrick:1": {
+        "minecraft:double_stone_slab4:0": 2,
+        "minecraft:mossy_stone_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:8": 1
+    },
+    "minecraft:nether_brick:0": {
+        "minecraft:double_stone_slab:7": 2,
+        "minecraft:nether_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:9": 1,
+        "minecraft:chiseled_nether_bricks:0": 1
+    },
+    "minecraft:stone:6": {
+        "minecraft:double_stone_slab3:2": 2,
+        "minecraft:polished_andesite_stairs:0": 1
+    },
+    "minecraft:stone:4": {
+        "minecraft:double_stone_slab3:5": 2,
+        "minecraft:polished_diorite_stairs:0": 1
+    },
+    "minecraft:stone:2": {
+        "minecraft:double_stone_slab3:7": 2,
+        "minecraft:polished_granite_stairs:0": 1
+    },
+    "minecraft:prismarine:2": {
+        "minecraft:double_stone_slab2:4": 2,
+        "minecraft:prismarine_bricks_stairs:0": 1
+    },
+    "minecraft:prismarine:0": {
+        "minecraft:double_stone_slab2:2": 2,
+        "minecraft:prismarine_stairs:0": 1,
+        "minecraft:cobblestone_wall:11": 1
+    },
+    "minecraft:purpur_block:0": {
+        "minecraft:purpur_block:2": 1,
+        "minecraft:double_stone_slab2:1": 2,
+        "minecraft:purpur_stairs:0": 1
+    },
+    "minecraft:quartz_block:0": {
+        "minecraft:quartz_block:1": 1,
+        "minecraft:quartz_block:2": 1,
+        "minecraft:double_stone_slab4:1": 2,
+        "minecraft:quartz_stairs:0": 1,
+        "minecraft:stone_slab:6": 2
+    },
+    "minecraft:red_nether_brick:0": {
+        "minecraft:double_stone_slab2:7": 2,
+        "minecraft:red_nether_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:13": 1
+    },
+    "minecraft:red_sandstone:0": {
+        "minecraft:red_sandstone:2": 1,
+        "minecraft:red_sandstone:1": 1,
+        "minecraft:double_stone_slab2:0": 2,
+        "minecraft:red_sandstone_stairs:0": 1,
+        "minecraft:cobblestone_wall:12": 1
+    },
+    "minecraft:sandstone:0": {
+        "minecraft:sandstone:2": 1,
+        "minecraft:sandstone:1": 1,
+        "minecraft:double_stone_slab:1": 2,
+        "minecraft:sandstone_stairs:0": 1,
+        "minecraft:cobblestone_wall:5": 1
+    },
+    "minecraft:quartz_block:3": {
+        "minecraft:double_stone_slab4:1": 2,
+        "minecraft:smooth_quartz_stairs:0": 1
+    },
+    "minecraft:red_sandstone:3": {
+        "minecraft:double_stone_slab3:1": 2,
+        "minecraft:smooth_red_sandstone_stairs:0": 1
+    },
+    "minecraft:sandstone:3": {
+        "minecraft:double_stone_slab2:6": 2,
+        "minecraft:smooth_sandstone_stairs:0": 1
+    },
+    "minecraft:smooth_stone:0": {
+        "minecraft:double_stone_slab:0": 2
+    },
+    "minecraft:stone:0": {
+        "minecraft:stonebrick:0": 1,
+        "minecraft:stonebrick:3": 1,
+        "minecraft:double_stone_slab:5": 2,
+        "minecraft:stone_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:7": 1,
+        "minecraft:double_stone_slab4:2": 2,
+        "minecraft:normal_stone_stairs:0": 1
+    },
+    "minecraft:stonebrick:0": {
+        "minecraft:double_stone_slab:5": 2,
+        "minecraft:stone_brick_stairs:0": 1,
+        "minecraft:cobblestone_wall:7": 1
+    },
+    "minecraft:blackstone:0": {
+        "minecraft:blackstone_slab:0": 2,
+        "minecraft:blackstone_stairs:0": 1,
+        "minecraft:blackstone_wall:0": 1,
+        "minecraft:chiseled_polished_blackstone:0": 1,
+        "minecraft:polished_blackstone_bricks:0": 1,
+        "minecraft:polished_blackstone_brick_slab:0": 2,
+        "minecraft:polished_blackstone_brick_stairs:0": 1,
+        "minecraft:polished_blackstone_brick_wall:0": 1,
+        "minecraft:polished_blackstone:0": 1,
+        "minecraft:polished_blackstone_slab:0": 2,
+        "minecraft:polished_blackstone_stairs:0": 1,
+        "minecraft:polished_blackstone_wall:0": 1
+    },
+    "minecraft:polished_blackstone:0": {
+        "minecraft:polished_blackstone_bricks:0": 1,
+        "minecraft:polished_blackstone_brick_slab:0": 2,
+        "minecraft:polished_blackstone_brick_stairs:0": 1,
+        "minecraft:polished_blackstone_brick_wall:0": 1,
+        "minecraft:chiseled_polished_blackstone:0": 1,
+        "minecraft:polished_blackstone_slab:0": 2,
+        "minecraft:polished_blackstone_stairs:0": 1,
+        "minecraft:polished_blackstone_wall:0": 1
+    },
+    "minecraft:basalt:0": {
+        "minecraft:polished_basalt:0": 1
+    },
+    "minecraft:quartz_block:0:0": {
+        "minecraft:quartz_bricks:0": 1
+    },
+    "minecraft:polished_blackstone_bricks:0": {
+        "minecraft:polished_blackstone_brick_slab:0": 2,
+        "minecraft:polished_blackstone_brick_stairs:0": 1,
+        "minecraft:polished_blackstone_brick_wall:0": 1
+    },
+    "minecraft:copper_block:0": {
+        "minecraft:cut_copper:0": 1,
+        "minecraft:cut_copper_slab:0": 2,
+        "minecraft:cut_copper_stairs:0": 1
+    },
+    "minecraft:cut_copper:0": {
+        "minecraft:cut_copper_slab:0": 2,
+        "minecraft:cut_copper_stairs:0": 1
+    },
+    "minecraft:exposed_copper:0": {
+        "minecraft:exposed_cut_copper:0": 1,
+        "minecraft:exposed_cut_copper_slab:0": 2,
+        "minecraft:exposed_cut_copper_stairs:0": 1
+    },
+    "minecraft:exposed_cut_copper:0": {
+        "minecraft:exposed_cut_copper_slab:0": 2,
+        "minecraft:exposed_cut_copper_stairs:0": 1
+    },
+    "minecraft:oxidized_copper:0": {
+        "minecraft:oxidized_cut_copper:0": 1,
+        "minecraft:oxidized_cut_copper_slab:0": 2,
+        "minecraft:oxidized_cut_copper_stairs:0": 1
+    },
+    "minecraft:oxidized_cut_copper:0": {
+        "minecraft:oxidized_cut_copper_slab:0": 2,
+        "minecraft:oxidized_cut_copper_stairs:0": 1
+    },
+    "minecraft:weathered_copper:0": {
+        "minecraft:weathered_cut_copper:0": 1,
+        "minecraft:weathered_cut_copper_slab:0": 2,
+        "minecraft:weathered_cut_copper_stairs:0": 1
+    },
+    "minecraft:weathered_cut_copper:0": {
+        "minecraft:weathered_cut_copper_slab:0": 2,
+        "minecraft:weathered_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_copper:0": {
+        "minecraft:waxed_cut_copper:0": 1,
+        "minecraft:waxed_cut_copper_slab:0": 2,
+        "minecraft:waxed_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_cut_copper:0": {
+        "minecraft:waxed_cut_copper_slab:0": 2,
+        "minecraft:waxed_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_exposed_copper:0": {
+        "minecraft:waxed_exposed_cut_copper:0": 1,
+        "minecraft:waxed_exposed_cut_copper_slab:0": 2,
+        "minecraft:waxed_exposed_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_exposed_cut_copper:0": {
+        "minecraft:waxed_exposed_cut_copper_slab:0": 2,
+        "minecraft:waxed_exposed_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_oxidized_copper:0": {
+        "minecraft:waxed_oxidized_cut_copper:0": 1,
+        "minecraft:waxed_oxidized_cut_copper_slab:0": 2,
+        "minecraft:waxed_oxidized_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_oxidized_cut_copper:0": {
+        "minecraft:waxed_oxidized_cut_copper_slab:0": 1,
+        "minecraft:waxed_oxidized_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_weathered_copper:0": {
+        "minecraft:waxed_weathered_cut_copper:0": 1,
+        "minecraft:waxed_weathered_cut_copper_slab:0": 2,
+        "minecraft:waxed_weathered_cut_copper_stairs:0": 1
+    },
+    "minecraft:waxed_weathered_cut_copper:0": {
+        "minecraft:waxed_weathered_cut_copper_slab:0": 2,
+        "minecraft:waxed_weathered_cut_copper_stairs:0": 1
+    }
+}
