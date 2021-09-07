@@ -10,6 +10,24 @@
 #include "mc/OffsetHelper.h"
 #include "ScheduleHelper.h"
 
+
+const std::string HELP_TEXT_FOR_PLAYER = "\
+[操作代理] 帮助\n\
+注：方括号为可选参数，默认值为当前玩家\n\
+opagent help                      // 显示帮助信息\n\
+opagent set 被代理实体 [操作实体] // 设置操作代理\n\
+opagent list                      // 列出当前代理设置，格式：操作实体 -> 被代理实体\n\
+opagent clear [操作实体]          // 清除某（些）实体的代理设置\n\
+opagent clearall                  // 清除所有实体的代理设置，效果同opagent clear @e";
+const std::string HELP_TEXT = "\
+[操作代理] 帮助\n\
+注：方括号为可选参数，默认值为当前玩家\n\
+opagent set 被代理实体 [操作实体] - 设置代理\n\
+opagent list - 列出当前代理\n\
+opagent clear [操作实体] - 清除代理\n\
+opagent clearall - 清除所有\n\
+";
+
 std::map<long long, long long> agentMap;
 
 bool autoClean = true;
@@ -150,14 +168,24 @@ bool oncmd_agentClear(CommandOrigin const& ori, CommandOutput& outp,
 	return true;
 }
 
-enum class AGENT_OTHERS : int {
-	list = 1,
-	clearall = 2,
+enum class AGENT_WITHOUT_ARG : int {
+	help = 1,
+	list = 2,
+	clearall = 3,
 };
-bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGENT_OTHERS>& op) {
+bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGENT_WITHOUT_ARG>& op) {
 	switch (op.val)
 	{
-	case AGENT_OTHERS::list:
+	case AGENT_WITHOUT_ARG::help:
+		if (ori.getOriginType() == OriginType::Player) {
+			outp.addMessage(HELP_TEXT_FOR_PLAYER);
+		}
+		else {
+			outp.addMessage(HELP_TEXT);
+		}
+		return true;
+		break;
+	case AGENT_WITHOUT_ARG::list:
 		outp.addMessage("代理列表(Agent->Master):  ");
 		for (auto it = agentMap.begin(); it != agentMap.end(); ++it) {
 			auto agent = getActorByAUID((*it).first);
@@ -172,7 +200,7 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
 			}
 		}
 		break;
-	case AGENT_OTHERS::clearall:
+	case AGENT_WITHOUT_ARG::clearall:
 		size_t count = agentMap.size();
 		agentMap.clear();
 		if (count > 0) {
@@ -193,7 +221,7 @@ void regListener() {
 		MakeCommand("opagent", "代理实体执行某些操作", 1);  //注册指令
 		CEnum<AGENT_SET> _1("set", { "set" });
 		CEnum<AGENT_CLEAR> _2("clear", { "clear" });
-		CEnum<AGENT_OTHERS> _3("op", { "list", "clearall" });
+		CEnum<AGENT_WITHOUT_ARG> _3("op", {"help", "list", "clearall" });
 		CmdOverload(opagent, oncmd_agentSet, "set", "master", "agent");  //重载指令
 		CmdOverload(opagent, oncmd_agentClear, "clear", "agent");  //重载指令
 		CmdOverload(opagent, oncmd_agentOthers, "op");  //重载指令
