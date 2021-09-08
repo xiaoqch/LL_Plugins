@@ -328,6 +328,9 @@ THook(bool, "?startRiding@Mob@@UEAA_NAEAVActor@@@Z", Mob* _this, Actor* actor) {
 			WPlayer(*(Player*)master).teleport(actor->getPos(), actor->getDimensionId());
 			setRideData(master->getUniqueID().id, actor->getUniqueID().id, getActorName(master) + "->" + getActorName(actor));
 		}
+		if (cancelAfterRide) {
+			deleteAgent(_this);
+		}
 		return original(master, actor);
 	}
 	return original(_this, actor);
@@ -353,7 +356,7 @@ THook(bool, "?startSleepInBed@Player@@UEAA?AW4BedSleepingResult@@AEBVBlockPos@@@
 			sendTextOrLog(player, "代理" + getActorDescription(master) + "睡觉失败，但已设置自动睡觉位置");
 		}
 		if (cancelAfterSleep) {
-			deleteAgent(master);
+			deleteAgent(player);
 		}
 		return rtn;
 	}
