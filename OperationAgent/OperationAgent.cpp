@@ -103,14 +103,14 @@ bool oncmd_agentSet(CommandOrigin const& ori, CommandOutput& outp,
 	Actor* agent;
 	auto masterRes = masterSel.results(ori);
 	if (masterRes.count() != 1) {
-		outp.addMessage("只能设置一个被代理实体");
+		outp.error("只能设置一个被代理实体");
 		return false;
 	}
 	master = *masterRes.begin();
 	if (agentSel.set) {
 		auto agentRes = agentSel.val().results(ori);
 		if (agentRes.count() != 1) {
-			outp.addMessage("只能设置一个代理实体");
+			outp.error("只能设置一个代理实体");
 			return false;
 		}
 		agent = *agentRes.begin();
@@ -118,13 +118,13 @@ bool oncmd_agentSet(CommandOrigin const& ori, CommandOutput& outp,
 	else {
 		agent = ori.getEntity();
 		if (agent == nullptr) {
-			outp.addMessage("控制台执行时必须设置代理实体");
+			outp.error("控制台执行时必须设置代理实体");
 			return false;
 		}
 	}
 	agentMap[agent->getUniqueID().id] = master->getUniqueID().id;
-	outp.addMessage("代理设置成功");
-	outp.addMessage(getActorDescription(agent) + " -> " + getActorDescription(master));
+	outp.success("代理设置成功");
+	outp.success(getActorDescription(agent) + " -> " + getActorDescription(master));
 	return true;
 }
 
@@ -143,28 +143,28 @@ bool oncmd_agentOperate1(CommandOrigin const& ori, CommandOutput& outp,
 			}
 			switch (count) {
 			case 0:
-				outp.addMessage("没有需要清除的代理设置");
+				outp.error("没有需要清除的代理设置");
 				return false;
 			case 1:
-				outp.addMessage("清除了 " + (*res.begin())->getNameTag() + " 的代理");
+				outp.success("清除了 " + (*res.begin())->getNameTag() + " 的代理");
 				return true;
 			default:
-				outp.addMessage("清除了 " + std::to_string(count) + " 个代理");
+				outp.success("清除了 " + std::to_string(count) + " 个代理");
 				return true;
 			}
 		}
 		else { // 没有输入实体，默认为执行指令的实体
 			Actor* entity = ori.getEntity();
 			if (deleteAgent(entity)) {
-				outp.addMessage("清除代理成功");
+				outp.success("清除代理成功");
 				return true;
 			}
-			else if (ori.getOriginType() != OriginType::Player && ori.getOriginType() != OriginType::Actor) {
-				outp.addMessage("控制台执行时必须选择需要清除的代理");
+			else if (ori.getEntity()) {
+				outp.error("控制台执行时必须选择需要清除的代理");
 				return false;
 			}
 			else {
-				outp.addMessage("没有需要清除的代理设置");
+				outp.error("没有需要清除的代理设置");
 				return false;
 			}
 		}
@@ -181,15 +181,15 @@ bool oncmd_agentOperate1(CommandOrigin const& ori, CommandOutput& outp,
 			actor = ori.getEntity();
 		}
 		if (!actor) {
-			outp.addMessage("此指令需要且仅允许输入一个实体");
+			outp.error("此指令需要且仅允许输入一个实体");
 			return false;
 		}
 		auto master = getMaster(actor);
 		if (!master) {
-			outp.addMessage("" + getActorDescription(actor) + " 没有设置任何代理");
+			outp.error("" + getActorDescription(actor) + " 没有设置任何代理");
 		}
 		else {
-			outp.addMessage("" + getActorDescription(actor) + " -> " + getActorDescription(master));
+			outp.success("" + getActorDescription(actor) + " -> " + getActorDescription(master));
 		}
 		break;
 	}
@@ -208,16 +208,16 @@ enum class AGENT_WITHOUT_ARG : int {
 bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGENT_WITHOUT_ARG>& op) {
 	switch (op.val) {
 	case AGENT_WITHOUT_ARG::help:
-		if (ori.getOriginType() == OriginType::Player) {
-			outp.addMessage(HELP_TEXT_FOR_PLAYER);
+		if (ori.getEntity()) {
+			outp.success(HELP_TEXT_FOR_PLAYER);
 		}
 		else {
-			outp.addMessage(HELP_TEXT);
+			outp.success(HELP_TEXT);
 		}
 		return true;
 		break;
 	case AGENT_WITHOUT_ARG::list:
-		outp.addMessage("代理列表(Agent->Master):  ");
+		outp.success("代理列表(Agent->Master): ");
 		for (auto it = agentMap.begin(); it != agentMap.end(); ++it) {
 			auto agent = getActorByAUID((*it).first);
 			auto master = getActorByAUID((*it).second);
@@ -227,7 +227,7 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
 			else {
 				std::string strAgent = getActorDescription(agent);
 				std::string strMaster = getActorDescription(master);
-				outp.addMessage(strAgent + " -> " + strMaster);
+				outp.success(strAgent + " -> " + strMaster);
 			}
 		}
 		break;
@@ -235,17 +235,17 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
 		auto count = agentMap.size();
 		agentMap.clear();
 		if (count > 0) {
-			outp.addMessage("已清除所有代理设置，共 " + std::to_string(count) + " 个");
+			outp.success("已清除所有代理设置，共 " + std::to_string(count) + " 个");
 			return true;
 		}
 		else {
-			outp.addMessage("当前没有已设置代理");
+			outp.error("当前没有已设置代理");
 			return false;
 		}
 		break;
 	}
 	case AGENT_WITHOUT_ARG::version:
-		outp.addMessage("OperationAgent v1.1.1");
+		outp.success("OperationAgent v1.1.2");
 		return true;
 	default:
 		return false;
@@ -310,7 +310,7 @@ void entry() {
 		forRide = getConf("forRide", forRide);;
 	}
 	regListener();
-	std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.1" << std::endl;
+	std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.2" << std::endl;
 }
 
 // ===== onSpawnProjectile =====
