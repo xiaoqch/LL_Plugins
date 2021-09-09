@@ -37,17 +37,17 @@ opagent clearall                  // 清除所有实体的代理设置，效果同 opagent clea
 ## 配置文件(config.json)
 ```json
 {
-    "autoClean": true, // 当执行代理操作失败时自动取消该代理
-    "cancelAfterSleep": true, // 执行代理睡觉成功后自动取消该代理
-    "cancelAfterRide": true, // 执行代理睡觉成功后自动取消该代理
-    "autoSleep": true, // 有玩家睡觉时自动睡觉
-    "autoRideWhenJoin": true, // 上线自动骑乘
+    "autoClean": true,          // 当执行代理操作失败时自动取消该代理
+    "cancelAfterSleep": true,   // 执行代理睡觉成功后自动取消该代理
+    "cancelAfterRide": true,    // 执行代理睡觉成功后自动取消该代理
+    "autoSleep": true,          // 有玩家睡觉时自动睡觉
+    "autoRideWhenJoin": true,   // 上线自动骑乘
     "useNewProjectMode": false, // 使用新的代理生成投掷物模式
-    "forProjectile": true, // 是否代理生成投掷物操作
-    "forAttack": true, // 是否代理攻击操作
-    "forSleep": true, // 是否代理睡觉操作
-    "forMove": false, // 是否代理移动操作，千万别开
-    "forRide": true // 是否代理骑乘操作
+    "forProjectile": true,      // 是否代理生成投掷物操作
+    "forAttack": true,          // 是否代理攻击操作
+    "forSleep": true,           // 是否代理睡觉操作
+    "forMove": false,           // 是否代理移动操作，千万别开
+    "forRide": true             // 是否代理骑乘操作
 }
 ```
 
@@ -55,14 +55,14 @@ opagent clearall                  // 清除所有实体的代理设置，效果同 opagent clea
 ```json
 {
     {
-        "-253403070460": { // 记录的实体的uid
-        "type": "Sleep", // 记录的操作类型
-        "bedPos": [560, 72, -12], // 记录的床的坐标
-        "remark": "player_name1->Bed(560,72,-12)" // 记录的操作的注释，
+        "-253403070460": {                          // 记录的实体的uid
+        "type": "Sleep",                            // 记录的操作类型
+        "bedPos": [560, 72, -12],                   // 记录的床的坐标
+        "remark": "player_name1->Bed(560,72,-12)"   // 记录的操作的注释，
     },
     "-51539607551": {
         "type": "Ride",
-        "mounts": -1348619730941, // 此处为被骑乘实体的uid
+        "mounts": -1348619730941,                   // 此处为被骑乘实体的uid
         "remark": "player_name2->矿车"
     }
 }
