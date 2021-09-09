@@ -245,7 +245,7 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
 		break;
 	}
 	case AGENT_WITHOUT_ARG::version:
-		outp.addMessage("OperationAgent v1.1.0");
+		outp.addMessage("OperationAgent v1.1.1");
 		return true;
 	default:
 		return false;
@@ -310,7 +310,7 @@ void entry() {
 		forRide = getConf("forRide", forRide);;
 	}
 	regListener();
-	std::cout << "[Operation Agent] 操作代理已加载。版本：v0.1" << std::endl;
+	std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.1" << std::endl;
 }
 
 // ===== onSpawnProjectile =====
