@@ -48,7 +48,7 @@ void sendTextOrLog(Actor* actor, std::string text) {
 		sendPlayerText((Player*)actor, text);
 	}
 	else {
-		std::cout << getActorDescription(actor) << " <- " << text << std::endl;
+		std::cout <<"[Operation Agent] " << getActorDescription(actor) << " <- " << text << std::endl;
 	}
 }
 
@@ -361,14 +361,16 @@ THook(bool, "?startRiding@Mob@@UEAA_NAEAVActor@@@Z", Mob* _this, Actor* actor) {
 	}
 	auto master = getMasterOrNull(_this);
 	if (master != nullptr) {
-		sendTextOrLog(_this, "代理" + getActorDescription(master) + "骑乘成功");
+		string msg="代理" + getActorDescription(master) + "骑乘";
 		if (isPlayer(master)) {
 			WPlayer(*(Player*)master).teleport(actor->getPos(), actor->getDimensionId());
 			setRideData(master->getUniqueID().id, actor->getUniqueID().id, getActorName(master) + "->" + getActorName(actor));
 		}
 		if (cancelAfterRide) {
+			msg += "，并取消代理设置";
 			deleteAgent(_this);
 		}
+		sendTextOrLog(_this, msg);
 		return original(master, actor);
 	}
 	return original(_this, actor);
@@ -387,13 +389,16 @@ THook(bool, "?startSleepInBed@Player@@UEAA?AW4BedSleepingResult@@AEBVBlockPos@@@
 		WPlayer(*(Player*)master).teleport(aboveBed, player->getDimensionId());
 		auto rtn = original(master, bpos);
 		setSleepData(master->getUniqueID().id, *bpos, getActorName(master) + " -> (" + bpos->toString() + ")");
+		string msg = "代理" + getActorDescription(master) + "睡觉";
 		if (isSleeping(master)) {
-			sendTextOrLog(player, "代理" + getActorDescription(master) + "睡觉成功，并设置自动睡觉位置");
+			msg += "成功，并设置自动睡觉位置";
 		}
 		else {
-			sendTextOrLog(player, "代理" + getActorDescription(master) + "睡觉失败，但已设置自动睡觉位置");
+			msg += "失败，但已设置自动睡觉位置";
 		}
+		sendTextOrLog(player, msg);
 		if (cancelAfterSleep) {
+			sendTextOrLog(player, "已取消代理设置");
 			deleteAgent(player);
 		}
 		return rtn;
