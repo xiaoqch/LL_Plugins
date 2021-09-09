@@ -17,10 +17,12 @@
 ## 使用
 ```
 opagent help                      // 显示帮助信息
+opagent version                   // 显示插件版本
 opagent set 被代理实体 [操作实体] // 设置操作代理，如果没有设置操作实体，将默认执行命令的玩家为操作实体
+opagent query [操作实体]          // 查询代理设置
 opagent list                      // 列出当前代理设置，格式：操作实体 -> 被代理实体
-opagent clear  [操作实体]         // 清除某（些）实体的代理设置，如果没有设置操作实体，将默认执行命令的玩家为操作实体
-opagent clearall                  // 清除所有实体的代理设置，效果同opagent clear @e
+opagent clear [操作实体]          // 清除某（些）实体的代理设置，如果没有设置操作实体，将默认执行命令的玩家为操作实体
+opagent clearall                  // 清除所有实体的代理设置，效果同 opagent clear @e
 ```
 
 ## 用法示例
