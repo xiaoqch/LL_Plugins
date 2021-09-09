@@ -79,6 +79,10 @@ std::string getActorDescription(Actor* actor) {
         std::cerr << "getActorDescription 传入空指针" << std::endl;
         return "";
     }
+    string nameTag = actor->getNameTag();
+    if (!nameTag.empty()) {
+        return nameTag;
+    }
     auto auid = std::to_string(actor->getUniqueID().id);
     return getActorName(actor) + "(" + auid + ")";
 }

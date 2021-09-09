@@ -48,7 +48,7 @@ void sendTextOrLog(Actor* actor, std::string text) {
 		sendPlayerText((Player*)actor, text);
 	}
 	else {
-		std::cout << getActorDescription(actor) << " <- " << text << std::endl;
+		std::cout <<"[Operation Agent] " << getActorDescription(actor) << " <- " << text << std::endl;
 	}
 }
 
@@ -103,14 +103,14 @@ bool oncmd_agentSet(CommandOrigin const& ori, CommandOutput& outp,
 	Actor* agent;
 	auto masterRes = masterSel.results(ori);
 	if (masterRes.count() != 1) {
-		outp.addMessage("[Operation Agent] 只能设置一个被代理实体");
+		outp.addMessage("只能设置一个被代理实体");
 		return false;
 	}
 	master = *masterRes.begin();
 	if (agentSel.set) {
 		auto agentRes = agentSel.val().results(ori);
 		if (agentRes.count() != 1) {
-			outp.addMessage("[Operation Agent] 只能设置一个代理实体");
+			outp.addMessage("只能设置一个代理实体");
 			return false;
 		}
 		agent = *agentRes.begin();
@@ -118,52 +118,83 @@ bool oncmd_agentSet(CommandOrigin const& ori, CommandOutput& outp,
 	else {
 		agent = ori.getEntity();
 		if (agent == nullptr) {
-			outp.addMessage("[Operation Agent] 控制台执行时必须设置代理实体");
+			outp.addMessage("控制台执行时必须设置代理实体");
 			return false;
 		}
 	}
 	agentMap[agent->getUniqueID().id] = master->getUniqueID().id;
-	outp.addMessage("[Operation Agent] 代理设置成功");
+	outp.addMessage("代理设置成功");
 	outp.addMessage(getActorDescription(agent) + " -> " + getActorDescription(master));
 	return true;
 }
 
-enum class AGENT_CLEAR : int { clear = 1 };
-bool oncmd_agentClear(CommandOrigin const& ori, CommandOutput& outp,
-	MyEnum<AGENT_CLEAR>& op,
+enum class AGENT_WITH_ONE_ARG : int { clear = 1, query = 2 };
+bool oncmd_agentOperate1(CommandOrigin const& ori, CommandOutput& outp,
+	MyEnum<AGENT_WITH_ONE_ARG>& op,
 	optional<CommandSelector<Actor>>& agent) {
-	int count = 0;
-	if (agent.set) {
-		auto res = agent.val().results(ori);
-		for (auto actor : res) {
-			count += deleteAgent(actor);
+	switch (op.val)
+	{
+	case AGENT_WITH_ONE_ARG::clear:
+		if (agent.set) {
+			int count = 0;
+			auto res = agent.val().results(ori);
+			for (auto actor : res) {
+				count += deleteAgent(actor);
+			}
+			switch (count) {
+			case 0:
+				outp.addMessage("没有需要清除的代理设置");
+				return false;
+			case 1:
+				outp.addMessage("清除了 " + (*res.begin())->getNameTag() + " 的代理");
+				return true;
+			default:
+				outp.addMessage("清除了 " + std::to_string(count) + " 个代理");
+				return true;
+			}
 		}
-		switch (count) {
-		case 0:
-			outp.addMessage("[Operation Agent] 没有需要清除的代理设置");
-			return false;
-		case 1:
-			outp.addMessage("[Operation Agent] 清除了 " + (*res.begin())->getNameTag() + " 的代理");
-			return true;
-		default:
-			outp.addMessage("[Operation Agent] 清除了 " + std::to_string(count) + " 个代理");
-			return true;
+		else { // 没有输入实体，默认为执行指令的实体
+			Actor* entity = ori.getEntity();
+			if (deleteAgent(entity)) {
+				outp.addMessage("清除代理成功");
+				return true;
+			}
+			else if (ori.getOriginType() != OriginType::Player && ori.getOriginType() != OriginType::Actor) {
+				outp.addMessage("控制台执行时必须选择需要清除的代理");
+				return false;
+			}
+			else {
+				outp.addMessage("没有需要清除的代理设置");
+				return false;
+			}
 		}
-	}
-	else { // 没有输入实体，默认为执行指令的实体
-		Actor* entity = ori.getEntity();
-		if (deleteAgent(entity)) {
-			outp.addMessage("[Operation Agent] 清除代理成功");
-			return true;
-		}
-		else if (ori.getOriginType() != OriginType::Player && ori.getOriginType() != OriginType::Actor) {
-			outp.addMessage("[Operation Agent] 控制台执行时必须选择需要清除的代理");
-			return false;
+		break;
+	case AGENT_WITH_ONE_ARG::query: {
+		Actor* actor = nullptr;
+		if (agent.set) {
+			auto res = agent.val().results(ori);
+			if (res.count() == 1) {
+				actor = *res.begin();
+			}
 		}
 		else {
-			outp.addMessage("[Operation Agent] 没有需要清除的代理设置");
+			actor = ori.getEntity();
+		}
+		if (!actor) {
+			outp.addMessage("此指令需要且仅允许输入一个实体");
 			return false;
 		}
+		auto master = getMaster(actor);
+		if (!master) {
+			outp.addMessage("" + getActorDescription(actor) + " 没有设置任何代理");
+		}
+		else {
+			outp.addMessage("" + getActorDescription(actor) + " -> " + getActorDescription(master));
+		}
+		break;
+	}
+	default:
+		break;
 	}
 	return true;
 }
@@ -172,10 +203,10 @@ enum class AGENT_WITHOUT_ARG : int {
 	help = 1,
 	list = 2,
 	clearall = 3,
+	version = 4
 };
 bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGENT_WITHOUT_ARG>& op) {
-	switch (op.val)
-	{
+	switch (op.val) {
 	case AGENT_WITHOUT_ARG::help:
 		if (ori.getOriginType() == OriginType::Player) {
 			outp.addMessage(HELP_TEXT_FOR_PLAYER);
@@ -200,8 +231,8 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
 			}
 		}
 		break;
-	case AGENT_WITHOUT_ARG::clearall:
-		size_t count = agentMap.size();
+	case AGENT_WITHOUT_ARG::clearall: {
+		auto count = agentMap.size();
 		agentMap.clear();
 		if (count > 0) {
 			outp.addMessage("已清除所有代理设置，共 " + std::to_string(count) + " 个");
@@ -211,6 +242,13 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
 			outp.addMessage("当前没有已设置代理");
 			return false;
 		}
+		break;
+	}
+	case AGENT_WITHOUT_ARG::version:
+		outp.addMessage("OperationAgent v1.1.1");
+		return true;
+	default:
+		return false;
 	}
 	return false;
 }
@@ -220,11 +258,11 @@ void regListener() {
 		CMDREG::SetCommandRegistry(ev.CMDRg);
 		MakeCommand("opagent", "代理实体执行某些操作", 1);  //注册指令
 		CEnum<AGENT_SET> _1("set", { "set" });
-		CEnum<AGENT_CLEAR> _2("clear", { "clear" });
-		CEnum<AGENT_WITHOUT_ARG> _3("op", {"help", "list", "clearall" });
+		CEnum<AGENT_WITH_ONE_ARG> _2("op", { "clear" ,"query" });
+		CEnum<AGENT_WITHOUT_ARG> _3("op2", { "help", "list", "clearall" ,"version" });
 		CmdOverload(opagent, oncmd_agentSet, "set", "master", "agent");  //重载指令
-		CmdOverload(opagent, oncmd_agentClear, "clear", "agent");  //重载指令
-		CmdOverload(opagent, oncmd_agentOthers, "op");  //重载指令
+		CmdOverload(opagent, oncmd_agentOperate1, "op", "agent");  //重载指令
+		CmdOverload(opagent, oncmd_agentOthers, "op2");  //重载指令
 		});
 	if (autoRideWhenJoin) {
 		Event::addEventListener([](JoinEV ev) {
@@ -253,7 +291,7 @@ void regListener() {
 				}
 				}, 100);
 			return true;
-		});
+			});
 	}
 }
 
@@ -272,7 +310,7 @@ void entry() {
 		forRide = getConf("forRide", forRide);;
 	}
 	regListener();
-	std::cout << "[Operation Agent] 操作代理已加载。版本：v0.1" << std::endl;
+	std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.1" << std::endl;
 }
 
 // ===== onSpawnProjectile =====
@@ -323,11 +361,16 @@ THook(bool, "?startRiding@Mob@@UEAA_NAEAVActor@@@Z", Mob* _this, Actor* actor) {
 	}
 	auto master = getMasterOrNull(_this);
 	if (master != nullptr) {
-		sendTextOrLog(_this, "代理" + getActorDescription(master) + "骑乘成功");
+		string msg="代理" + getActorDescription(master) + "骑乘";
 		if (isPlayer(master)) {
 			WPlayer(*(Player*)master).teleport(actor->getPos(), actor->getDimensionId());
 			setRideData(master->getUniqueID().id, actor->getUniqueID().id, getActorName(master) + "->" + getActorName(actor));
 		}
+		if (cancelAfterRide) {
+			msg += "，并取消代理设置";
+			deleteAgent(_this);
+		}
+		sendTextOrLog(_this, msg);
 		return original(master, actor);
 	}
 	return original(_this, actor);
@@ -346,14 +389,17 @@ THook(bool, "?startSleepInBed@Player@@UEAA?AW4BedSleepingResult@@AEBVBlockPos@@@
 		WPlayer(*(Player*)master).teleport(aboveBed, player->getDimensionId());
 		auto rtn = original(master, bpos);
 		setSleepData(master->getUniqueID().id, *bpos, getActorName(master) + " -> (" + bpos->toString() + ")");
+		string msg = "代理" + getActorDescription(master) + "睡觉";
 		if (isSleeping(master)) {
-			sendTextOrLog(player, "代理" + getActorDescription(master) + "睡觉成功，并设置自动睡觉位置");
+			msg += "成功，并设置自动睡觉位置";
 		}
 		else {
-			sendTextOrLog(player, "代理" + getActorDescription(master) + "睡觉失败，但已设置自动睡觉位置");
+			msg += "失败，但已设置自动睡觉位置";
 		}
+		sendTextOrLog(player, msg);
 		if (cancelAfterSleep) {
-			deleteAgent(master);
+			sendTextOrLog(player, "已取消代理设置");
+			deleteAgent(player);
 		}
 		return rtn;
 	}

@@ -5,13 +5,13 @@
 #else
 #    define LIAPI __declspec(dllexport)
 #endif
+#define LITELOADER_VERSION "1.1.2.1"
+#define LITELOADER_VERSION_NUMBER 13ui8
 typedef unsigned char uchar;
-#define LiteLoaderVersion "1.1.2"
-#define LiteLoaderVersionNum (unsigned short)12
 
 namespace loaderapi {
 LIAPI std::string getLoaderVersion();
 LIAPI unsigned short getLoaderVersionNum();
 LIAPI bool           isDebugMode();
 };  // namespace loaderapi
-#define LiteLoaderVersionGithub LiteLoaderVersion"-Ci-85bcc8e_1629024363"
+#define LITELOADER_VERSION_GITHUB LITELOADER_VERSION"-Ci-0668036_1630837437"
