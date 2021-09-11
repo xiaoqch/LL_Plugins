@@ -5,35 +5,33 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="nbt-cpp">
-      <UniqueIdentifier>{541c3bb6-2a71-4832-8d43-e984ba04e01e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="seh_exception">
       <UniqueIdentifier>{e665811d-4c44-417a-a303-f43475bd458e}</UniqueIdentifier>
     </Filter>
     <Filter Include="LLCheckBag">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>
+      </Extensions>
     </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{619f0589-52ac-4aef-b8d3-d7be3a9171f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{a54d627a-c5ba-4aef-b4a5-80f4f494968a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nbt">
+      <UniqueIdentifier>{541c3bb6-2a71-4832-8d43-e984ba04e01e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third-party\nbt-cpp\include\nbt.hpp">
-      <Filter>nbt-cpp</Filter>
+      <Filter>nbt</Filter>
     </ClInclude>
     <ClInclude Include="..\third-party\nbt-cpp\include\nbt_internal.hpp">
-      <Filter>nbt-cpp</Filter>
+      <Filter>nbt</Filter>
     </ClInclude>
     <ClInclude Include="..\third-party\seh_exception\seh_exception.hpp">
       <Filter>seh_exception</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>LLCheckBag</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>LLCheckBag</Filter>
     </ClInclude>
     <ClInclude Include="FormHelper.h">
       <Filter>Utils</Filter>
@@ -44,14 +42,23 @@
     <ClInclude Include="DataHelepr.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="LangHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SymHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\nbt-from-lxl\NBT.h">
+      <Filter>nbt</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>LLCheckBag</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>LLCheckBag</Filter>
-    </ClCompile>
     <ClCompile Include="LLCheckBag.cpp">
       <Filter>LLCheckBag</Filter>
     </ClCompile>
@@ -64,10 +71,28 @@
     <ClCompile Include="DataHelper.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="LangHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="SymHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp">
+      <Filter>nbt</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DataHelepr.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib">
-      <Filter>nbt-cpp</Filter>
+      <Filter>nbt</Filter>
     </Library>
     <Library Include="..\lib\LiteLoader.lib" />
   </ItemGroup>
