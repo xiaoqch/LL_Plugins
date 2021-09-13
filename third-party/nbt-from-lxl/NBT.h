@@ -5,6 +5,8 @@
 #include <api/types/types.h>
 
 using namespace std;
+
+
 enum TagType : uint8_t {
 	End, Byte, Short, Int, Long, Float, Double, ByteArray, String, List, Compound,
 };
@@ -17,7 +19,6 @@ class ItemStack;
 struct TagMemoryChunk {
 	size_t capacity = 0;
 	size_t size = 0;
-
 	unique_ptr<uint8_t[]> data;
 
 	TagMemoryChunk(size_t size, uint8_t data[]) :capacity(size), size(size), data(data) {}
@@ -83,7 +84,7 @@ public:
 	static Tag* fromBlockEntity(BlockActor* ble);
 };
 
-//std::string TagToJson(Tag* nbt, int formatIndent);
+std::string TagToJson(Tag* nbt, int formatIndent);
 std::string TagToSNBT(Tag* nbt);
 std::string TagToBinaryNBT(Tag* nbt);
 Tag* SNBTToTag(const std::string& snbt);
