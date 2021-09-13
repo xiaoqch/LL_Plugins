@@ -12,7 +12,6 @@ const std::string DATA_PATH = "plugins/OperationAgent/data.json";
 
 rapidjson::Document config, dataDom;
 
-
 bool loadConf() {
 	std::ifstream fs;
 	fs.open(CONF_PATH, std::ios::in);

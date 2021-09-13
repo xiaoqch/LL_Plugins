@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="IdsHelper">
+      <UniqueIdentifier>{6cae35fb-60db-43ea-abbb-d5c396fefa45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{3b109583-a8b0-4456-9841-08a17d59d28c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party">
+      <UniqueIdentifier>{f203056b-f72a-4cb1-b845-48145a16b34f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\lxl-nbt">
+      <UniqueIdentifier>{5c5a8bc2-15fa-4a7d-a4f8-ec2c2cfbbcd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party\nbt-cpp">
+      <UniqueIdentifier>{d9b8b765-0cf8-422e-95e8-e5bc89a9a2ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{9ae33b15-df1a-4cb6-a11f-10f274218bf3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SymHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\nbt-from-lxl\NBT.h">
+      <Filter>third-party\lxl-nbt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\nbt-cpp\include\nbt.hpp">
+      <Filter>third-party\nbt-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\nbt-cpp\include\nbt_internal.hpp">
+      <Filter>third-party\nbt-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BdsDbHelper2.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BdsDbHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IdsHelper.cpp">
+      <Filter>IdsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="SymHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp">
+      <Filter>third-party\lxl-nbt</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="BdsDbHelper2.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="BdsDbHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\LiteLoader.lib" />
+    <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib">
+      <Filter>third-party\nbt-cpp</Filter>
+    </Library>
+  </ItemGroup>
+</Project>

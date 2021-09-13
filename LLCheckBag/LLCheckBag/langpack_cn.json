@@ -1,0 +1,7 @@
+{
+  "message.loaded": "[LLCheckBag] 在线离线玩家查包插件已加载，版本：",
+  "command.llcb.description": "在线离线玩家查包",
+
+  "form.player_list.title": "LL Check Bag",
+  "form.player_list.content": "请选择需要查看背包数据的玩家"
+}

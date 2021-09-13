@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <map>
 #include "FormHelper.h"
-
+#include "LangHelper.h"
 
 std::map<unsigned, std::function<void(string)>> formCallbacks;
 
@@ -45,7 +45,7 @@ int sendSimpleForm(Player* player, const string& title, const string& content, c
 
 
 bool sendPlayerList(Player* player, const std::vector<string> playerList, std::function<void(string)> callback) {
-	unsigned formId = sendSimpleForm(player, "玩家列表", "请选择需要查看背包数据的玩家", playerList);
+	unsigned formId = sendSimpleForm(player, _TRS("form.player_list.title"), _TRS("form.player_list.title"), playerList);
 	formCallbacks[formId] = callback;
 	return true;
 }
@@ -53,7 +53,11 @@ bool sendPlayerList(Player* player, const std::vector<string> playerList, std::f
 // ===== handleCallBack =====
 bool callFormCallback(Player* player, unsigned formId, const string& data)
 {
-	formCallbacks.at(formId)(data);
+	auto cb = formCallbacks.find(formId);
+	if (cb != formCallbacks.end()) {
+		cb->second(data);
+		formCallbacks.erase(cb);
+	}
 }
 Player* getPlayerFromPacket(ServerNetworkHandler* handler, NetworkIdentifier* id, Packet* packet)
 {
