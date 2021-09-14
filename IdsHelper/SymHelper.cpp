@@ -85,7 +85,7 @@ Tag* loadPlayerData(const string& uuid) {
 Tag* loadFromDBStorage(string& key) {
 	string bin;
 	uint64_t key_span[2] = { key.length() , (uint64_t)key.c_str() };
-	bool b=SymCall("?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+	bool b = SymCall("?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
 		bool, LevelStorage*, uint64_t*, string&)(getLevelStorage(), key_span, bin);
 	if (b == bin.empty())
 		throw("Error in DBStorage::loadData()");
@@ -106,6 +106,35 @@ bool saveToDBStorage(string& key, Tag* tag) {
 	string bin = TagToBinaryNBT(tag);
 	void* result[2]{};
 	void* rtn = SymCall("?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@$$QEAV43@@Z",
-		void*, LevelStorage * , void* , string& , string& )(getLevelStorage(), result, key, bin);
+		void*, LevelStorage*, void*, string&, string&)(getLevelStorage(), result, key, bin);
 	return false;
+}
+
+// DBStorage::saveData
+bool deleteDBStorageData(string& key) {
+	void* result[2]{};
+	void* rtn = SymCall("?deleteData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
+		void*, LevelStorage*, void*, string&)(getLevelStorage(), result, key);
+	return false;
+}
+
+
+bool _flushWriteCacheToLevelDB() {
+	char* result[24]{};
+	SymCall("?_flushWriteCacheToLevelDB@DBStorage@@AEAA?AVTaskResult@@XZ",
+		void*, LevelStorage*, void*)(getLevelStorage(), result);
+	return false;
+}
+
+void* forEachKeyWithPrefix(const string& prefix, function<void(string&, string&)> callback) {
+	uintptr_t prifix_span[2] = { prefix.length(), (uintptr_t)prefix.c_str() };
+	return SymCall("?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@$$CBD$0?0@gsl@@AEBV?$function@$$A6AXV?$basic_string_span@$$CBD$0?0@gsl@@0@Z@std@@@Z",
+		void*, void*, void*, function<void(uintptr_t&, uintptr_t&)>)(getLevelStorage(), prifix_span, [prefix, callback](uintptr_t& v_key, uintptr_t& v_data)->void {
+			void* key_left_span = &v_key;
+			void* data_span = &v_data;
+			string key_left = string(dAccess<char*>(key_left_span, 8), v_key);
+			string key = prefix + key_left;
+			string data = string(dAccess<char*>(data_span, 8), v_data);
+			callback(key, data);
+			});
 }
