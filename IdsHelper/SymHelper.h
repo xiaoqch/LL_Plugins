@@ -72,3 +72,6 @@ Tag* loadPlayerData(const string& uuid);
 Tag* loadFromDBStorage(string& key);
 bool saveToDBStorage(string& key, Tag* tag);
 void saveLevelStorage(Actor* actor);
+bool deleteDBStorageData(string& key);
+bool _flushWriteCacheToLevelDB();
+void* forEachKeyWithPrefix(const string& prefix, function<void(string&, string&)> callback);
