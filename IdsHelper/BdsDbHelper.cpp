@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "BdsDbHelper.h"
-
+#include <variant>
 using namespace std;
 
 std::map<std::string, PlayerIds> allPlayerIds;
@@ -63,40 +63,111 @@ Tag* loadPlayerFromFile(string& path) {
 }
 
 string loadFromFile(string& path) {
-	fstream fs(path, ios_base::in);
+	ifstream fs(path, ios::in | ios::binary);
 	string res((std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>());
 	fs.close();
 	return res;
 }
 void saveToFile(string& path, string& data) {
-	fstream fs(path, ios_base::out);
+	ofstream fs(path, ios::out | ios::binary);
 	fs.write(data.c_str(), data.length());
 	fs.flush();
 	fs.close();
 }
 
-Tag* readFromBinary(string& bin, int& offset) {
+Tag* readFromBinary2(string& bin, int& offset) {
+	// bits version
 	void* vtbl = dlsym("??_7RakDataInput@@6B@");
-	size_t data_struct[3] = { bin.length() * 8, offset, (size_t)bin.c_str() };
+	uintptr_t data_struct[3] = { bin.length() * 8, offset, (uintptr_t)bin.c_str() };
 	void* iDataInput[2] = { vtbl , data_struct };
 	Tag* tag = Tag::createTag(TagType::Compound);
 	auto rtn = SymCall("?read@NbtIo@@SA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEAVIDataInput@@@Z",
 		unique_ptr<Tag>*, Tag**, void*)(&tag, (void*)iDataInput);
-	offset = data_struct[1]/8;
+	offset = data_struct[1] / 8;
 	return rtn->get();
 }
 
-Tag* readFromBinary(string& bin) {
-	int end_offset = 0;
-	return readFromBinary(bin, end_offset);
+Tag* readFromBinary(string& bin, int& offset, bool isLittleEndian) {
+	void* vtbl = dlsym("??_7StringByteInput@@6B@");
+	//void* vtbl2 = dlsym("??_7BigEndianStringByteInput@@6B@");
+	uintptr_t iDataInput[4] = { (uintptr_t)vtbl ,offset, bin.length(), (uintptr_t)bin.c_str() };
+	Tag* tag = Tag::createTag(TagType::Compound);
+	auto rtn = SymCall("?read@NbtIo@@SA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEAVIDataInput@@@Z",
+		unique_ptr<Tag>*, Tag**, void*)(&tag, (void*)iDataInput);
+	offset = iDataInput[1];
+	return rtn->get();
 }
-string writeToBinary(Tag* tag) {
-	void* vtbl = dlsym("??_7StringByteOutput@@6B@");
-	string output = "";
-	void* iDataOutput[2] = { vtbl , &output};
+
+Tag* readFromBinary(string& bin, bool isLittleEndian) {
+	int offset = 0;
+	return readFromBinary(bin, offset);
+}
+
+// Reference to StringByteOutput and BigEndianStringByteInput
+class BigEndianStringByteOutput {
+	void writeBigEndianBytes(byte* bytes, size_t count) {
+		auto v5 = bytes + count - 1;
+		if (v5 >= bytes)
+		{
+			auto v7 = bytes + 1;
+			do
+			{
+				auto v8 = *(v7 - 1);
+				*(v7 - 1) = *v5;
+				*v5-- = v8;
+			} while (v7++ <= v5);
+		}
+		writeBytes(bytes, count);
+	}
+public:
+	virtual ~BigEndianStringByteOutput() {};
+	virtual void* writeString(void* string_span) {
+		return SymCall("?writeString@BytesDataOutput@@UEAAXV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
+			void*, void*, void*)((void*)this, string_span);
+	}
+	virtual void* writeLongString(void* string_span) {
+		return SymCall("?writeLongString@BytesDataOutput@@UEAAXV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
+			void*, void*, void*)((void*)this, string_span);
+	}
+	virtual void writeFloat(float data) {
+		writeBigEndianBytes((byte*)&data, 4);
+	}
+	virtual void writeDouble(double data) {
+		writeBigEndianBytes((byte*)&data, 8);
+	}
+	virtual void writeByte(byte data) {
+		writeBytes(&data, 1);
+	}
+	virtual void writeShort(short data) {
+		writeBigEndianBytes((byte*)&data, 2);
+	}
+	virtual void writeInt(int data) {
+		writeBigEndianBytes((byte*)&data, 4);
+	}
+	virtual void writeLongLong(long long data) {
+		writeBigEndianBytes((byte*)&data, 8);
+	}
+	virtual void* writeBytes(byte* bytes, size_t count) {
+		return SymCall("?writeBytes@StringByteOutput@@UEAAXPEBX_K@Z",
+			void*, void*, byte*, size_t)((void*)this, bytes, count);
+	}
+};
+
+string writeToBinary(Tag* tag, bool isLittleEndian) {
+	void* vtbl;
+	if (isLittleEndian) {
+		vtbl = dlsym("??_7StringByteOutput@@6B@");
+	}
+	else {
+		auto tmp = BigEndianStringByteOutput();
+		vtbl = *(void***)&tmp;
+	}
+	//void* vtbl2 = dlsym("??_7BigEndianStringByteOutput@@6B@"); // deleted
+	string result = "";
+	void* iDataOutput[2] = { vtbl , &result };
 	SymCall("?write@NbtIo@@SAXPEBVCompoundTag@@AEAVIDataOutput@@@Z",
 		void*, Tag*, void*)(tag, (void*)iDataOutput);
-	return output;
+	return result;
 }
 
 std::string byteToHexStr(byte* byte_arr, int arr_len, string prefix)
@@ -170,7 +241,6 @@ int bytesToInt(byte* bytes, int size)
 	return addr;
 }
 
-
 bool getChunkDetailFromKey(string& bytes, int& cx, int& cz, int& dimid, byte& type, byte& index) {
 	int len = bytes.length();
 	cx = bytesToInt((byte*)bytes.c_str());
@@ -218,7 +288,11 @@ string getKeyFromChunkDetail(int cx, int cz, int dimid, byte type, byte index = 
 //	int  dimid;
 //	byte type;
 //	byte index;
-ChunkKey::ChunkKey(const string& bytes):bytes(bytes) {
+
+
+
+
+ChunkKey::ChunkKey(const string& bytes) :bytes(bytes) {
 	this->bytes = bytes;
 	int len = bytes.length();
 	cx = bytesToInt((byte*)bytes.c_str());
@@ -282,9 +356,52 @@ int ChunkKey::getDimid(string bytes) {
 }
 string ChunkKey::toString() {
 	char buff[50] = {};
-	if(hasIndex())
+	if (hasIndex())
 		sprintf_s(buff, "cx: %6d, cz: %6d, dim: %d, type: %3d-%3d", cx, cz, dimid, type, index);
 	else
 		sprintf_s(buff, "cx: %6d, cz: %6d, dim: %d, type: %3d    ", cx, cz, dimid, type);
 	return buff;
+}
+
+void loadSubChunk(int cx, int cy, int cz) {
+	string data;
+	string blockIds = {};
+	string blockData = {};
+	string combinedPalette = {};
+	string blockArray = {};
+	int offset = 0;
+	int storageCount;
+	if (data[0] == '\x00' || (data[0] >= '\x02' && data[0] <= '\x07')) {
+		++offset;
+		blockIds = data.substr(offset, 16 * 16 * 16);
+		offset += 16 * 16 * 16;
+		blockData = data.substr(offset, 16 * 16 * 8);
+	}
+	else if (data[0] == '\x00' || data[0] == '\x08') {
+		// load block palette
+		if (data[0] == '\x00') {
+			storageCount = 1;
+			++offset;
+		}
+		else {
+			storageCount == (int)data[1];
+			offset += 2;
+		}
+		auto bits_per_block = data[offset] >> 1;
+		++offset;
+		auto blocks_per_word = 32 / bits_per_block;
+		auto world_count = -(-4096 / blocks_per_word);
+		//get blocks
+		offset += 4 * world_count;
+		auto palette_len = bytesToInt((byte*)data.c_str(), 4);
+		offset += 4;
+		vector<Tag*> palette;
+		for (auto i = 0; i < palette_len; ++i) {
+			palette.emplace_back(readFromBinary(data, offset));
+		}
+	}
+	else {
+		throw("Sub Chunk version unknown");
+	}
+
 }
