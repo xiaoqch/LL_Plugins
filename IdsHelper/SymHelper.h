@@ -57,7 +57,9 @@ RTN inline VirtualCall(void* _this, uintptr_t off, Args... args) {
 	return (*(RTN(**)(void*, Args...))(*(uintptr_t*)_this + off))(_this, args...);
 }
 
+BlockSource* getBlockSourceByDim(int dimid);
 Level* getLevel();
+Dimension* getDimensionByDid(int dimid);
 LevelStorage* getLevelStorage();
 string getServerId(const string& storageId);
 std::vector<string> loadAllPlayerIDs(bool b);
@@ -74,4 +76,5 @@ bool saveToDBStorage(string& key, Tag* tag);
 void saveLevelStorage(Actor* actor);
 bool deleteDBStorageData(string& key);
 bool _flushWriteCacheToLevelDB();
+Tag* fromJavaNbtString(string& snbt);
 void* forEachKeyWithPrefix(const string& prefix, function<void(string&, string&)> callback);

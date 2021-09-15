@@ -32,41 +32,118 @@ bool oncmd_allIds(CommandOrigin const& ori, CommandOutput& outp) {
 	return true;
 }
 
-
-string getKeyFromChunkDetail(int& cx, int& cz, int& dimid, int& type) {
-
+vector<Tag*> readTags(string bytes) {
+	int offset = 0;
+	vector<Tag*> tags;
+	while (offset < bytes.length()) {
+		auto tag = readFromBinary(bytes, offset);
+		if (offset < 4)
+			break;
+		tags.emplace_back(tag);
+	}
+	return tags;
 }
-//DBStorage::forEachKeyWithPrefix(gsl::basic_string_span<char const, -1>, std::function<void(gsl::basic_string_span<char const, -1>, gsl::basic_string_span<char const, -1>)> const&)
-bool oncmd_test(CommandOrigin const& ori, CommandOutput& outp, std::string str) {
+
+bool oncmd_test(CommandOrigin const& ori, CommandOutput& outp, int cx, int cy) {
+	string hex_key = "player";
+	string path_ori = "D:\\bds\\LXL_Plugins\\" + hex_key + ".nbt";
+	auto data = loadFromFile(path_ori);
+	auto tag = readFromBinary(data);
+	string path_data = "D:\\bds\\LXL_Plugins\\" + hex_key + "_data.nbt";
+	saveToFile(path_data, data);
+	string bin_big = writeToBinary(tag, false);
+	string path_big = "D:\\bds\\LXL_Plugins\\" + hex_key + "_big.nbt";
+	saveToFile(path_big, bin_big);
+	string bin_little = writeToBinary(tag, true);
+	string path_little = "D:\\bds\\LXL_Plugins\\" + hex_key + "_little.nbt";
+	saveToFile(path_little, bin_little);
+	cout << TagToSNBT(tag) << endl;
+	return true;
+	//vector<void*> areas = SymCall("?getTickingAreas@Dimension@@QEAAAEAVTickingAreaList@@XZ",
+	//	vector<void*>&, Dimension*)(getDimensionByDid(0));
+	//void* chunk = SymCall("?getChunk@BlockSource@@QEBAPEAVLevelChunk@@HH@Z",
+	//	void*, BlockSource*, int, int)(getBlockSourceByDim(0), cx, cy);
+	//if (chunk) {
+	//	bool a = dAccess<unsigned int>(chunk, 120);
+	//	cout << "Chunk a: " << a << endl;
+	//	bool fullLoaded = SymCall("?isFullyLoaded@LevelChunk@@QEBA_NXZ",
+	//		bool, void*)(chunk);
+	//	cout << "fullLoaded: " << fullLoaded << endl;
+	//}
+	//return true;
 	_flushWriteCacheToLevelDB();
-	forEachKeyWithPrefix(str, [](string& key, string& data) {
+	//string bin = loadFromFile(str);
+	//Tag* tag = readFromBinary(bin);
+	//cout << TagToSNBT(tag) << endl;
+	forEachKeyWithPrefix("", [](string& key, string& data) {
 		if (std::regex_match(key, std::regex("[\\w ,\.\-]*")))
-			cout << "key: " << key << ", data.length(): " << data.length() << endl;
+			//cout << "key: " << key << ", data.length(): " << data.length() << endl;
+			int a;
 		else {
 			auto chunkKey = ChunkKey(key);
 			string hex_key = byteToHexStr((byte*)key.c_str(), key.length());
-			cout << "hex_key: " << hex_key << endl;
-			cout << chunkKey.toString() << ", dataLen: " << data.length() << endl;
-			if (chunkKey.type == byte('\x31') || chunkKey.type == byte('\x32')) {
+			//cout << "hex_key: " << hex_key << endl;
+			//cout << chunkKey.toString() << ", dataLen: " << data.length() << endl;
+			if (chunkKey.type == byte('\x30') || chunkKey.type == byte('\x31') || chunkKey.type == byte('\x32')) {
 				auto tag = readFromBinary(data);
+				string path_data = "D:\\bds\\LXL_Plugins\\" + hex_key + "_data.nbt";
+				saveToFile(path_data, data);
 				string bin = writeToBinary(tag);
-				if (bin != data.substr(0,bin.length()))
-					throw("Error");
+				string path = "D:\\bds\\LXL_Plugins\\" + hex_key + "_big.nbt";
+				saveToFile(path, bin);
+				string bin2 = writeToBinary(tag, false);
+				string path2 = "D:\\bds\\LXL_Plugins\\" + hex_key + "_little.nbt";
+				saveToFile(path2, bin2);
 				cout << TagToSNBT(tag) << endl;
+				if (bin != data.substr(0, bin.length()))
+					throw("Error");
 			}
+			//if (chunkKey.type == byte('\x2F')) {
+			//	auto tag = readFromBinary(data);
+			//	//auto str = byteToHexStr((byte*)data.c_str(), data.length(), "\\x");
+			//	cout << "hex_key: " << hex_key << endl;
+			//	for (auto tag : readTags(data)) {
+			//		cout << TagToSNBT(tag) << endl;
+			//	}
+			//}
 		}
 		});
 	return true;
 
 }
+vector<ChunkKey> allChunk;
 bool oncmd_delall(CommandOrigin const& ori, CommandOutput& outp) {
 	_flushWriteCacheToLevelDB();
 	forEachKeyWithPrefix("", [](string& key, string& data) {
 		if (!std::regex_match(key, std::regex("[\\w ,\.\-]*"))) {
 			deleteDBStorageData(key);
 			_flushWriteCacheToLevelDB();
+			auto ck = ChunkKey(key);
+			auto dim = getBlockSourceByDim(ck.dimid);
+			if (!dim)
+				return;
+			void* chunk = SymCall("?getChunk@BlockSource@@QEBAPEAVLevelChunk@@HH@Z",
+				void*, BlockSource*, int, int)(dim, ck.cx, ck.cz);
+			if (!chunk)
+				return;
+			allChunk.emplace_back(ck);
 		}
 		});
+	for (auto& ck : allChunk) {
+		auto dim = getBlockSourceByDim(ck.dimid);
+		if (!dim)
+			continue;
+		void* chunk = SymCall("?getChunk@BlockSource@@QEBAPEAVLevelChunk@@HH@Z",
+			void*, BlockSource*, int, int)(dim, ck.cx, ck.cz);
+		if (!chunk)
+			continue;
+		void* chunkSource = SymCall("?getChunkSource@Dimension@@QEBAAEAVChunkSource@@XZ",
+			void*, Dimension*)(getDimensionByDid(ck.dimid));
+		SymCall("?loadChunk@DBChunkStorage@@UEAAXAEAVLevelChunk@@_N@Z",
+			void, void*, void*, bool)(chunkSource, chunk, true);
+		//SymCall("?setSaved@LevelChunk@@QEAAXXZ",
+		//	void, void*)(chunk);
+	}
 	return true;
 }
 bool oncmd_del(CommandOrigin const& ori, CommandOutput& outp, int cx, int cz, int dimid) {
@@ -94,7 +171,7 @@ bool oncmd_list(CommandOrigin const& ori, CommandOutput& outp, int cx, int cz, i
 		while (offset < data.length())
 		{
 			string snbt = TagToSNBT(readFromBinary(data, offset));
-			if (snbt.length()<3)
+			if (snbt.length() < 3)
 				break;
 			snbts.emplace_back(snbt);
 		}
@@ -120,7 +197,7 @@ void regCmd()
 		CmdOverload(rpd, oncmd_allIds);
 		CmdOverload(rpd, oncmd_rpd, "key");
 		CmdOverload(rdb, oncmd_rdb, "key");
-		CmdOverload(test, oncmd_test, "test");
+		CmdOverload(test, oncmd_test, "test", "cy");
 		CmdOverload(delall, oncmd_delall);
 		CmdOverload(del, oncmd_del, "cx", "cz", "dimid");
 		CmdOverload(listc, oncmd_list, "cx", "cz", "dimid");
@@ -132,13 +209,6 @@ void regCmd()
 
 void entry()
 {
-	//int a = -15593200;
-	//byte* bytes;
-	//bytes = intToBytes(a, 4);
-	//int b = bytesToInt(bytes, 4);
-	////269554195
-	//cout << byteToHexStr(bytes, 4)<<": " << bytesToInt(bytes, 4) << endl;
-
 	regCmd();
 	std::cout << "[TestSym] TestSym Loaded." << endl;
 }
@@ -225,7 +295,7 @@ THook(void*, "?write@NbtIo@@SAXPEBVCompoundTag@@AEAVIDataOutput@@@Z",
 
 //Tag::writeNamedTag(string const&, Tag const&, IDataOutput&)
 THook(void*, "?writeNamedTag@Tag@@SAXAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV1@AEAVIDataOutput@@@Z",
-	string* key,Tag* tag,  void** iDataOutput[3]) {
+	string* key, Tag* tag, void** iDataOutput[3]) {
 	void** tmp;
 	tmp = iDataOutput[1];
 	//cout << "path: " << (char*)iDataOutput[2] << endl;
@@ -244,6 +314,19 @@ THook(void*, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@$$CBD$0
 }
 THook(bool, "?_hasChunk@DBChunkStorage@@AEAA_NAEBVDBChunkStorageKey@@@Z",
 	void* _this, void** dbChunkStorageKey) {
+	return true;
 	auto rtn = original(_this, dbChunkStorageKey);
+	return rtn;
+}
+
+clock_t time_start, time_end;
+long time_limit = CLOCKS_PER_SEC * 0.01;
+
+THook(bool, "?tickWorld@ServerPlayer@@UEAAHAEBUTick@@@Z",
+	ServerPlayer* player, Tick* tick) {
+	time_start = clock();
+	auto rtn = original(player, tick);
+	time_end = clock();
+	//cout << time_end - time_start << endl;
 	return rtn;
 }

@@ -21,7 +21,19 @@ LevelStorage* getLevelStorage() {
 	return SymCall("?getLevelStorage@Level@@UEBAAEBVLevelStorage@@XZ", LevelStorage*, Level*)(getLevel());
 };
 
+Dimension* getDimensionByDid(int dimid) {
+	return SymCall("?getDimension@Level@@UEBAPEAVDimension@@V?$AutomaticID@VDimension@@H@@@Z",
+		Dimension*, void*, int)(this_mc->getLevel(), dimid);
+}
 
+BlockSource* getBlockSourceByDim(int dimid)
+{
+	auto dim = (int*)getDimensionByDid(dimid);
+	if (dim)
+		return dAccess<BlockSource*>(dim, 96);
+	else
+		return nullptr;
+}
 
 
 //======= xuid & uuid & others =======
@@ -124,6 +136,13 @@ bool _flushWriteCacheToLevelDB() {
 	SymCall("?_flushWriteCacheToLevelDB@DBStorage@@AEAA?AVTaskResult@@XZ",
 		void*, LevelStorage*, void*)(getLevelStorage(), result);
 	return false;
+}
+Tag* fromJavaNbtString(string& snbt) {
+	Tag* tag = Tag::createTag(TagType::Compound);
+	SymCall("?fromJavaNbtString@StateSerializationUtils@@YA?AW4WallConnectionType@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+		void*, Tag*, string&)(tag, snbt);
+	cout << TagToSNBT(tag) << endl;
+	return tag;
 }
 
 void* forEachKeyWithPrefix(const string& prefix, function<void(string&, string&)> callback) {
