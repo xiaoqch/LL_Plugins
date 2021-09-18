@@ -2,19 +2,19 @@
 #include "SymHelper.h"
 /*
 enum class DBStorageQueryType : int {
-	None = 0,
-	LoadAllPlayerIds = 1,
-	GetCoumpundTag = 2,
+    None = 0,
+    LoadAllPlayerIds = 1,
+    GetCoumpundTag = 2,
 };
 
 
 struct PlayerIds
 {
-	string MsaId;
-	string PlatformOnlineId;
-	string PlatformOfflineId;
-	string SelfSignedId;
-	string ServerId;
+    string MsaId;
+    string PlatformOnlineId;
+    string PlatformOfflineId;
+    string SelfSignedId;
+    string ServerId;
 };
 extern std::map<std::string, PlayerIds> allPlayerIds;
 
