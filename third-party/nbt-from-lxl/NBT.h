@@ -87,7 +87,7 @@ public:
 std::string TagToJson(Tag* nbt, int formatIndent);
 std::string TagToSNBT(Tag* nbt);
 std::string TagToBinaryNBT(Tag* tag, bool isLittleEndian = true);
-std::string TagsToBinaryNBT(const vector<Tag*>& tags, bool isLittleEndian);
+std::string TagsToBinaryNBT(const vector<Tag*>& tags, bool isLittleEndian = true);
 
 Tag* SNBTToTag(const std::string& snbt);
 Tag* BinaryNBTToTag(const std::string& bin, size_t& offset, bool isLittleEndian = true);

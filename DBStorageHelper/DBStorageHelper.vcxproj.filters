@@ -20,6 +20,9 @@
     <Filter Include="third-party">
       <UniqueIdentifier>{d1d252cb-50b5-466f-8dbe-627043dbd286}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{1a0a1811-f645-4e1b-874e-e7520f10a29b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -40,7 +43,9 @@
     <ClInclude Include="Utils.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="DBStorage.h" />
+    <ClInclude Include="DBStorage.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -64,12 +69,14 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="DBStorage.cpp" />
     <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp">
       <Filter>third-party</Filter>
     </ClCompile>
     <ClCompile Include="DBLogger.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DBStorage.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

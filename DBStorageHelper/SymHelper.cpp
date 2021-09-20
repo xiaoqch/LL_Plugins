@@ -38,6 +38,10 @@ BlockSource* getBlockSourceByDim(int dimid)
 }
 
 
+SavedData* getSavedData() {
+    return SymCall("?getSavedData@Level@@UEBAAEAVSavedDataStorage@@XZ",
+        SavedData*, Level*)(getLevel());
+}
 //======= xuid & uuid & others =======
 
 /*

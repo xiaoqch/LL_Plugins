@@ -10,7 +10,6 @@
 #define LOG_START(name) \
 string fun_name=name;\
 string space="                                       ";\
-level--;\
 cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;
 #define LOG_END \
 --level;\
@@ -45,7 +44,7 @@ THook(void*, "?addStorageObserver@DBStorage@@UEAAXV?$unique_ptr@VLevelStorageObs
 }
 
 // DBStorage::getCompoundTag
-THook(void*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
+THook(unique_ptr<Tag>*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
     LevelStorage* _this, unique_ptr<Tag>& tagPtr, string& key) {
     LOG_START("DBStorage::getCompoundTag");
     auto rtn = original(_this, tagPtr, key);
@@ -57,9 +56,10 @@ THook(void*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$de
 // DBStorage::hasKey
 THook(bool, "?hasKey@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
     void* _this, string_span key_span) {
-    LOG_START("DBStorage::hasKey");
+    //LOG_START("DBStorage::hasKey");
     auto rtn = original(_this, key_span);
-    LOG_END_RTN
+    //LOG_END_RTN
+    return rtn;
     string key = key_span.toString();
     //printf_s("DBStorage::hasKey(%p, %s) -> %d\n", _this, keyToString(key, "\\x").c_str(), rtn);
     cout << ".";
@@ -73,7 +73,7 @@ THook(unsigned long long, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string
     string key = string(key_span.str, key_span.len);
     auto rtn = original(_this, key_span, func);
     LOG_END_RTN
-    printf_s("DBStorage::forEachKeyWithPrefix(%p, %s, %p) -> %d\n", _this, keyToString(key).c_str(), func, rtn);
+    printf_s("DBStorage::forEachKeyWithPrefix(%p, %s, %p) -> %d\n", _this, keyToString(key).c_str(), &func, (int)rtn);
     return rtn;
 }
 
@@ -83,7 +83,7 @@ THook(bool, "?loadLevelData@DBStorage@@UEAA_NAEAVLevelData@@@Z",
     LOG_START("DBStorage::loadLevelData");
     auto rtn = original(_this, data);
     LOG_END_RTN
-    printf_s("DBStorage::loadLevelData(%p, %p) -> %d\n", _this, data, rtn);
+    printf_s("DBStorage::loadLevelData(%p, %p) -> %d\n", _this, data, (int)rtn);
     return rtn;
 }
 
@@ -117,32 +117,6 @@ THook(string*, "?getFullPath@DBStorage@@UEBAAEBV?$PathBuffer@V?$basic_string@DU?
     return rtn;
 }
 
-template <typename T>
-class CompleteResult;
-template <typename T>
-struct IAsyncResult {
-    //res {*res {bedrock_server_mod.exe!const Bedrock::Threading::AsyncResult::CompleteResult<void>::`vftable'}}
-    CompleteResult<T>* completeResult;
-    // ref {*ref {bedrock_server_mod.exe!const std::_Ref_count_obj2<class Bedrock::Threading::AsyncResult::CompleteResult<void> >::`vftable'}}
-    std::_Ref_count_obj2<CompleteResult<T>>* ref;
-};
-
-template <typename T>
-class CompleteResult {
-public:
-    virtual ~CompleteResult() {};
-    //0x00007ff73c4f8070 {bedrock_server_mod.exe!`anonymous namespace'::availableSetCountOfOne(void)}
-    virtual int availableSetCountOfOne() = 0;
-    //0x00007ff73cd4b520 {bedrock_server_mod.exe!Bedrock::Threading::AsyncResult::CompleteResult<class Bedrock::Http::Response>::getError(void)const }
-    virtual void* getError() = 0;
-    //0x00007ff73cd4b540 {bedrock_server_mod.exe!BackgroundTask<class TaskResult,void>::getException(void)const }
-    virtual void* getException() = 0;
-    //0x00007ff73c494300 {bedrock_server_mod.exe!std::_Func_impl_no_alloc<<lambda_93c16ff65c96352fe9f8a88319689ec6>,void,JsonUtil::JsonParseState<JsonUtil::JsonParseState<JsonUtil::JsonParseState<JsonUtil::EmptyClass,BlockComponentGroupDescription>,BlockQueuedTickingDescription>,BlockQueuedTickingDescription> &>::_Do_call(void)}
-    virtual void* _Do_call() = 0;
-    //0x00007ff73cd49cb0 {bedrock_server_mod.exe!Bedrock::Threading::AsyncResult::CompleteResult<class Bedrock::Http::Response>::addOnComplete(class std::function<void >)}
-    virtual void* addOnComplete(std::function<void(IAsyncResult<T> const&)>) = 0;
-};
-
 
 //std::map<string,LevelStorageWriteBatch::BatchEntry>
 // DBStorage::saveData
@@ -157,12 +131,12 @@ THook(void*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threadi
 
 // DBStorage::saveData
 THook(IAsyncResult<void>*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@$$QEAV43@@Z",
-    void* _this, IAsyncResult<void>& result, string const& key, string* data) {
-    LOG_START("DBStorage::saveData");
+    void* _this, IAsyncResult<void>* result, string const& key, string* data) {
+    LOG_START("DBStorage::saveData2");
     size_t len = data->length();
     auto rtn = original(_this, result, key, data);
     LOG_END_RTN
-    printf_s("DBStorage::saveData ss(%p, %p, %s, byte[%d]) -> %d\n",
+    printf_s("DBStorage::saveData ss(%p, %p, %s, byte[%lld]) -> %d\n",
         _this, &result, keyToString((string&)key, "\\x").c_str(), len, rtn->completeResult->availableSetCountOfOne());
     //Tag* error = (Tag*)res->v1->getError();
     //string str = TagToSNBT(error);
@@ -172,7 +146,7 @@ THook(IAsyncResult<void>*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncRe
 
 // DBStorage::deleteData
 THook(void*, "?deleteData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
-    void* _this, IAsyncResult<void>** result, string const* key, void* a3) {
+    void* _this, IAsyncResult<void>* result, string const* key, void* a3) {
     LOG_START("DBStorage::deleteData");
     auto rtn = original(_this, result, key, a3);
     LOG_END_RTN
@@ -273,6 +247,8 @@ THook(bool, "?checkShutdownDone@DBStorage@@UEAA_NXZ",
 THook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     void* _this, string_span key_span, string& data) {
     LOG_START("DBStorage::loadData");
+    //if(key_span.toString()=="portals")
+    //    *((void**)0) = 0;
     string key = key_span.toString();
     auto rtn = original(_this, key_span, data);
     LOG_END_RTN
@@ -453,7 +429,7 @@ THook(void, "?_markAsCorrupted@DBStorage@@AEBAXV?$basic_string_span@$$CBD$0?0@gs
 }
 // DBStorage::_mergeIntoWriteCache
 THook(void, "?_mergeIntoWriteCache@DBStorage@@IEAAXAEBVLevelStorageWriteBatch@@@Z",
-    DBStorage* _this, void* batch) {
+    DBStorage* _this, LevelStorageWriteBatch* batch) {
     LOG_START("DBStorage::_mergeIntoWriteCache");
     original(_this, batch);
     LOG_END
@@ -519,7 +495,7 @@ THook(bool, "?tryRepair@DBStorage@@QEBA_NAEBVPath@Core@@@Z",
 
 // DBStorage::getState2
 
-
+/*
 bool backupEnd(bool success);
 
 bool backupCopy(filesystem::path src, filesystem::path dst, size_t size) {
@@ -558,7 +534,11 @@ bool backupCompress(filesystem::path dir, filesystem::path zipPath) {
         ShExecInfo.nShow = SW_HIDE;
         ShExecInfo.hInstApp = NULL;
         auto result=ShellExecuteEx(&ShExecInfo);
-        WaitForSingleObject(ShExecInfo.hProcess, 30000);
+        if (ShExecInfo.hProcess == 0) {
+            cerr << "Error in compress file: ShExecInfo.hProcess == 0" << endl;
+            return false;
+        }
+        WaitForSingleObjectEx(ShExecInfo.hProcess, 30000, true);
         return result;
     }
     catch (filesystem::filesystem_error e) {
@@ -721,3 +701,4 @@ THook(void, "?tick@ServerLevel@@UEAAXXZ"
 //{
 //    return original(_this);
 //}
+*/

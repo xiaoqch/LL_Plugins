@@ -1,10 +1,12 @@
 #pragma once
 #include <nbt-from-lxl/NBT.h>
+#include "DBStorage.h"
 class ChunkData
 {
     ChunkPos pos;
     int dimid;
     string keyPrefix;
+    DBStorage* dbStorage;
 public:
     enum class KeyType : unsigned char {
         ChunkVersion = '\x2C', // byte

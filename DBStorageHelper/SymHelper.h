@@ -10,11 +10,28 @@ RTN inline VirtualCall(void* _this, uintptr_t off, Args... args) {
     return (*(RTN(**)(void*, Args...))(*(uintptr_t*)_this + off))(_this, args...);
 }
 
-BlockSource* getBlockSourceByDim(int dimid);
 Level* getLevel();
 Dimension* getDimensionByDid(int dimid);
 LevelStorage* getLevelStorage();
 DBStorage* getDBStorage();
+BlockSource* getBlockSourceByDim(int dimid);
+class SavedData {
+public:
+    bool        dirty;
+    std::string buffer;
+    virtual ~SavedData() = default;
+    virtual void deserialize(class CompoundTag const&) = 0;
+    virtual void serialize(class CompoundTag&) const = 0;
+};
+SavedData* getSavedData();
+
+
+
+
+
+
+
+
 string getServerId(const string& storageId);
 std::vector<string> loadAllPlayerIDs(bool b);
 string getPlatformOnlineId(Player* player);
