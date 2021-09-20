@@ -103,8 +103,7 @@ Tag* loadFromDBStorage(string& key) {
 		throw("Error in DBStorage::loadData()");
 	if (bin.empty())
 		return nullptr;
-	return readFromBinary(bin);
-	return BinaryNBTToTag((void*)bin.c_str(), bin.length());
+	return BinaryNBTToTag(bin);
 }
 
 

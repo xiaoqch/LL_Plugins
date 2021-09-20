@@ -3,11 +3,17 @@
 #include <vector>
 #include <map>
 #include <sstream>
-#include "../third-party/nbt-cpp/include/nbt.hpp"
-#include "../../IdsHelper/SymHelper.h"
+#include "nbt-cpp/include/nbt.hpp"
 
 using namespace std;
 
+// 不要忘记实现这个
+Level* getLevel();
+
+template<typename RTN = void, typename... Args>
+RTN inline VirtualCall(void* _this, uintptr_t off, Args... args) {
+    return (*(RTN(**)(void*, Args...))(*(uintptr_t*)_this + off))(_this, args...);
+}
 
 void Raw_RefreshActorData(Actor* ac)
 {
@@ -552,19 +558,94 @@ string TagToSNBT(Tag* nbt)
     return sout.str();
 }
 
-string TagToBinaryNBT(Tag* nbt)
-{
-    if (nbt->getTagType() != TagType::Compound)
-        return "";
-    tags::compound_tag content(false);
-    TagToSNBT_Compound_Helper(content, nbt);
-    tags::compound_tag root(true);
-    root.value[""] = make_unique<tags::compound_tag>(content);
+// Reference from StringByteOutput and BigEndianStringByteInput
+class BigEndianStringByteOutput {
+    void writeBigEndianBytes(byte* bytes, size_t count) {
+        auto v5 = bytes + count - 1;
+        if (v5 >= bytes)
+        {
+            auto v7 = bytes + 1;
+            do
+            {
+                auto v8 = *(v7 - 1);
+                *(v7 - 1) = *v5;
+                *v5-- = v8;
+            } while (v7++ <= v5);
+        }
+        writeBytes(bytes, count);
+    }
+public:
+    virtual ~BigEndianStringByteOutput() {};
+    virtual void* writeString(void* string_span) {
+        return SymCall("?writeString@BytesDataOutput@@UEAAXV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
+            void*, void*, void*)((void*)this, string_span);
+    }
+    virtual void* writeLongString(void* string_span) {
+        return SymCall("?writeLongString@BytesDataOutput@@UEAAXV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
+            void*, void*, void*)((void*)this, string_span);
+    }
+    virtual void writeFloat(float data) {
+        writeBigEndianBytes((byte*)&data, 4);
+    }
+    virtual void writeDouble(double data) {
+        writeBigEndianBytes((byte*)&data, 8);
+    }
+    virtual void writeByte(byte data) {
+        writeBytes(&data, 1);
+    }
+    virtual void writeShort(short data) {
+        writeBigEndianBytes((byte*)&data, 2);
+    }
+    virtual void writeInt(int data) {
+        writeBigEndianBytes((byte*)&data, 4);
+    }
+    virtual void writeLongLong(long long data) {
+        writeBigEndianBytes((byte*)&data, 8);
+    }
+    virtual void* writeBytes(byte* bytes, size_t count) {
+        return SymCall("?writeBytes@StringByteOutput@@UEAAXPEBX_K@Z",
+            void*, void*, byte*, size_t)((void*)this, bytes, count);
+    }
+};
 
-    ostringstream sout;
-    sout << contexts::bedrock_disk << root;
-    return sout.str();
+string TagToBinaryNBT(Tag* tag, bool isLittleEndian) {
+    void* vtbl;
+    if (isLittleEndian) {
+        vtbl = dlsym("??_7StringByteOutput@@6B@");
+    }
+    else {
+        auto tmp = BigEndianStringByteOutput();
+        vtbl = *(void***)&tmp;
+    }
+    //void* vtbl2 = dlsym("??_7BigEndianStringByteOutput@@6B@"); // deleted
+    string result = "";
+    void* iDataOutput[2] = { vtbl , &result };
+    SymCall("?write@NbtIo@@SAXPEBVCompoundTag@@AEAVIDataOutput@@@Z",
+        void*, Tag*, void*)(tag, (void*)iDataOutput);
+    return result;
 }
+
+string TagsToBinaryNBT(const vector<Tag*>& tags, bool isLittleEndian) {
+    string bin;
+    for (auto tag : tags) {
+        bin += TagToBinaryNBT(tag, isLittleEndian);
+    }
+    return bin;
+}
+
+//string TagToBinaryNBT(Tag* nbt)
+//{
+//    if (nbt->getTagType() != TagType::Compound)
+//        return "";
+//    tags::compound_tag content(false);
+//    TagToSNBT_Compound_Helper(content, nbt);
+//    tags::compound_tag root(true);
+//    root.value[""] = make_unique<tags::compound_tag>(content);
+//
+//    ostringstream sout;
+//    sout << contexts::bedrock_disk << root;
+//    return sout.str();
+//}
 
 
 //////////////////// From SNBT ////////////////////
@@ -784,18 +865,51 @@ Tag* SNBTToTag(const string& snbt)
     return res;
 }
 
-Tag* BinaryNBTToTag(void* data, size_t len)
-{
-    istringstream bsin(string((char*)data, len));
-    tags::compound_tag root(true);
-    bsin >> contexts::bedrock_disk >> root;
-    tags::compound_tag content(false);
-    content = *(tags::compound_tag*)root.value.begin()->second.get();
+Tag* BinaryNBTToTag(const string& bin, size_t& offset, bool isLittleEndian) {
+    void* vtbl;
+    if (isLittleEndian)
+        vtbl = dlsym("??_7StringByteInput@@6B@");
+    else
+        vtbl = dlsym("??_7BigEndianStringByteInput@@6B@");
 
-    Tag* res = Tag::createTag(TagType::Compound);
-    SNBTToTag_Compound_Helper(res, content);
-    return res;
+    uintptr_t iDataInput[4] = { (uintptr_t)vtbl , offset, bin.length(), (uintptr_t)bin.c_str() };
+    Tag* tag = Tag::createTag(TagType::Compound);
+    auto rtn = SymCall("?read@NbtIo@@SA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEAVIDataInput@@@Z",
+        unique_ptr<Tag>*, Tag**, void*)(&tag, (void*)iDataInput);
+
+    offset = iDataInput[1];
+    return rtn->get();
 }
+
+Tag* BinaryNBTToTag(const string& bin, bool isLittleEndian) {
+    size_t offset = 0;
+    return BinaryNBTToTag(bin, offset, isLittleEndian);
+}
+
+vector<Tag*> BinaryNBTToTags(const string& bin, bool isLittleEndian) {
+    vector<Tag*> tags;
+    size_t offset = 0;
+    while (offset < bin.length()) {
+        auto tag = BinaryNBTToTag(bin, offset, isLittleEndian);
+        if (offset < 4)
+            return tags;
+        tags.emplace_back(tag);
+    }
+    return tags;
+}
+
+//Tag* BinaryNBTToTag(void* data, size_t len)
+//{
+//    istringstream bsin(string((char*)data, len));
+//    tags::compound_tag root(true);
+//    bsin >> contexts::bedrock_disk >> root;
+//    tags::compound_tag content(false);
+//    content = *(tags::compound_tag*)root.value.begin()->second.get();
+//
+//    Tag* res = Tag::createTag(TagType::Compound);
+//    SNBTToTag_Compound_Helper(res, content);
+//    return res;
+//}
 
 //////////////////// To Json ////////////////////
 /*
