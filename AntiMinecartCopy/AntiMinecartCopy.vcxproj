@@ -153,8 +153,10 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
-copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\</Command>
+      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
+copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
+copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
+)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>复制插件到bds插件目录</Message>

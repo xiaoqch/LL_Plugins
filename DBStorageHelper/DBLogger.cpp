@@ -44,8 +44,6 @@ THook(void*, "?addStorageObserver@DBStorage@@UEAAXV?$unique_ptr@VLevelStorageObs
     LOG_START("DBStorage:addStorageObserver");
     auto rtn = original(_this, observer);
     LOG_END_RTN
-    printf_s("%s(%p, %p) -> %p\n", fun_name.c_str(), _this, observer, rtn);
-    return rtn;
 }
 
 // DBStorage::getCompoundTag
@@ -54,8 +52,6 @@ THook(unique_ptr<Tag>*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoun
     LOG_START_WITH_KEY("DBStorage::getCompoundTag");
     auto rtn = original(_this, tagPtr, key);
     LOG_END_RTN
-    printf_s("DBStorage::getCompoundTag(%p, %p, %s) -> %p\n", _this, tagPtr.get(), keyToString(key, "\\x").c_str(), rtn);
-    return rtn;
 }
 
 // DBStorage::hasKey
@@ -64,10 +60,6 @@ THook(bool, "?hasKey@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
     //LOG_START("DBStorage::hasKey");
     auto rtn = original(_this, key_span);
     //LOG_END_RTN
-    return rtn;
-    string key = key_span.toString();
-    //printf_s("DBStorage::hasKey(%p, %s) -> %d\n", _this, keyToString(key, "\\x").c_str(), rtn);
-    cout << ".";
     return rtn;
 }
 
@@ -78,8 +70,6 @@ THook(unsigned long long, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string
     LOG_START_WITH_KEY("DBStorage::forEachKeyWithPrefix");
     auto rtn = original(_this, key_span, func);
     LOG_END_RTN
-    printf_s("DBStorage::forEachKeyWithPrefix(%p, %s, %p) -> %d\n", _this, keyToString(key).c_str(), &func, (int)rtn);
-    return rtn;
 }
 
 // DBStorage::loadLevelData
@@ -88,8 +78,6 @@ THook(bool, "?loadLevelData@DBStorage@@UEAA_NAEAVLevelData@@@Z",
     LOG_START("DBStorage::loadLevelData");
     auto rtn = original(_this, data);
     LOG_END_RTN
-    printf_s("DBStorage::loadLevelData(%p, %p) -> %d\n", _this, data, (int)rtn);
-    return rtn;
 }
 
 // DBStorage::createChunkStorage
@@ -98,8 +86,6 @@ THook(void*, "?createChunkStorage@DBStorage@@UEAA?AV?$unique_ptr@VChunkSource@@U
     LOG_START("DBStorage::createChunkStorage");
     auto rtn = original(_this, cs, sv);
     LOG_END_RTN
-    printf_s("DBStorage::createChunkStorage(%p, %p, %p) -> %p\n", _this, cs, sv, rtn);
-    return rtn;
 }
 
 // DBStorage::saveLevelData
@@ -108,8 +94,6 @@ THook(void*, "?saveLevelData@DBStorage@@UEAAXAEBVLevelData@@@Z",
     LOG_START("DBStorage::saveLevelData");
     auto rtn = original(_this, data);
     LOG_END_RTN
-    printf_s("DBStorage::saveLevelData(%p, %p) -> %p\n", _this, data, rtn);
-    return rtn;
 }
 
 // DBStorage::getFullPath
@@ -118,7 +102,6 @@ THook(string*, "?getFullPath@DBStorage@@UEBAAEBV?$PathBuffer@V?$basic_string@DU?
     //LOG_START("DBStorage::getFullPath");
     auto rtn = original(_this);
     //LOG_END_RTN
-    //printf_s("DBStorage::getFullPath(%p) -> %s\n", _this, rtn->c_str());
     return rtn;
 }
 
@@ -130,8 +113,6 @@ THook(void*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threadi
     LOG_START("DBStorage::saveData");
     auto rtn = original(_this, result, batch);
     LOG_END_RTN
-    printf_s("DBStorage::saveData(%p, %p) -> %p\n", _this, batch, rtn);
-    return rtn;
 }
 
 // DBStorage::saveData
@@ -141,12 +122,6 @@ THook(IAsyncResult<void>*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncRe
     size_t len = data->length();
     auto rtn = original(_this, result, key, data);
     LOG_END_RTN
-    printf_s("DBStorage::saveData ss(%p, %p, %s, byte[%lld]) -> %d\n",
-        _this, &result, keyToString((string&)key, "\\x").c_str(), len, rtn->completeResult->availableSetCountOfOne());
-    //Tag* error = (Tag*)res->v1->getError();
-    //string str = TagToSNBT(error);
-    //auto exe = res->v1->getException();
-    return rtn;
 }
 
 // DBStorage::deleteData
@@ -155,8 +130,6 @@ THook(void*, "?deleteData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threa
     LOG_START_WITH_KEY("DBStorage::deleteData");
     auto rtn = original(_this, result, key, a3);
     LOG_END_RTN
-    printf_s("DBStorage::deleteData(%p, %s) -> %p\n", _this, keyToString((string&)key, "\\x").c_str(), rtn);
-    return rtn;
 }
 
 // DBStorage::syncIO
@@ -165,8 +138,6 @@ THook(void*, "?syncIO@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::syncIO");
     auto rtn = original(_this);
     LOG_END_RTN
-    printf_s("DBStorage::syncIO(%p) -> %p\n", _this, rtn);
-    return rtn;
 }
 
 // DBStorage::getStatistics
@@ -195,8 +166,6 @@ THook(void*, "?getStatistics@DBStorage@@UEBAXAEAV?$basic_string@DU?$char_traits@
     LOG_START("DBStorage::getStatistics");
     auto rtn = original(_this, result);
     LOG_END_RTN
-    printf_s("DBStorage::getStatistics(%p, %s) -> %p\n", _this, result.c_str(), rtn);
-    return rtn;
 }
 
 // DBStorage::clonePlayerData
@@ -206,8 +175,6 @@ THook(void*, "?clonePlayerData@LevelStorage@@UEAA_NV?$basic_string_span@$$CBD$0?
     LOG_START_WITH_KEY("DBStorage::clonePlayerData");
     auto rtn = original(_this, key_span_1, key_span_2);
     LOG_END_RTN
-    printf_s("DBStorage::clonePlayerData(%p, %s, %s) -> %p\n", _this, key_span_1.str, key_span_2.str, rtn);
-    return rtn;
 }
 
 // DBStorage::getState
@@ -216,7 +183,6 @@ THook(void*, "?getState@DBStorage@@UEBA?AULevelStorageResult@Core@@XZ",
     //LOG_START("DBStorage::getState");
     auto rtn = original(_this, result);
     //LOG_END_RTN
-    //printf_s("DBStorage::getState(%p) -> %p\n", _this, rtn);
     return rtn;
 }
 
@@ -226,7 +192,6 @@ THook(void, "?startShutdown@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::startShutdown");
     original(_this);
     LOG_END
-    printf_s("DBStorage::startShutdown(%p)\n", _this);
 }
 
 // DBStorage::isShuttingDown
@@ -235,8 +200,6 @@ THook(bool, "?isShuttingDown@DBStorage@@UEBA_NXZ",
     LOG_START("DBStorage::isShuttingDown");
     auto rtn = original(_this);
     LOG_END_RTN
-    printf_s("DBStorage::isShuttingDown(%p) -> %d\n", _this, rtn);
-    return rtn;
 }
 
 // DBStorage::checkShutdownDone
@@ -245,8 +208,6 @@ THook(bool, "?checkShutdownDone@DBStorage@@UEAA_NXZ",
     LOG_START("DBStorage::checkShutdownDone");
     auto rtn = original(_this);
     LOG_END_RTN
-    printf_s("DBStorage::checkShutdownDone(%p) -> %d\n", _this, rtn);
-    return rtn;
 }
 
 // DBStorage::loadData
@@ -258,8 +219,6 @@ THook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV
     //    *((void**)0) = 0;
     auto rtn = original(_this, key_span, data);
     LOG_END_RTN
-    printf_s("DBStorage::loadData(%p, %s, %p) -> %d\n", _this, keyToString(key).c_str(), &data, rtn);
-    return rtn;
 }
 
 // DBStorage::releaseSnapshot
@@ -268,7 +227,6 @@ THook(void, "?releaseSnapshot@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::releaseSnapshot");
     original(_this);
     LOG_END
-    printf_s("DBStorage::releaseSnapshot(%p)\n", _this);
 }
 
 // DBStorage::compactStorage
@@ -277,7 +235,6 @@ THook(void, "?compactStorage@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::compactStorage");
     original(_this);
     LOG_END
-    printf_s("DBStorage::compactStorage(%p)\n", _this);
 }
 
 // DBStorage::syncAndSuspendStorage
@@ -286,7 +243,6 @@ THook(void, "?syncAndSuspendStorage@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::syncAndSuspendStorage");
     original(_this);
     LOG_END
-    printf_s("DBStorage::syncAndSuspendStorage(%p)\n", _this);
 }
 
 // DBStorage::resumeStorage
@@ -295,7 +251,6 @@ THook(void, "?resumeStorage@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::resumeStorage");
     original(_this);
     LOG_END
-    printf_s("DBStorage::resumeStorage(%p)\n", _this);
 }
 
 // DBStorage::setFlushAllowed
@@ -304,7 +259,6 @@ THook(void, "?setFlushAllowed@DBStorage@@UEAAX_N@Z",
     LOG_START("DBStorage::setFlushAllowed");
     original(_this, a1);
     LOG_END
-    printf_s("DBStorage::setFlushAllowed(%p, %d)\n", _this, a1);
 }
 
 // DBStorage::flushToPermanentStorage
@@ -313,7 +267,6 @@ THook(void, "?flushToPermanentStorage@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::flushToPermanentStorage");
     original(_this);
     LOG_END
-    printf_s("DBStorage::flushToPermanentStorage(%p)\n", _this);
 }
 
 // DBStorage::freeCaches
@@ -322,7 +275,6 @@ THook(void, "?freeCaches@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::freeCaches");
     original(_this);
     LOG_END
-    printf_s("DBStorage::freeCaches(%p)\n", _this);
 }
 
 // DBStorage::setCompactionCallback
@@ -331,8 +283,6 @@ THook(void*, "?setCompactionCallback@DBStorage@@UEAAXV?$function@$$A6AXW4Compact
     LOG_START("DBStorage::setCompactionCallback");
     auto rtn = original(_this, func);
     LOG_END_RTN
-    printf_s("DBStorage::setCompactionCallback(%p, %p) -> %p\n", _this, &func, rtn);
-    return rtn;
 }
 
 // DBStorage::setCriticalSyncSaveCallback
@@ -341,8 +291,6 @@ THook(void*, "?setCriticalSyncSaveCallback@DBStorage@@UEAAXV?$function@$$A6AXXZ@
     LOG_START("DBStorage::setCriticalSyncSaveCallback");
     auto rtn = original(_this, func);
     LOG_END_RTN
-    printf_s("DBStorage::setCriticalSyncSaveCallback(%p, %p) -> %p\n", _this, &func, rtn);
-    return rtn;
 }
 
 // DBStorage::corruptLevel
@@ -351,7 +299,6 @@ THook(void, "?corruptLevel@DBStorage@@UEAAXXZ",
     LOG_START("DBStorage::corruptLevel");
     original(_this);
     LOG_END
-    printf_s("DBStorage::corruptLevel(%p)\n", _this);
 }
 
 // not in vtbl
@@ -362,9 +309,6 @@ THook(LevelStorageWriteBatch*, "??0PendingWriteResult@DBStorage@@QEAA@V?$shared_
     LOG_START("DBStorage::PendingWriteResult::PendingWriteResult");
     auto rtn = original(_this, bin, a2);
     LOG_END_RTN
-    size_t len = bin.get()->length();
-    printf_s("DBStorage::PendingWriteResult::PendingWriteResult(%p, byte[%d], %d) -> %p\n", _this, (int)len, a2, rtn);
-    return rtn;
 }
 
 // DBStorage::_findCacheEntry
@@ -377,8 +321,6 @@ THook(LevelStorageWriteBatch*, "?_findCacheEntry@DBStorage@@IEAA?AU?$pair@PEAVLe
     // a1===rtn
     auto rtn = original(_this, batch, key);
     LOG_END_RTN
-    printf_s("DBStorage::_findCacheEntry(%p, %p, %s) -> %p\n", _this, batch, keyToString(key).c_str(), rtn);
-    return rtn;
 }
 
 // DBStorage::_flushWriteCacheToLevelDB
@@ -388,8 +330,6 @@ THook(void*, "?_flushWriteCacheToLevelDB@DBStorage@@AEAA?AVTaskResult@@XZ",
     //taskResult {*taskResult {内部 bedrock_server_mod.exe!WorkerPool::tryPop(int)} {0x4c08508b48088b48 {...}}}
     auto rtn = original(_this, taskResult);
     LOG_END_RTN
-    printf_s("DBStorage::_flushWriteCacheToLevelDB(%p, %p) -> %p\n", _this, taskResult, rtn);
-    return rtn;
 }
 
 typedef void** PendingWriteResult;
@@ -412,8 +352,6 @@ THook(void*, "?_getTelemetryMessage@DBStorage@@AEBA?AV?$basic_string@DU?$char_tr
     LOG_START("DBStorage::_getTelemetryMessage");
     auto rtn = original(_this, statusStr, dbStatus);
     LOG_END_RTN
-    printf_s("DBStorage::_getTelemetryMessage(%p, %s, %s) -> %p\n", _this, statusStr.c_str(), statusToString(dbStatus).c_str(), rtn);
-    return rtn;
 }
 
 // DBStorage::_handleErrorStatus
@@ -422,7 +360,6 @@ THook(void, "?_handleErrorStatus@DBStorage@@IEAAXAEBVStatus@leveldb@@@Z",
     LOG_START("DBStorage::_handleErrorStatus");
     original(_this, dbStatus);
     LOG_END
-    printf_s("DBStorage::_handleErrorStatus(%p, %s)\n", _this, statusToString(dbStatus).c_str());
 }
 
 // DBStorage::_markAsCorrupted
@@ -431,7 +368,6 @@ THook(void, "?_markAsCorrupted@DBStorage@@AEBAXV?$basic_string_span@$$CBD$0?0@gs
     LOG_START("DBStorage::_markAsCorrupted");
     original(_this, str_span);
     LOG_END
-    printf_s("DBStorage::_markAsCorrupted(%p, %p)\n", _this, str_span.str);
 }
 // DBStorage::_mergeIntoWriteCache
 THook(void, "?_mergeIntoWriteCache@DBStorage@@IEAAXAEBVLevelStorageWriteBatch@@@Z",
@@ -439,7 +375,6 @@ THook(void, "?_mergeIntoWriteCache@DBStorage@@IEAAXAEBVLevelStorageWriteBatch@@@
     LOG_START("DBStorage::_mergeIntoWriteCache");
     original(_this, batch);
     LOG_END
-    printf_s("DBStorage::_mergeIntoWriteCache(%p, %p)\n", _this, batch);
 }
 
 // DBStorage::_queueSaveCallback
@@ -448,7 +383,6 @@ THook(void, "?_queueSaveCallback@DBStorage@@IEAAX_N@Z",
     LOG_START("DBStorage::_queueSaveCallback");
     original(_this, a1);
     LOG_END
-    printf_s("DBStorage::_queueSaveCallback(%p, %d)\n", _this, a1);
 }
 
 // DBStorage::_read
@@ -458,8 +392,6 @@ THook(void*, "?_read@DBStorage@@IEBAXV?$basic_string_span@$$CBD$0?0@gsl@@AEBV?$f
     LOG_START_WITH_KEY("DBStorage::_read");
     auto rtn = original(_this, prefix_span, func);
     LOG_END_RTN
-    printf_s("DBStorage::_read(%p, %s, %p) -> %p\n", _this, key.c_str(), func, rtn);
-    return rtn;
 }
 // DBStorage::_readPendingWrite
 THook(PendingWriteResult*, "?_readPendingWrite@DBStorage@@IEBA?AUPendingWriteResult@1@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
@@ -467,9 +399,6 @@ THook(PendingWriteResult*, "?_readPendingWrite@DBStorage@@IEBA?AUPendingWriteRes
     LOG_START_WITH_KEY("DBStorage::_readPendingWrite");
     auto rtn = original(_this,res, key);
     LOG_END_RTN
-    //printf_s("DBStorage::_readPendingWrite(%p, %p, %s) -> %p\n", _this, res, keyToString(key).c_str(), rtn);
-    cout << ",";
-    return rtn;
 }
 // DBStorage::_scheduleNextAutoCompaction
 THook(void, "?_scheduleNextAutoCompaction@DBStorage@@AEAAXXZ",
@@ -477,7 +406,6 @@ THook(void, "?_scheduleNextAutoCompaction@DBStorage@@AEAAXXZ",
     LOG_START("DBStorage::_scheduleNextAutoCompaction");
     original(_this);
     LOG_END
-    printf_s("DBStorage::_scheduleNextAutoCompaction(%p)\n", _this);
 }
 // DBStorage::_suspendAndPerformSaveAction
 THook(bool, "?_suspendAndPerformSaveAction@DBStorage@@AEAA_NV?$function@$$A6A?AVTaskResult@@XZ@std@@V?$function@$$A6AXXZ@3@@Z",
@@ -485,8 +413,6 @@ THook(bool, "?_suspendAndPerformSaveAction@DBStorage@@AEAA_NV?$function@$$A6A?AV
     LOG_START("DBStorage::_suspendAndPerformSaveAction")
     auto rtn = original(_this, func1, func2);
     LOG_END_RTN
-    printf_s("DBStorage::_suspendAndPerformSaveAction(%p, %p, %p) -> %d\n", _this, &func1, &func2, rtn);
-    return rtn;
 }
 
 // DBStorage::_suspendAndPerformSaveAction
@@ -495,8 +421,6 @@ THook(bool, "?tryRepair@DBStorage@@QEBA_NAEBVPath@Core@@@Z",
     LOG_START("DBStorage::_suspendAndPerformSaveAction")
     auto rtn = original(_this, path);
     LOG_END_RTN
-    printf_s("DBStorage::_suspendAndPerformSaveAction(%p, %p) -> %d\n", _this, path, rtn);
-    return rtn;
 }
 
 // DBStorage::getState2
@@ -715,14 +639,4 @@ THook(BlockLegacy*, "?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$ba
     void* _this, string& nid) {
     auto rtn = original(_this, nid);
     return rtn;
-}
-
-// ===== attack =====
-THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
-    Player* player, Actor* actor, int* damageCause) {
-    auto pls=liteloader::getAllPlayers();
-    for (auto& pl : pls) {
-        cout << offPlayer::getXUIDString(pl) << endl;
-    }
-    return original(player, actor, damageCause);
 }
