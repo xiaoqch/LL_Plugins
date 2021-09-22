@@ -257,7 +257,7 @@ THook(void*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threadi
     LevelStorage* _this, void* result, string& key, string& bin) {
     // bin 格式和 string 类似
     if (!bin.empty())
-        cout << TagToSNBT(BinaryNBTToTag((void*)bin.c_str(), bin.length())).substr(0, 120) << endl;
+        cout << TagToSNBT(BinaryNBTToTag(bin)).substr(0, 120) << endl;
     //void* fake_result[2]{};
     void* ret = original(_this, result, key, bin);
     //cout << "****DBStorage::saveData(" << _this << ", " << result << ", \"" << key << "\", " << &bin << ");" << endl;

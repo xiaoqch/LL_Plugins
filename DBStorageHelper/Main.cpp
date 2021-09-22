@@ -2,7 +2,7 @@
 #include "SymHelper.h"
 #include "DBStorageHelper.h"
 #include "DBStorage.h"
-
+#include <mc/OffsetHelper.h>
 using namespace std;
 #define DATA_DIR "F:\\Minecraft\\leveldb_struct"
 
@@ -11,25 +11,43 @@ using namespace std;
 // DBStorage::addStorageObserver
 
 bool testDBStorage() {
+    filesystem::path binDir = filesystem::path(DATA_DIR).append("bin");
+    filesystem::path snbtDir = filesystem::path(DATA_DIR).append("snbt");
+    filesystem::create_directories(binDir);
+    filesystem::create_directories(snbtDir);
     auto dbh = getDBStorage()->getHelper();
-    dbh.forEachKeyWithPrefix("", [&dbh](const string& key, string& bin) {
+    dbh.forEachKeyWithPrefix("", [&dbh, binDir, snbtDir](const string& key, string& bin) {
         try {
+            if (!std::regex_match(key, std::regex("[\\w ,\.\-]*")))
+                return;
             string fmtKey = keyToString(key, "");
-            filesystem::path bin_path = filesystem::path(DATA_DIR).append("bin").append(fmtKey + ".bin");
-            fstream fo(bin_path, ios::out | ios::binary);
+            filesystem::path binPath = filesystem::path(binDir).append(fmtKey + ".bin");
+            fstream fo(binPath, ios::out | ios::binary);
             fo.write(bin.c_str(), bin.length());
             fo.flush();
             fo.close();
             auto tags = BinaryNBTToTags(bin);
-            int index = 0;
-            for (auto& tag : tags) {
-                filesystem::path snbt_path = filesystem::path(DATA_DIR).append("snbt").append(fmtKey+"__"+to_string(index) + ".snbt");
+            if (tags.size() == 1) {
+                auto tag = tags[0];
+                filesystem::path snbt_path = filesystem::path(snbtDir).append(fmtKey + ".snbt");
                 fstream fsnbt(snbt_path, ios::out);
                 auto snbt = TagToSNBT(tag);
                 fsnbt.write(snbt.c_str(), snbt.length());
                 fsnbt.flush();
                 fsnbt.close();
-                ++index;
+            }
+            else {
+                int index = 0;
+                for (auto& tag : tags) {
+                    filesystem::path snbt_path = snbtDir;
+                    snbt_path.append(fmtKey + "__" + to_string(index) + ".snbt");
+                    fstream fsnbt(snbt_path, ios::out);
+                    auto snbt = TagToSNBT(tag);
+                    fsnbt.write(snbt.c_str(), snbt.length());
+                    fsnbt.flush();
+                    fsnbt.close();
+                    ++index;
+                }
             }
         }
         catch (...) {
@@ -97,6 +115,21 @@ enum class OP_CHUNK_HELPER :int
     key, // key cx cz dim [type] [cy]
 };
 bool oncmd_dbhelper(CommandOrigin const& ori, CommandOutput& outp) {
+    auto ip=liteloader::getIP(*offPlayer::getNetworkIdentifier((Player*)ori.getEntity()));
+    cout << ip << endl;
+    outp.success(ip);
+    return true;
+    //Player* pl = (Player*)ori.getEntity();
+    //auto& pos = pl->getPos();
+    //BlockPos bpos = { (int)pos.x, (int)pos.y, (int)pos.z };
+    //BlockSource* bs = getBlockSourceByDim(pl->getDimensionId());
+    //auto bp = dAccess<void*>(getLevel(), 0x850);
+    //BlockLegacy* bl = SymCall("?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    //    BlockLegacy*, void*, const string &)(dAccess<void*>(bp, 88), "minecraft:structure_block");
+    //SymCall("?setBlock@BlockSource@@QEAA_NAEBVBlockPos@@AEBVBlock@@HPEBUActorBlockSyncMessage@@@Z",
+    //    bool, BlockSource*, BlockPos, Block*, int, void*)
+    //    (bs, bpos, (Block*)bl, 0, nullptr);
+    //return true;
     testDBStorage();
     return true;
     auto dbh = getDBStorage()->getHelper();
@@ -139,3 +172,4 @@ void regListener() {
 void entry() {
     regListener();
 }
+

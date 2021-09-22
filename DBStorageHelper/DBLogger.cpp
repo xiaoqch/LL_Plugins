@@ -10,7 +10,12 @@
 #define LOG_START(name) \
 string fun_name=name;\
 string space="                                       ";\
-cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;
+if(level<0) level=0;\
+//cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;
+#define LOG_START_WITH_KEY(name) \
+string space="                                       ";\
+if(level<0) level=0;\
+//cout<<space.substr(0, 2*level++)<<name<<": "<<keyToString(key)<<endl;
 #define LOG_END \
 --level;\
 return;
@@ -46,7 +51,7 @@ THook(void*, "?addStorageObserver@DBStorage@@UEAAXV?$unique_ptr@VLevelStorageObs
 // DBStorage::getCompoundTag
 THook(unique_ptr<Tag>*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
     LevelStorage* _this, unique_ptr<Tag>& tagPtr, string& key) {
-    LOG_START("DBStorage::getCompoundTag");
+    LOG_START_WITH_KEY("DBStorage::getCompoundTag");
     auto rtn = original(_this, tagPtr, key);
     LOG_END_RTN
     printf_s("DBStorage::getCompoundTag(%p, %p, %s) -> %p\n", _this, tagPtr.get(), keyToString(key, "\\x").c_str(), rtn);
@@ -69,8 +74,8 @@ THook(bool, "?hasKey@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@@Z",
 // DBStorage::forEachKeyWithPrefix
 THook(unsigned long long, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@$$CBD$0?0@gsl@@AEBV?$function@$$A6AXV?$basic_string_span@$$CBD$0?0@gsl@@0@Z@std@@@Z",
     void* _this, string_span key_span, function<void(string_span, string_span)> const& func) {
-    LOG_START("DBStorage::forEachKeyWithPrefix");
     string key = string(key_span.str, key_span.len);
+    LOG_START_WITH_KEY("DBStorage::forEachKeyWithPrefix");
     auto rtn = original(_this, key_span, func);
     LOG_END_RTN
     printf_s("DBStorage::forEachKeyWithPrefix(%p, %s, %p) -> %d\n", _this, keyToString(key).c_str(), &func, (int)rtn);
@@ -132,7 +137,7 @@ THook(void*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threadi
 // DBStorage::saveData
 THook(IAsyncResult<void>*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@$$QEAV43@@Z",
     void* _this, IAsyncResult<void>* result, string const& key, string* data) {
-    LOG_START("DBStorage::saveData2");
+    LOG_START_WITH_KEY("DBStorage::saveData2");
     size_t len = data->length();
     auto rtn = original(_this, result, key, data);
     LOG_END_RTN
@@ -146,8 +151,8 @@ THook(IAsyncResult<void>*, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncRe
 
 // DBStorage::deleteData
 THook(void*, "?deleteData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
-    void* _this, IAsyncResult<void>* result, string const* key, void* a3) {
-    LOG_START("DBStorage::deleteData");
+    void* _this, IAsyncResult<void>* result, string const& key, void* a3) {
+    LOG_START_WITH_KEY("DBStorage::deleteData");
     auto rtn = original(_this, result, key, a3);
     LOG_END_RTN
     printf_s("DBStorage::deleteData(%p, %s) -> %p\n", _this, keyToString((string&)key, "\\x").c_str(), rtn);
@@ -197,7 +202,8 @@ THook(void*, "?getStatistics@DBStorage@@UEBAXAEAV?$basic_string@DU?$char_traits@
 // DBStorage::clonePlayerData
 THook(void*, "?clonePlayerData@LevelStorage@@UEAA_NV?$basic_string_span@$$CBD$0?0@gsl@@0@Z",
     void* _this, string_span key_span_1, string_span key_span_2) {
-    LOG_START("DBStorage::clonePlayerData");
+    string key = key_span_1.toString();
+    LOG_START_WITH_KEY("DBStorage::clonePlayerData");
     auto rtn = original(_this, key_span_1, key_span_2);
     LOG_END_RTN
     printf_s("DBStorage::clonePlayerData(%p, %s, %s) -> %p\n", _this, key_span_1.str, key_span_2.str, rtn);
@@ -246,10 +252,10 @@ THook(bool, "?checkShutdownDone@DBStorage@@UEAA_NXZ",
 // DBStorage::loadData
 THook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     void* _this, string_span key_span, string& data) {
-    LOG_START("DBStorage::loadData");
+    string key = key_span.toString();
+    LOG_START_WITH_KEY("DBStorage::loadData");
     //if(key_span.toString()=="portals")
     //    *((void**)0) = 0;
-    string key = key_span.toString();
     auto rtn = original(_this, key_span, data);
     LOG_END_RTN
     printf_s("DBStorage::loadData(%p, %s, %p) -> %d\n", _this, keyToString(key).c_str(), &data, rtn);
@@ -367,7 +373,7 @@ THook(LevelStorageWriteBatch*, "?_findCacheEntry@DBStorage@@IEAA?AU?$pair@PEAVLe
     DBStorage* _this, pair<void*, void*>* batch, string& key) {
     //		(void***)batch->first	0x00007ff9e5da69d6 {msvcp140.dll!std::basic_filebuf<char,std::char_traits<char>>::_Unlock(void), 行 403} {...}	void * * *
     //		(void***)batch->second	0x00007ff9e5e25080 {msvcp140.dll!std::basic_ostream<char,std::char_traits<char>> std::cout} {0x00007ff9e5df7d88 {msvcp140.dll!const std::basic_ostream<char,struct std::char_traits<char> >::`vbtable'} {...}}	void * * *
-    LOG_START("DBStorage::_findCacheEntry");
+    LOG_START_WITH_KEY("DBStorage::_findCacheEntry");
     // a1===rtn
     auto rtn = original(_this, batch, key);
     LOG_END_RTN
@@ -402,11 +408,11 @@ THook(void*, "?_getAllPendingWrites@DBStorage@@IEBA?AV?$map@V?$basic_string@DU?$
 
 // DBStorage::_getTelemetryMessage
 THook(void*, "?_getTelemetryMessage@DBStorage@@AEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVStatus@leveldb@@@Z",
-    DBStorage* _this, string& str, void* dbStatus) {
+    DBStorage* _this, string& statusStr, void* dbStatus) {
     LOG_START("DBStorage::_getTelemetryMessage");
-    auto rtn = original(_this, str, dbStatus);
+    auto rtn = original(_this, statusStr, dbStatus);
     LOG_END_RTN
-    printf_s("DBStorage::_getTelemetryMessage(%p, %s, %s) -> %p\n", _this, str.c_str(), statusToString(dbStatus).c_str(), rtn);
+    printf_s("DBStorage::_getTelemetryMessage(%p, %s, %s) -> %p\n", _this, statusStr.c_str(), statusToString(dbStatus).c_str(), rtn);
     return rtn;
 }
 
@@ -447,18 +453,18 @@ THook(void, "?_queueSaveCallback@DBStorage@@IEAAX_N@Z",
 
 // DBStorage::_read
 THook(void*, "?_read@DBStorage@@IEBAXV?$basic_string_span@$$CBD$0?0@gsl@@AEBV?$function@$$A6AXV?$basic_string_span@$$CBD$0?0@gsl@@0@Z@std@@@Z",
-    DBStorage* _this, string_span str_span, void* func) {
-    LOG_START("DBStorage::_read");
-    auto rtn = original(_this, str_span, func);
+    DBStorage* _this, string_span prefix_span, void* func) {
+    auto key = prefix_span.toString();
+    LOG_START_WITH_KEY("DBStorage::_read");
+    auto rtn = original(_this, prefix_span, func);
     LOG_END_RTN
-    auto key = keyToString((string&)str_span.toString());
     printf_s("DBStorage::_read(%p, %s, %p) -> %p\n", _this, key.c_str(), func, rtn);
     return rtn;
 }
 // DBStorage::_readPendingWrite
 THook(PendingWriteResult*, "?_readPendingWrite@DBStorage@@IEBA?AUPendingWriteResult@1@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     DBStorage* _this, PendingWriteResult* res, string& key) {
-    LOG_START("DBStorage::_readPendingWrite");
+    LOG_START_WITH_KEY("DBStorage::_readPendingWrite");
     auto rtn = original(_this,res, key);
     LOG_END_RTN
     //printf_s("DBStorage::_readPendingWrite(%p, %p, %s) -> %p\n", _this, res, keyToString(key).c_str(), rtn);
@@ -702,3 +708,21 @@ THook(void, "?tick@ServerLevel@@UEAAXXZ"
 //    return original(_this);
 //}
 */
+
+
+// BlockPalette::getBlockLegacy
+THook(BlockLegacy*, "?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    void* _this, string& nid) {
+    auto rtn = original(_this, nid);
+    return rtn;
+}
+
+// ===== attack =====
+THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
+    Player* player, Actor* actor, int* damageCause) {
+    auto pls=liteloader::getAllPlayers();
+    for (auto& pl : pls) {
+        cout << offPlayer::getXUIDString(pl) << endl;
+    }
+    return original(player, actor, damageCause);
+}

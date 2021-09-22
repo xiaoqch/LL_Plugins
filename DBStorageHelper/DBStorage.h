@@ -55,6 +55,58 @@ struct SnapshotFilenameAndLength {
 	size_t size;
 };
 
+struct BiomeData {
+	struct Info {
+		byte id;
+		float snowAccumulation;
+	};
+	vector<Info> data;
+};
+
+struct Dimension {
+	struct LimboEntitie {
+		int ChunkX;
+		int ChunkY;
+		vector<Tag*> EntityTagList;
+	};
+	vector<LimboEntitie> limboEntities;
+};
+struct TheEnd : Dimension {
+	struct DragonFight {
+		byte DragonFightVersion;
+		byte DragonKilled;
+		byte DragonSpawned;
+		long DragonUUID;
+		BlockPos ExitPortalLocation;
+		vector<int> Gateways;
+		byte IsRespawning;
+		byte PreviouslyKilled;
+	};
+	DragonFight dragonFight;
+};
+
+// 
+struct ScoreBoard {
+	struct Criteria;
+	struct DisplayObjective {};
+	struct Entry {
+		byte IdentityType;
+		long ScoreboardId;
+		//map<string, string> xxx; // Uncertain, determind by idtype
+	};
+	struct Objective {
+		struct Score {
+			int Score;
+			int ScoreBoard;
+		};
+		string Criteria;
+		string DisplayName;
+		string Name;
+		vector<Score> Scores;
+	};
+
+};
+
 struct PortalRecord {
 	int DimId;
 	byte Span;
@@ -89,7 +141,6 @@ struct PortalRecord {
 		return TagToSNBT(this->toTag());
 	}
 };
-
 //struct MobEvents {
 //	byte events_enabled;
 //	byte minecraft__ender_dragon_event;
@@ -97,11 +148,12 @@ struct PortalRecord {
 //	byte minecraft__wandering_trader_event;
 //};
 
+// key: mobevents
 struct MobEvents {
-	bool events_enabled; 
-	bool ender_dragon_event; // whether the ender dragon is kill?
-	bool pillager_patrols_event; 
-	bool wandering_trader_event; 
+	bool events_enabled=true; 
+	bool ender_dragon_event=true;
+	bool pillager_patrols_event=true; 
+	bool wandering_trader_event=true; 
 	Tag* toTag() {
 		Tag* tag = Tag::createTag(TagType::Compound);
 		tag->putByte("events_enabled", (char)this->events_enabled);
@@ -123,6 +175,105 @@ struct MobEvents {
 	}
 };
 
+// map_{id}
+struct Map_ {
+	TagMemoryChunk colors;
+	struct Decoration {
+		struct Data {
+			int rot;
+			int type;
+			int x;
+			int y;
+		};
+		struct Kye {
+			int blockX;
+			int blockY;
+			int blockZ;
+			int type;
+		};
+	};
+	vector<Decoration> decorations;
+	byte dimension;
+	byte fullyExplored;
+	short height;
+	long mapId;
+	byte mapLocked;
+	long parentMapId;
+	byte scale;
+	byte unlimitedTracking;
+	byte width;
+	int xCenter;
+	int zCenter;
+};
+
+//VILLAGE_{UUID}_INFO
+struct VillageInfo {
+	long BDTime;
+	long GDTime;
+	byte Initialized;
+	long MTick;
+	long PDTick;
+	int RX0;
+	int RX1;
+	int RY0;
+	int RY1;
+	int RZ0;
+	int RZ1;
+	long Tick;
+	long VHTime;
+	byte Version;
+	int X0;
+	int X1;
+	int Y0;
+	int Y1;
+	int Z0;
+	int Z1;
+};
+
+//VILLAGE_{UUID}_DWELLERS
+struct VillageDwellers {
+	struct ActorInfo {
+		long ID;
+		long TS;
+		BlockPos last_saved_pos;
+		long last_worked;
+	};
+	vector<ActorInfo> actors_1;
+	vector<ActorInfo> actors_2;
+	vector<ActorInfo> actors_3;
+	vector<ActorInfo> actors_4;
+};
+
+//VILLAGE_{UUID}_PLAYERS
+struct VillagePlayers {
+	struct PlayerInfo {
+		long ID;
+		int S; // Unknown
+	};
+	vector<PlayerInfo> players;
+};
+
+//VILLAGE_{UUID}_POI
+struct VillagePOI {
+	struct Instance {
+		long Capacity;
+		string InitEvent;
+		string Name;
+		long OwnerCount;
+		float Radius;
+		byte Skip;
+		string SoundEvent;
+		int Type;
+		byte UseAABB;
+		long Weight;
+		int x;
+		int y;
+		int z;
+	};
+	long VillagerID;
+	//vector<Instance> instances;
+	Instance instances[3];
+};
 class DBStorage
 {
 public:

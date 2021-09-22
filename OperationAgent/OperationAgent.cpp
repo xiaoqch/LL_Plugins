@@ -310,7 +310,7 @@ void entry() {
 		forRide = getConf("forRide", forRide);;
 	}
 	regListener();
-	std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.2" << std::endl;
+	std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.3" << std::endl;
 }
 
 // ===== onSpawnProjectile =====

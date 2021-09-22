@@ -891,7 +891,7 @@ vector<Tag*> BinaryNBTToTags(const string& bin, bool isLittleEndian) {
     size_t offset = 0;
     while (offset < bin.length()) {
         auto tag = BinaryNBTToTag(bin, offset, isLittleEndian);
-        if (offset < 4)
+        if (offset < 4||tag->getTagType()!=TagType::Compound||tag->asCompound().size()<1)
             return tags;
         tags.emplace_back(tag);
     }
