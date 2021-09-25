@@ -5,6 +5,8 @@
 #include "DBStorageHelper.h"
 #include <mc/Level.h>
 #include <mc/OffsetHelper.h>
+#include <api/scheduler/scheduler.h>
+#include <seh_exception/seh_exception.hpp>
 
 
 #define LOG_START(name) \
@@ -214,6 +216,9 @@ THook(bool, "?checkShutdownDone@DBStorage@@UEAA_NXZ",
 THook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     void* _this, string_span key_span, string& data) {
     string key = key_span.toString();
+    //if (key == "portals") {
+    //    *(void**)0 = 0;
+    //}
     LOG_START_WITH_KEY("DBStorage::loadData");
     //if(key_span.toString()=="portals")
     //    *((void**)0) = 0;
@@ -339,8 +344,8 @@ THook(void*, "?_getAllPendingWrites@DBStorage@@IEBA?AV?$map@V?$basic_string@DU?$
     LOG_START("DBStorage::_getAllPendingWrites");
     auto rtn = original(_this, resultMap, a);
     LOG_END_RTN
-    printf_s("DBStorage::_getAllPendingWrites(%p, %p) -> %p\n", _this, &resultMap, rtn);
-    for (auto& [key, res]: resultMap) {
+        printf_s("DBStorage::_getAllPendingWrites(%p, %p) -> %p\n", _this, &resultMap, rtn);
+    for (auto& [key, res] : resultMap) {
         cout << keyToString((string&)key) << " -> " << res << endl;
     }
     return rtn;
@@ -397,7 +402,7 @@ THook(void*, "?_read@DBStorage@@IEBAXV?$basic_string_span@$$CBD$0?0@gsl@@AEBV?$f
 THook(PendingWriteResult*, "?_readPendingWrite@DBStorage@@IEBA?AUPendingWriteResult@1@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     DBStorage* _this, PendingWriteResult* res, string& key) {
     LOG_START_WITH_KEY("DBStorage::_readPendingWrite");
-    auto rtn = original(_this,res, key);
+    auto rtn = original(_this, res, key);
     LOG_END_RTN
 }
 // DBStorage::_scheduleNextAutoCompaction
@@ -411,7 +416,7 @@ THook(void, "?_scheduleNextAutoCompaction@DBStorage@@AEAAXXZ",
 THook(bool, "?_suspendAndPerformSaveAction@DBStorage@@AEAA_NV?$function@$$A6A?AVTaskResult@@XZ@std@@V?$function@$$A6AXXZ@3@@Z",
     DBStorage* _this, function<void* (void)> func1, function<void(void)>func2) {
     LOG_START("DBStorage::_suspendAndPerformSaveAction")
-    auto rtn = original(_this, func1, func2);
+        auto rtn = original(_this, func1, func2);
     LOG_END_RTN
 }
 
@@ -419,7 +424,7 @@ THook(bool, "?_suspendAndPerformSaveAction@DBStorage@@AEAA_NV?$function@$$A6A?AV
 THook(bool, "?tryRepair@DBStorage@@QEBA_NAEBVPath@Core@@@Z",
     DBStorage* _this, void* path) {
     LOG_START("DBStorage::_suspendAndPerformSaveAction")
-    auto rtn = original(_this, path);
+        auto rtn = original(_this, path);
     LOG_END_RTN
 }
 
@@ -507,7 +512,7 @@ bool backup(vector<SnapshotFilenameAndLength>& fdetails, string& worldName) {
             return backupEnd(success);
         //cout << s.filePath << ":" << s.fileSize << endl;
     }
-    time_t timep=0; 
+    time_t timep=0;
     time(&timep);
     struct tm t_tm;
     localtime_s(&t_tm, &timep);
@@ -639,4 +644,115 @@ THook(BlockLegacy*, "?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$ba
     void* _this, string& nid) {
     auto rtn = original(_this, nid);
     return rtn;
+}
+
+// SavedDataStorage::loadAndSet
+THook(bool, "?loadAndSet@SavedDataStorage@@QEAA_NAEAVSavedData@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    void* _this, void* portalForcer, string& key) {
+    auto rtn = original(_this, portalForcer, key);
+    return rtn;
+}
+
+bool isPortalBlock(BlockSource* bs, BlockPos bpos) {
+    Block* bl = SymCall("?getBlock@BlockSource@@QEBAAEBVBlock@@AEBVBlockPos@@@Z",
+        Block*, BlockSource*, BlockPos&)(bs, bpos);
+    cout << offBlock::getFullName(bl) << endl;
+    return offBlock::getFullName(bl) == "minecraft:portal";
+}
+
+bool isInsidePortal(Actor* actor) {
+    return SymCall("?isInsidePortal@Actor@@QEBA_NXZ",
+        bool, Actor*)(actor);
+}
+class PortalForcer;
+void removePortal(PortalForcer* pf, BlockPos bpos, BlockSource* bs) {
+    SymCall("?removePortalRecord@PortalForcer@@QEAAXAEAVBlockSource@@AEBVBlockPos@@@Z",
+        void, PortalForcer*, BlockSource*, BlockPos*)(pf, bs, &bpos);
+}
+int cleanPortals(PortalForcer* pf) {
+    int count = 0;
+    Tag* pTag = Tag::createTag(TagType::Compound);
+    SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
+        void, PortalForcer*, Tag*)(pf, pTag);
+    Portals portals(pTag);
+    for (auto& pr : portals.records) {
+        auto dimid = pr.DimId;
+        auto bs = getBlockSourceByDim(dimid);
+        if (!bs)
+            continue;
+        auto bpos = pr.getPos();
+        if (!isPortalBlock(bs, bpos)) {
+            removePortal(pf, bpos, bs);
+            ++count;
+        }
+    }
+    return count;
+}
+
+THook(void, "?travelPortal@PortalForcer@@QEBAXAEAVActor@@AEBVBlockPos@@V?$AutomaticID@VDimension@@H@@@Z",
+    PortalForcer* pf, Actor* actor, BlockPos* bpos, int dimid) {
+    original(pf, actor, bpos, dimid);
+    if (!actor || isInsidePortal(actor))
+        return;
+    auto task = DelayedTask([pf]()->void {
+        _set_se_translator(seh_exception::TranslateSEHtoCE);
+        try {
+            int count = cleanPortals(pf);
+            if (count)
+                cout << "Found and clean " << count << " Ghost Portal" << (count > 1 ? "s." : ".") << endl;
+            else
+                cerr << "Ghost Portal not found." << endl;
+        }
+        catch (const seh_exception&) {}
+        catch (const std::exception&) {}
+        }, 1);
+    auto taskId = Handler::schedule(std::move(task));
+    cout << "Found Ghost Portal! Try to clean all Ghost Portals" << endl;
+
+    //auto task = DelayedTask([player, dimid]()->void {
+    //    _set_se_translator(seh_exception::TranslateSEHtoCE);
+    //    try {
+    //        if (isInsidePortal(player))
+    //            return;
+    //        Tag* pTag = Tag::createTag(TagType::Compound);
+    //        auto bs = offPlayer::getBlockSource(player);
+    //        Level* level = offPlayer::getLevel(player);
+    //        auto pbpos = ((Vec3)player->getPos()).toBlockPos();
+    //        PortalForcer* pf = dAccess<PortalForcer*>(level, 0x8B8); //  
+    //        SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
+    //            void, PortalForcer*, Tag*)(pf, pTag);
+    //        Portals portals(pTag);
+    //        BlockPos portalPos = {};
+    //        for (auto& pr : portals.records) {
+    //            if (pr.DimId != dimid)
+    //                continue;
+    //            
+    //        }
+    //        //bool res = SymCall("?findPortal@PortalForcer@@QEBA_NV?$AutomaticID@VDimension@@H@@AEBVBlockPos@@HAEAV3@@Z"
+    //        //    , bool, PortalForcer*, int, BlockPos&, int, BlockPos&)(pf, dimid, pbpos, 22, portalPos);
+    //        if (!isPortalBlock(bs, portalPos)) {
+    //            cout << "Found Bug Portal in dimension " << dimid << " (" << portalPos.toString() << "), and delete it." << endl;
+    //            SymCall("?removePortalRecord@PortalForcer@@QEAAXAEAVBlockSource@@AEBVBlockPos@@@Z",
+    //                void, PortalForcer*, BlockSource*, BlockPos*)(pf, bs, &portalPos);
+    //        }
+    //    }
+    //    catch (const seh_exception&) {}
+    //    catch (const std::exception&){}
+    //    }, 1);
+    //auto taskId = Handler::schedule(std::move(task));
+}
+
+THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
+    Mob* ac, ActorDamageSource* ads, int damage, bool unk1_1, bool unk2_0)
+{
+    if (ac)
+    {
+        auto level = offPlayer::getLevel(ac);
+        void* auid;
+        auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &auid); // 
+        auto v7 = *VirtualCall<ActorUniqueID*>(ads, 0x68, &auid); // 
+        cout << "auid1: " << (void*)v6.id << endl;
+        cout << "auid2: " << (void*)v7.id << endl;
+    }
+    return original(ac, ads, damage, unk1_1, unk2_0);
 }

@@ -3,14 +3,16 @@
 #include "DBStorageHelper.h"
 #include "DBStorage.h"
 #include <mc/OffsetHelper.h>
+#include <seh_exception/seh_exception.hpp>
+
 using namespace std;
+
 #define DATA_DIR "F:\\Minecraft\\leveldb_struct"
 
 
-
 // DBStorage::addStorageObserver
-
 bool testDBStorage() {
+
     filesystem::path binDir = filesystem::path(DATA_DIR).append("bin");
     filesystem::path snbtDir = filesystem::path(DATA_DIR).append("snbt");
     filesystem::create_directories(binDir);
@@ -114,22 +116,8 @@ enum class OP_CHUNK_HELPER :int
     fromfile, // tofile filename
     key, // key cx cz dim [type] [cy]
 };
+
 bool oncmd_dbhelper(CommandOrigin const& ori, CommandOutput& outp) {
-    auto ip=liteloader::getIP(*offPlayer::getNetworkIdentifier((Player*)ori.getEntity()));
-    cout << ip << endl;
-    outp.success(ip);
-    return true;
-    //Player* pl = (Player*)ori.getEntity();
-    //auto& pos = pl->getPos();
-    //BlockPos bpos = { (int)pos.x, (int)pos.y, (int)pos.z };
-    //BlockSource* bs = getBlockSourceByDim(pl->getDimensionId());
-    //auto bp = dAccess<void*>(getLevel(), 0x850);
-    //BlockLegacy* bl = SymCall("?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    //    BlockLegacy*, void*, const string &)(dAccess<void*>(bp, 88), "minecraft:structure_block");
-    //SymCall("?setBlock@BlockSource@@QEAA_NAEBVBlockPos@@AEBVBlock@@HPEBUActorBlockSyncMessage@@@Z",
-    //    bool, BlockSource*, BlockPos, Block*, int, void*)
-    //    (bs, bpos, (Block*)bl, 0, nullptr);
-    //return true;
     testDBStorage();
     return true;
     auto dbh = getDBStorage()->getHelper();
@@ -153,6 +141,7 @@ bool oncmd_dbread(CommandOrigin const& ori, CommandOutput& outp, string& prefix)
             cout << TagToSNBT(tag) << endl;
         }
         });
+    
     return true;
 }
 
@@ -170,6 +159,15 @@ void regListener() {
 }
 
 void entry() {
+    _set_se_translator(seh_exception::TranslateSEHtoCE);
+    //try
+    //{
+    //    char* pp = NULL;
+    //    *pp = 'a';
+    //}
+    //catch (const seh_exception& error)
+    //{
+    //    printf("SEHcode: [%08x] %s", error.code(), error.what());
+    //}
     regListener();
 }
-

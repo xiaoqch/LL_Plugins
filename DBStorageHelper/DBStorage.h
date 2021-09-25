@@ -106,7 +106,6 @@ struct ScoreBoard {
 	};
 
 };
-
 struct PortalRecord {
 	int DimId;
 	byte Span;
@@ -137,8 +136,36 @@ struct PortalRecord {
 		this->Xa = (byte)cmp["Xa"].asByte();
 		this->Za = (byte)cmp["Za"].asByte();
 	}
+	BlockPos getPos() {
+		return { this->TpX, this->TpY, this->TpZ };
+	}
 	string toString() {
 		return TagToSNBT(this->toTag());
+	}
+};
+
+struct Portals {
+	vector<PortalRecord> records;
+	Tag* toTag() {
+		Tag* prTags = Tag::createTag(TagType::List);
+		for (auto& r : records) {
+			prTags->add(r.toTag());
+		}
+		Tag* tag = Tag::createTag(TagType::Compound);
+		Tag* data = Tag::createTag(TagType::Compound);
+		data->put("PortalRecords", prTags);
+		tag->putCompound("data", data);
+		return tag;
+	}
+	Portals(Tag* tag) {
+		try {
+			auto& prTags = tag->asCompound()["data"].asCompound()["PortalRecords"].asList();
+			for (auto& prTag : prTags) {
+				PortalRecord pr(prTag);
+				this->records.push_back(pr);
+			}
+		}
+		catch (...) {};
 	}
 };
 //struct MobEvents {

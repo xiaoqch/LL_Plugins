@@ -608,7 +608,6 @@ public:
     }
 };
 
-
 string TagToBinaryNBT(Tag* tag, bool isLittleEndian) {
     void* vtbl;
     if (isLittleEndian) {
