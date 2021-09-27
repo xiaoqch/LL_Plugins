@@ -4,16 +4,16 @@
 #include "DBStorage.h"
 
 //======= Basic Function =======
-Minecraft* this_mc;
+Minecraft* mc;
 
 THook(void, "?initAsDedicatedServer@Minecraft@@QEAAXXZ", void* self)
 {
     original(self);
-    this_mc = (Minecraft*)self;
+    mc = (Minecraft*)self;
 }
 
 Level* getLevel() {
-    return this_mc->getLevel();
+    return mc->getLevel();
 };
 
 LevelStorage* getLevelStorage() {
@@ -25,7 +25,7 @@ DBStorage* getDBStorage() {
 };
 Dimension* getDimensionByDid(int dimid) {
     return SymCall("?getDimension@Level@@UEBAPEAVDimension@@V?$AutomaticID@VDimension@@H@@@Z",
-        Dimension*, void*, int)(this_mc->getLevel(), dimid);
+        Dimension*, void*, int)(mc->getLevel(), dimid);
 }
 
 BlockSource* getBlockSourceByDim(int dimid)

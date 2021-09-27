@@ -145,6 +145,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,8 +155,10 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
-copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\</Command>
+      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
+copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
+copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

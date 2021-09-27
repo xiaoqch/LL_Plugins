@@ -82,7 +82,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)headers;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)third-party;$(SolutionDir)headers;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -163,8 +163,10 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\</Comma
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
-copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\</Command>
+      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
+copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
+copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
