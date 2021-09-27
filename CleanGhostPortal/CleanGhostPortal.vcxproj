@@ -155,7 +155,9 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
+      <Command>copy $(TargetPath) $(SolutionDir)Realese
+copy $(OutDir)$(TargetName).pdb $(SolutionDir)Realese
+if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
 copy $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
 copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
 )</Command>

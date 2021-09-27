@@ -10,9 +10,13 @@
 
 ## 插件目录
 * [AntiMinecartCopy](https://github.com/xiaoqch/LL_Plugins/tree/master/AntiMinecartCopy#readme)
+* [AntiCutter](https://github.com/xiaoqch/LL_Plugins/tree/master/AntiCutter#readme)
+* [GhostPortalCleaner](https://github.com/xiaoqch/LL_Plugins/tree/master/CleanGhostPortal#readme)
+* [AllVoidWorld](https://github.com/xiaoqch/LL_Plugins/tree/master/AllVoidWorld)
+* [OperationAgent](https://github.com/xiaoqch/LL_Plugins/tree/master/OperationAgent#readme)
 
 ## 安装及使用
-1. 前往 [MineBBS](https://www.minebbs.com/resources/authors/xiaoqch.21476/) 寻找并下载需要的插件
+1. 前往 [MineBBS](https://www.minebbs.com/resources/authors/xiaoqch.21476/) 或 [Release文件夹](https://github.com/xiaoqch/LL_Plugins/tree/master/Release) 寻找并下载需要的插件
 1. 将插件文件复制到 Minecraft Dedicated Server 目录下 plugins 文件夹中
 2. 配置好可能存在的配置文件
 3. 开服
