@@ -8,7 +8,7 @@
 using namespace std;
 
 // 不要忘记实现这个
-Level* getLevel();
+extern Minecraft* mc;
 
 template<typename RTN = void, typename... Args>
 RTN inline VirtualCall(void* _this, uintptr_t off, Args... args) {
@@ -302,7 +302,7 @@ bool Tag::setPlayer(Player* player)
 bool Tag::setBlockEntity(BlockActor* ble)
 {
     void* vtbl = dlsym("??_7DefaultDataLoadHelper@@6B@");
-    VirtualCall(ble, 0x8, getLevel(), this, &vtbl);    //IDA Virtual Table from BlockActor::load
+    VirtualCall(ble, 0x8, mc->getLevel(), this, &vtbl);    //IDA Virtual Table from BlockActor::load
     return true;
 }
 
@@ -560,7 +560,7 @@ string TagToSNBT(Tag* nbt)
 
 // Reference from StringByteOutput and BigEndianStringByteInput
 class BigEndianStringByteOutput {
-    void writeBigEndianBytes(byte* bytes, size_t count) {
+    void writeBigEndianBytes(std::byte* bytes, size_t count) {
         auto v5 = bytes + count - 1;
         if (v5 >= bytes)
         {
@@ -585,26 +585,26 @@ public:
             void*, void*, void*)((void*)this, string_span);
     }
     virtual void writeFloat(float data) {
-        writeBigEndianBytes((byte*)&data, 4);
+        writeBigEndianBytes((std::byte*)&data, 4);
     }
     virtual void writeDouble(double data) {
-        writeBigEndianBytes((byte*)&data, 8);
+        writeBigEndianBytes((std::byte*)&data, 8);
     }
-    virtual void writeByte(byte data) {
+    virtual void writeByte(std::byte data) {
         writeBytes(&data, 1);
     }
     virtual void writeShort(short data) {
-        writeBigEndianBytes((byte*)&data, 2);
+        writeBigEndianBytes((std::byte*)&data, 2);
     }
     virtual void writeInt(int data) {
-        writeBigEndianBytes((byte*)&data, 4);
+        writeBigEndianBytes((std::byte*)&data, 4);
     }
     virtual void writeLongLong(long long data) {
-        writeBigEndianBytes((byte*)&data, 8);
+        writeBigEndianBytes((std::byte*)&data, 8);
     }
-    virtual void* writeBytes(byte* bytes, size_t count) {
+    virtual void* writeBytes(std::byte* bytes, size_t count) {
         return SymCall("?writeBytes@StringByteOutput@@UEAAXPEBX_K@Z",
-            void*, void*, byte*, size_t)((void*)this, bytes, count);
+            void*, void*, std::byte*, size_t)((void*)this, bytes, count);
     }
 };
 

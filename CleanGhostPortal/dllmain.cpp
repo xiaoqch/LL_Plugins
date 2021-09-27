@@ -1,10 +1,20 @@
 ﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
+#include "framework.h"
 
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                     )
+void entry();
+
+extern "C" {
+    _declspec(dllexport) void onPostInit() {
+        std::ios::sync_with_stdio(false);
+        entry();
+    }
+}
+
+BOOL APIENTRY DllMain(HMODULE hModule,
+    DWORD  ul_reason_for_call,
+    LPVOID lpReserved
+)
 {
     switch (ul_reason_for_call)
     {
@@ -16,4 +26,3 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     }
     return TRUE;
 }
-

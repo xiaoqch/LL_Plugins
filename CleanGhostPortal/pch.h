@@ -8,6 +8,12 @@
 #define PCH_H
 
 // 添加要在此处预编译的标头
-#include "framework.h"
+#include <iostream>
+#include <map>
+#include <stl/Logger.h>
+#include <stl/langPack.h>
+#include <loader/Loader.h>
+#include <mc/Player.h>
+#include <seh_exception/seh_exception.hpp>
 
 #endif //PCH_H

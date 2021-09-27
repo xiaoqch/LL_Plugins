@@ -116,8 +116,20 @@ enum class OP_CHUNK_HELPER :int
     fromfile, // tofile filename
     key, // key cx cz dim [type] [cy]
 };
-
 bool oncmd_dbhelper(CommandOrigin const& ori, CommandOutput& outp) {
+    Tag* tag = Tag::createTag(TagType::Compound);
+    VirtualCall<Tag*>((void*)&ori, 0xD0, tag);
+    cout << TagToSNBT(tag) << endl;
+    void* filler[3] = {};
+    void* loader = SymCall("??0CommandOriginLoader@@QEAA@AEAVServerLevel@@@Z",
+        void*, void*, ServerLevel*)(filler, (ServerLevel*)getLevel());
+    CommandOrigin** lori = SymCall("?load@CommandOriginLoader@@UEAA?AV?$unique_ptr@VCommandOrigin@@U?$default_delete@VCommandOrigin@@@std@@@std@@AEBVCompoundTag@@@Z",
+        CommandOrigin**, void*, Tag**)(loader, &tag);
+    Tag* tag2 = Tag::createTag(TagType::Compound);
+    VirtualCall<Tag*>(lori, 0xD0, tag2);
+    cout << TagToSNBT(tag2) << endl;
+    outp.success(TagToSNBT(tag));
+    return true;
     testDBStorage();
     return true;
     auto dbh = getDBStorage()->getHelper();
@@ -170,4 +182,10 @@ void entry() {
     //    printf("SEHcode: [%08x] %s", error.code(), error.what());
     //}
     regListener();
+}
+
+THook(void*, "?load@CommandOriginLoader@@SA?AV?$unique_ptr@VCommandOrigin@@U?$default_delete@VCommandOrigin@@@std@@@std@@AEBVCompoundTag@@AEAVServerLevel@@@Z",
+    void* _this, void* a1, void* a2, void* a3) {
+    auto rtn = original(_this, a1, a2, a3);
+    return rtn;
 }

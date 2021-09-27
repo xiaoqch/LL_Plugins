@@ -7,13 +7,29 @@ using namespace std;
 
 void entry() {};
 
+struct DBChunkStorageKey {
+    int cx;
+    int cy;
+    int dimid;
+};
 
 THook(bool, "?_hasChunk@DBChunkStorage@@AEAA_NAEBVDBChunkStorageKey@@@Z",
-    void* _this, void* dbChunkStorageKey, void* a) {
-    auto rtn = original(_this, dbChunkStorageKey, a);
-    //if (!rtn) {
-    //    auto k = dbChunkStorageKey->toString();
-    //}
+    void* _this, DBChunkStorageKey* key, void* a) {
+    auto rtn = original(_this, key, a);
+    //if(!rtn)
+    //    printf("OnChunkFirstLoaded: (%d, %d) in dim: %d\n", key->cx, key->cy, key->dimid);
+    //else
+    //    printf("OnChunkLoaded: (%d, %d) in dim: %d\n", key->cx, key->cy, key->dimid);
+    return true;
+}
+
+THook(bool, "?_hasChunkUncached@DBChunkStorage@@AEAA_NAEBVDBChunkStorageKey@@@Z",
+    void* _this, DBChunkStorageKey* key, void* a) {
+    auto rtn = original(_this, key, a);
+    //if(rtn)
+    //    printf("hasChunkUncached: (%d, %d) in dim: %d\n", key->cx, key->cy, key->dimid);
+    //else
+    //    printf("!hasChunkUncached: (%d, %d) in dim: %d\n", key->cx, key->cy, key->dimid);
     return true;
 }
 

@@ -5,16 +5,16 @@
 
 
 //======= Basic Function =======
-Minecraft* this_mc;
+Minecraft* mc;
 
 THook(void, "?initAsDedicatedServer@Minecraft@@QEAAXXZ", void* self)
 {
 	original(self);
-	this_mc = (Minecraft*)self;
+	mc = (Minecraft*)self;
 }
 
 Level* getLevel() {
-	return this_mc->getLevel();
+	return mc->getLevel();
 };
 
 LevelStorage* getLevelStorage() {
@@ -23,7 +23,7 @@ LevelStorage* getLevelStorage() {
 
 Dimension* getDimensionByDid(int dimid) {
 	return SymCall("?getDimension@Level@@UEBAPEAVDimension@@V?$AutomaticID@VDimension@@H@@@Z",
-		Dimension*, void*, int)(this_mc->getLevel(), dimid);
+		Dimension*, void*, int)(mc->getLevel(), dimid);
 }
 
 BlockSource* getBlockSourceByDim(int dimid)
@@ -51,15 +51,15 @@ string getPlatformOnlineId(Player* player) {
 }
 // Only online
 string getPlayerXUID(mce::UUID uuid) {
-	if (this_mc == nullptr) {
+	if (mc == nullptr) {
 		return "mc is nullptr";
 	}
 	return SymCall("?getPlayerXUID@Level@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVUUID@mce@@@Z",
-		string&, Level*, mce::UUID&)(this_mc->getLevel(), uuid);
+		string&, Level*, mce::UUID&)(mc->getLevel(), uuid);
 }
 
 string getPlayerUuid(Player* player) {
-	mce::UUID tmp = dAccess<mce::UUID>(player, 3000);
+	mce::UUID tmp = dAccess<mce::UUID>(player, 3040);
 	return tmp.asString();
 }
 // Unknown arg b

@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{99d2e2fb-8096-482d-baad-f43a90672add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party">
+      <UniqueIdentifier>{57eff02a-1254-4815-841e-e6d663090bf1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -29,5 +35,19 @@
     <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="GhostPortalCleaner.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp">
+      <Filter>third-party</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\LiteLoader.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib">
+      <Filter>Lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

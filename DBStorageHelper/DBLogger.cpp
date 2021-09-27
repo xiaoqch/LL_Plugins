@@ -637,122 +637,151 @@ THook(void, "?tick@ServerLevel@@UEAAXXZ"
 //    return original(_this);
 //}
 */
-
-
-// BlockPalette::getBlockLegacy
-THook(BlockLegacy*, "?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    void* _this, string& nid) {
-    auto rtn = original(_this, nid);
-    return rtn;
+Actor* getActor(Level* lv, ActorUniqueID id) {
+    return SymCall("?fetchEntity@Level@@UEBAPEAVActor@@UActorUniqueID@@_N@Z",
+        Actor*, Level*, ActorUniqueID, bool)(lv, id, 0);
 }
-
-// SavedDataStorage::loadAndSet
-THook(bool, "?loadAndSet@SavedDataStorage@@QEAA_NAEAVSavedData@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-    void* _this, void* portalForcer, string& key) {
-    auto rtn = original(_this, portalForcer, key);
-    return rtn;
-}
-
-bool isPortalBlock(BlockSource* bs, BlockPos bpos) {
-    Block* bl = SymCall("?getBlock@BlockSource@@QEBAAEBVBlock@@AEBVBlockPos@@@Z",
-        Block*, BlockSource*, BlockPos&)(bs, bpos);
-    cout << offBlock::getFullName(bl) << endl;
-    return offBlock::getFullName(bl) == "minecraft:portal";
-}
-
-bool isInsidePortal(Actor* actor) {
-    return SymCall("?isInsidePortal@Actor@@QEBA_NXZ",
-        bool, Actor*)(actor);
-}
-class PortalForcer;
-void removePortal(PortalForcer* pf, BlockPos bpos, BlockSource* bs) {
-    SymCall("?removePortalRecord@PortalForcer@@QEAAXAEAVBlockSource@@AEBVBlockPos@@@Z",
-        void, PortalForcer*, BlockSource*, BlockPos*)(pf, bs, &bpos);
-}
-int cleanPortals(PortalForcer* pf) {
-    int count = 0;
-    Tag* pTag = Tag::createTag(TagType::Compound);
-    SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
-        void, PortalForcer*, Tag*)(pf, pTag);
-    Portals portals(pTag);
-    for (auto& pr : portals.records) {
-        auto dimid = pr.DimId;
-        auto bs = getBlockSourceByDim(dimid);
-        if (!bs)
-            continue;
-        auto bpos = pr.getPos();
-        if (!isPortalBlock(bs, bpos)) {
-            removePortal(pf, bpos, bs);
-            ++count;
-        }
-    }
-    return count;
-}
-
-THook(void, "?travelPortal@PortalForcer@@QEBAXAEAVActor@@AEBVBlockPos@@V?$AutomaticID@VDimension@@H@@@Z",
-    PortalForcer* pf, Actor* actor, BlockPos* bpos, int dimid) {
-    original(pf, actor, bpos, dimid);
-    if (!actor || isInsidePortal(actor))
-        return;
-    auto task = DelayedTask([pf]()->void {
-        _set_se_translator(seh_exception::TranslateSEHtoCE);
-        try {
-            int count = cleanPortals(pf);
-            if (count)
-                cout << "Found and clean " << count << " Ghost Portal" << (count > 1 ? "s." : ".") << endl;
-            else
-                cerr << "Ghost Portal not found." << endl;
-        }
-        catch (const seh_exception&) {}
-        catch (const std::exception&) {}
-        }, 1);
-    auto taskId = Handler::schedule(std::move(task));
-    cout << "Found Ghost Portal! Try to clean all Ghost Portals" << endl;
-
-    //auto task = DelayedTask([player, dimid]()->void {
-    //    _set_se_translator(seh_exception::TranslateSEHtoCE);
-    //    try {
-    //        if (isInsidePortal(player))
-    //            return;
-    //        Tag* pTag = Tag::createTag(TagType::Compound);
-    //        auto bs = offPlayer::getBlockSource(player);
-    //        Level* level = offPlayer::getLevel(player);
-    //        auto pbpos = ((Vec3)player->getPos()).toBlockPos();
-    //        PortalForcer* pf = dAccess<PortalForcer*>(level, 0x8B8); //  
-    //        SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
-    //            void, PortalForcer*, Tag*)(pf, pTag);
-    //        Portals portals(pTag);
-    //        BlockPos portalPos = {};
-    //        for (auto& pr : portals.records) {
-    //            if (pr.DimId != dimid)
-    //                continue;
-    //            
-    //        }
-    //        //bool res = SymCall("?findPortal@PortalForcer@@QEBA_NV?$AutomaticID@VDimension@@H@@AEBVBlockPos@@HAEAV3@@Z"
-    //        //    , bool, PortalForcer*, int, BlockPos&, int, BlockPos&)(pf, dimid, pbpos, 22, portalPos);
-    //        if (!isPortalBlock(bs, portalPos)) {
-    //            cout << "Found Bug Portal in dimension " << dimid << " (" << portalPos.toString() << "), and delete it." << endl;
-    //            SymCall("?removePortalRecord@PortalForcer@@QEAAXAEAVBlockSource@@AEBVBlockPos@@@Z",
-    //                void, PortalForcer*, BlockSource*, BlockPos*)(pf, bs, &portalPos);
-    //        }
-    //    }
-    //    catch (const seh_exception&) {}
-    //    catch (const std::exception&){}
-    //    }, 1);
-    //auto taskId = Handler::schedule(std::move(task));
-}
-
 THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
     Mob* ac, ActorDamageSource* ads, int damage, bool unk1_1, bool unk2_0)
 {
-    if (ac)
+    if (false&&ac)
     {
         auto level = offPlayer::getLevel(ac);
         void* auid;
         auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &auid); // 
+        cout << "auid1: " << v6 << endl;
         auto v7 = *VirtualCall<ActorUniqueID*>(ads, 0x68, &auid); // 
-        cout << "auid1: " << (void*)v6.id << endl;
-        cout << "auid2: " << (void*)v7.id << endl;
+        cout << "auid2: " << v7 << endl;
+        if (v6&&v7&&v6.id != v7.id) {
+            auto act1 = getActor(level, v6);
+            auto act2 = getActor(level, v6);
+        }
+        pair<string, vector<string>> res;
+        string name = ac->getNameTag();
+        auto& msg = *VirtualCall<pair<string, vector<string>>*>(ads, 0x28, &res, &name , getActor(level, v6));
+        cout << "key: " << msg.first << endl;
+        for (auto& val : msg.second) {
+            cout << "val: " << val << endl;
+        }
     }
     return original(ac, ads, damage, unk1_1, unk2_0);
 }
+
+
+
+// IDA _dynamic_initializer_for__gDamageTypeParam__
+enum class DamageCause : int
+{
+    None = -1,
+    Override = 0,
+    Contact = 1,
+    Attack = 2,
+    Projectile = 3,
+    Suffocation = 4,
+    Fall = 5,
+    Fire = 6,
+    FireTick = 7,
+    Lava = 8,
+    Drowning = 9,
+    BlockExplosion = 10,
+    EntityExplosion = 11,
+    Void = 12,
+    Suicide = 13,
+    Magic = 14,
+    Wither = 15,
+    Starve = 16,
+    Anvil = 17,
+    Stalactite = 28,
+    Stalagmite = 29,
+    Thorns = 18,
+    FallingBlock = 19,
+    Piston = 20,
+    FlyIntoWall = 21,
+};
+//0x00007ff644bab4b0 {bedrock_server_mod.exe!ActorDamageSource::getDeathMessage(class string, class Actor *)const }
+string getDamageMessage(ActorDamageSource* ads) {
+    string res;
+    pair<string, vector<string>>* unk;
+    return SymCall("?getDeathMessage@ActorDamageSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+        string&, ActorDamageSource*, std::pair<string, vector<string>>*, string&)(ads, unk, res);
+}
+
+int code = -2;
+// ===== onMobHurt =====
+THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
+    Mob* ac, ActorDamageSource* ads, int damage, bool unk1_1, bool unk2_0)
+{
+
+    if (ac)
+    {
+        auto level = offPlayer::getLevel(ac);
+        DamageCause cause = dAccess<DamageCause>(ads, 8);
+        //*((int*)ads + 1) = code++;
+
+        //cout << "Cause: " << (int)cause << endl;
+        //auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &v83); //IDA ActorDamageSource::`vftable'
+        //auto src = Raw_GetEntityByUniqueId(v6);
+    }
+    return original(ac, ads, damage, unk1_1, unk2_0);
+}
+
+THook(void*, "?getDeathMessage@ActorDamageSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+    auto rtn = original(ads, res, name, actor);
+    return rtn;
+}
+
+THook(void*, "?getDeathMessage@ActorDamageByActorSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+    auto rtn = original(ads, res, name, actor);
+    return rtn;
+}
+
+THook(void*, "?getDeathMessage@ActorDamageByChildActorSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+    auto rtn = original(ads, res, name, actor);
+    return rtn;
+}
+
+THook(void*, "?getDeathMessage@ActorDamageByBlockSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+    auto rtn = original(ads, res, name, actor);
+    return rtn;
+}
+
+/*
+*/
+
+
+//vector<int> vec;
+//bool notInAir = false;
+//// ===== onAttack =====
+//THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
+//    Player* _this, Actor* ac, int* damageCause){
+//    SymCall("?setNameTagVisible@Actor@@UEAAX_N@Z",
+//        void, Actor*, bool)(ac, true);
+//    cout << "dAccess<void*>(ac, 472)" << dAccess<void*>(ac, 472) << endl;
+//    return original(_this, ac, damageCause);
+//    if (vec.empty()) {
+//        for(int i=0;i<10000;i++){
+//            vec.push_back(i);
+//        }
+//    }
+//    for (auto iter = vec.begin(); iter != vec.end();) {
+//        if (dAccess<bool>(_this, *iter) != notInAir) {
+//            iter=vec.erase(iter);
+//        }
+//        else {
+//            iter++;
+//        }
+//    }
+//    cout << "not in air: " << notInAir << endl;
+//    cout << "size: " << vec.size() << endl;
+//    if (vec.size()<10) {
+//        for (auto& off : vec) {
+//            cout << "off: "<< off << endl;
+//        }
+//    }
+//    notInAir = !notInAir;
+//    return original(_this, ac, damageCause);
+//}
