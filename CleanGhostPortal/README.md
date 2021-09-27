@@ -6,9 +6,9 @@
 此插件工作方式为当有实体穿过地狱门时，此插件会检测目标地狱门信息是否为幽灵地狱门，如果是，则寻找被加载区块中所有地狱门数据并删除幽灵地狱门
 
 ## 安装及使用
-1. 前往 [MineBBS]() 下载插件
+1. 前往 [MineBBS](https://www.minebbs.com/resources/ghostportalcleaner.2986/) 下载插件
 2. 将插件文件复制到 Minecraft Dedicated Server 目录下 plugins 文件夹中
 3. 开服
 
 ## 支持的版本
-* Minecraft Dedicated Server 1.17.31.04 with [LiteLoaderBDS](https://www.minebbs.com/resources/liteloader.2059/) 1.2.0
+* Minecraft Dedicated Server 1.17.30.04 with [LiteLoaderBDS](https://www.minebbs.com/resources/liteloader.2059/) 1.2.0 或以上
