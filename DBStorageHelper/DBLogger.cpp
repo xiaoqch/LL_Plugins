@@ -788,3 +788,63 @@ THook(void*, "?getDeathMessage@ActorDamageByBlockSource@@UEBA?AU?$pair@V?$basic_
 
 //THook(void, "?registerOnContainerChangedCallback@ContainerModel@@QEAAXV?$function@$$A6AXHAEBVItemStack@@0@Z@std@@@Z",
 //    )
+
+struct voids {
+    void********** v[1000];
+};
+//THook(void, "?setItem@SparseContainer@@UEAAXHAEBVItemStack@@@Z",
+//    class SparseContainer* _this, int slotNumber, ItemStack* newItem) {
+//    auto v = ((voids*)_this)->v;
+//    Player* pl = dAccess<Player*>(_this, 8);
+//    byte ctnId = dAccess<byte>(_this, 40);
+//    cout << slotNumber << endl;
+//    BlockPos* bpos = dAccess<BlockPos*>(_this, 216);
+//    short baType = dAccess<short>(_this, 216);
+//    //auto csc = dAccess<class ContainerScreenContext*>(_this, 112);
+//    //auto ctn = SymCall("?_getContainer@LevelContainerModel@@EEBAPEAVContainer@@XZ",
+//    //    class Container*, ContainerModel*)(_this);
+//    //auto oldItem = SymCall("?getItem@FillingContainer@@UEBAAEBVItemStack@@H@Z",
+//    //    ItemStack*, Container*, int)(ctn, slotNumber);
+//    cout << "pl: " << pl->getNameTag() << endl;
+//    cout << "slot: " << slotNumber << endl;
+//    cout << "ctnId: " << (int)ctnId << endl;
+//    cout << "bpos: " << bpos->toString() << endl;
+//    cout << "baType: " << baType << endl;
+//    //if (newItem)
+//    //    cout << "newItem: " << offItemStack::getCount(newItem) << endl;
+//    //if (oldItem)
+//    //    cout << "oldItem: " << offItemStack::getCount(oldItem) << endl;
+//    original(_this, slotNumber, newItem);
+//}
+THook(void*, "?getSlot@LevelContainerManagerModel@@UEBAAEBVItemStack@@H@Z",
+    class LevelContainerManagerModel* _this, int slotNumber) {
+
+    Player* pl = dAccess<Player*>(_this, 8);
+    byte ctnId = dAccess<byte>(_this, 40);
+    BlockPos* bpos = dAccess<BlockPos*>(_this, 216);
+    short baType = dAccess<short>(_this, 216);
+    auto csc = dAccess<class ContainerScreenContext*>(_this, 112);
+    auto ctn = SymCall("?_getContainer@LevelContainerModel@@EEBAPEAVContainer@@XZ",
+        class Container*, LevelContainerManagerModel*)(_this);
+    auto oldItem = SymCall("?getItem@FillingContainer@@UEBAAEBVItemStack@@H@Z",
+        ItemStack*, Container*, int)(ctn, slotNumber);
+    cout << "pl: " << pl->getNameTag() << endl;
+    cout << "slot: " << slotNumber << endl;
+    cout << "ctnId: " << (int)ctnId << endl;
+    cout << "bpos: " << bpos->toString() << endl;
+    cout << "baType: " << baType << endl;
+    if (oldItem)
+        cout << "oldItem: " << offItemStack::getCount(oldItem) << endl;
+
+    return original(_this, slotNumber);
+}
+THook(void, "?releaseResources@LevelContainerModel@@UEAAXXZ",
+    class LevelContainerModel* _this) {
+
+    auto v = (voids*)_this;
+    Player* pl = dAccess<Player*>(_this, 26 * 8);
+    if (pl)
+        cout<<"CloseContainer: " << pl->getNameTag() << endl;
+    original(_this);
+
+}
