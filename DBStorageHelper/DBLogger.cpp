@@ -785,3 +785,6 @@ THook(void*, "?getDeathMessage@ActorDamageByBlockSource@@UEBA?AU?$pair@V?$basic_
 //    notInAir = !notInAir;
 //    return original(_this, ac, damageCause);
 //}
+
+//THook(void, "?registerOnContainerChangedCallback@ContainerModel@@QEAAXV?$function@$$A6AXHAEBVItemStack@@0@Z@std@@@Z",
+//    )
