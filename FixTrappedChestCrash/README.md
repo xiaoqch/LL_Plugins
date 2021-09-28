@@ -1,9 +1,6 @@
 # FixTrappedChestCrash
 修复陷阱箱崩服
 
-## 简介
-此插件能防止玩家通过某些非正规手段修改切石机来修改物品
-
 ## 安装
 1. 前往 [MineBBS](https://www.minebbs.com/resources/fixtrappedchestcrash.2991/) 下载插件
 2. 将插件文件复制到 Minecraft Dedicated Server 目录下 plugins 文件夹中
