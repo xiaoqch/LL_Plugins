@@ -14,7 +14,7 @@
 合成监听并验证合成是否合法
 
 ## 支持的版本
-* Minecraft Dedicated Server 1.17.10.04 with [LiteLoaderBDS](https://www.minebbs.com/resources/liteloader.2059/) 1.1.1 及以上
+* Minecraft Dedicated Server 1.17.30.04 with [LiteLoaderBDS](https://www.minebbs.com/resources/liteloader.2059/) 1.2.0 或以上
 
 ## 配置文件(config.json)
 ```json

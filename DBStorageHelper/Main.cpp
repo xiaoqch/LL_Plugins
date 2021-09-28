@@ -189,3 +189,117 @@ THook(void*, "?load@CommandOriginLoader@@SA?AV?$unique_ptr@VCommandOrigin@@U?$de
     auto rtn = original(_this, a1, a2, a3);
     return rtn;
 }
+struct voids {
+    void******* v[1000];
+};
+//THook(void*, "?getLine@ConsoleInputReader@@QEAA_NAEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+//    void* _this, string* a1) {
+//    auto rtn = original(_this, a1);
+//    if (a1->size() != 0) {
+//        *a1="\xe4\xb8\x80\xe4\xba\x8c\xe4\xb8\x89";
+//    }
+//    return rtn;
+//}
+THook(bool, "??$inner_enqueue@$0A@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@?$SPSCQueue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@$0CAA@@@AEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    void* _this, string& cmd)
+{
+    //cout << cmd << endl;
+    //cmd = "\xe4\xb8\x80\xe4\xba\x8c\xe4\xb8\x89";
+    return original(_this, cmd);
+}
+
+THook(bool, "??$try_dequeue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@?$SPSCQueue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@$0CAA@@@QEAA_NAEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    void* _this, string* cmd, string* str)
+{
+    auto rtn = original(_this, cmd, str);
+    return rtn;
+}
+THook(void*, "?_read@File_c_windows@Core@@UEAA?AVResult@2@PEAX_KPEA_K@Z",
+    void* _this, void* res, void* a1, void* a2, unsigned __int64 a3, unsigned __int64* a4)
+{
+    auto rtn = original(_this, res, a1, a2, a3,a4);
+    return rtn;
+}
+THook(void*, "?_readAtPosition@File_c_windows@Core@@UEAA?AVResult@2@_KPEAX0PEA_K@Z",
+    void* _this, void* res, unsigned __int64 a1, void* a2, unsigned __int64 a3, unsigned __int64* a4)
+{
+    auto rtn = original(_this, res, a1, a2, a3, a4);
+    return rtn;
+}
+THook(void*, "?_readExactly@File_c_windows@Core@@UEAA?AVResult@2@PEAX_K@Z",
+    void* _this, void* res, void* a1, void* a2)
+{
+    auto rtn = original(_this, res, a1, a2);
+    return rtn;
+}
+THook(void*, "?_write@File_c_windows@Core@@UEAA?AVResult@2@PEBX_K@Z",
+    void* _this, void* res, void const* a1, unsigned __int64 a2)
+{
+    auto rtn = original(_this, res, a1, a2);
+    return rtn;
+}
+THook(void*, "?_skip@File_c_windows@Core@@UEAA?AVResult@2@_K@Z",
+    void* _this, void* res, unsigned __int64 a1)
+{
+    auto rtn = original(_this, res, a1);
+    return rtn;
+}
+THook(void*, "?_flush@File_c_windows@Core@@UEAA?AVResult@2@XZ",
+    void* _this, void* res)
+{
+    auto rtn = original(_this, res);
+    return rtn;
+}
+THook(void*, "?_close@File_c_windows@Core@@UEAA?AVResult@2@XZ",
+    void* _this, void* res)
+{
+    auto rtn = original(_this, res);
+    return rtn;
+}
+THook(void*, "?_getRemainingSize@File_c_windows@Core@@UEAA?AVResult@2@PEA_K@Z",
+    void* _this, void* res, unsigned __int64* a1)
+{
+    auto rtn = original(_this, res, a1);
+    return rtn;
+}
+THook(void*, "?_getSize@File_c_windows@Core@@UEAA?AVResult@2@PEA_K@Z",
+    void* _this, void* res, unsigned __int64* a1)
+{
+    auto rtn = original(_this, res, a1);
+    return rtn;
+}
+THook(unsigned __int64, "?_getBlockSize@File_c_windows@Core@@UEBA_KXZ",
+    void* _this)
+{
+    auto rtn = original(_this);
+    return rtn;
+}
+THook(void*, "?_setPosition@File_c_windows@Core@@UEAA?AVResult@2@_K@Z",
+    void* _this, void* res, unsigned __int64* a1)
+{
+    auto rtn = original(_this, res, a1);
+    return rtn;
+}
+THook(void*, "?_open@File_c_windows@Core@@CA?AVResult@2@PEAVFileSystem_windows@2@AEAV?$unique_ptr@VFileImpl@Core@@U?$default_delete@VFileImpl@Core@@@std@@@std@@AEBVPath@2@VFileOpenMode@2@W4FileBufferingMode@2@@Z",
+    void* _this, class Core_FileSystem_windows* fsw, class std::unique_ptr<class Core_FileImpl>* impl, string& path, class Core_FileOpenMode* fom, enum Core_FileBufferingMode* fbm)
+{
+    //cout << path << endl;
+    auto rtn = original(_this, fsw, impl, path, fom, fbm);
+    return rtn;
+}
+THook(void, "?initialize@File_c_windows@Core@@SAXXZ",
+    void* _this)
+{
+    original(_this);
+}
+THook(bool, "?_isOpen@File_c_windows@Core@@UEAA_NXZ",
+    void* _this)
+{
+    auto rtn = original(_this);
+    return rtn;
+}
+THook(void, "?setLoggingEnabled@FileStream@Core@@QEAAX_N@Z",
+    void* _this, bool b)
+{
+    original(_this, true);
+}
