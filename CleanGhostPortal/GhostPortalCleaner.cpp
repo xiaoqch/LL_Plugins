@@ -110,13 +110,17 @@ struct ChunkBlockPos {
     char z;
     __int16 y;
 };
-
+template<typename RTN = void, typename... Args>
+RTN inline VirtualCall(void* _this, uintptr_t off, Args... args) {
+    return (*(RTN(**)(void*, Args...))(*(uintptr_t*)_this + off))(_this, args...);
+}
 // 返回方块或空指针
 Block* getBlockEx(BlockSource* bs, BlockPos bpos) {
     //if (bpos.y < *((__int16*)bs + 21))
     //    return nullptr;
     //if (bpos.y >= *((__int16*)bs + 20))
     //    return nullptr;
+
     LevelChunk* chunk = SymCall("?getChunkAt@BlockSource@@QEBAPEAVLevelChunk@@AEBVBlockPos@@@Z",
         LevelChunk*, BlockSource*, BlockPos*)(bs, &bpos);
     if (!chunk)
@@ -126,6 +130,21 @@ Block* getBlockEx(BlockSource* bs, BlockPos bpos) {
     char cbx = bpos.x & 0xF;
     char cbz = bpos.z & 0xF;
     ChunkBlockPos cbpos{ cbx, cbz, cby };
+
+    // unknown code from IDA LevelChunk::getBlock
+    //auto subChunkIndex = cbpos.y >> 4; // cbpos.y/16 数据中的第几层？
+    //auto subChunkCount=dAccess<int64_t>(chunk, 352);
+    //auto subChunk = dAccess<void*>(chunk, 80 * static_cast<uintptr_t>(subChunkIndex) + 248);
+    //if (subChunkIndex >= subChunkCount || !subChunk)
+    //    return nullptr;
+    //void* func = dAccess<void*>(subChunk, 6*8); //blockPalette?
+    //auto blockIndex = (cbpos.y & 0xF) + 16 * (cbpos.z + 16 * cbpos.x);
+    //VirtualCall<void*>(func, 16, blockIndex);
+    //return (Block*)(*(__int64(__fastcall**)(uintptr_t, uintptr_t))(**((uintptr_t**)v3 + 6) + 16i64))(
+    //    *((uintptr_t*)v3 + 6),
+    //    (unsigned __int16)((cbpos.y & 0xF)
+    //        + 16 * (cbpos.z + 16 * cbpos.x)));
+
     return SymCall("?getBlock@LevelChunk@@QEBAAEBVBlock@@AEBVChunkBlockPos@@@Z",
         Block*, LevelChunk*, ChunkBlockPos*)(chunk, &cbpos);
 }

@@ -641,31 +641,31 @@ Actor* getActor(Level* lv, ActorUniqueID id) {
     return SymCall("?fetchEntity@Level@@UEBAPEAVActor@@UActorUniqueID@@_N@Z",
         Actor*, Level*, ActorUniqueID, bool)(lv, id, 0);
 }
-THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
-    Mob* ac, ActorDamageSource* ads, int damage, bool unk1_1, bool unk2_0)
-{
-    if (false&&ac)
-    {
-        auto level = offPlayer::getLevel(ac);
-        void* auid;
-        auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &auid); // 
-        cout << "auid1: " << v6 << endl;
-        auto v7 = *VirtualCall<ActorUniqueID*>(ads, 0x68, &auid); // 
-        cout << "auid2: " << v7 << endl;
-        if (v6&&v7&&v6.id != v7.id) {
-            auto act1 = getActor(level, v6);
-            auto act2 = getActor(level, v6);
-        }
-        pair<string, vector<string>> res;
-        string name = ac->getNameTag();
-        auto& msg = *VirtualCall<pair<string, vector<string>>*>(ads, 0x28, &res, &name , getActor(level, v6));
-        cout << "key: " << msg.first << endl;
-        for (auto& val : msg.second) {
-            cout << "val: " << val << endl;
-        }
-    }
-    return original(ac, ads, damage, unk1_1, unk2_0);
-}
+//THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
+//    Mob* ac, ActorDamageSource* ads, int damage, bool unk1_1, bool unk2_0)
+//{
+//    if (false&&ac)
+//    {
+//        auto level = offPlayer::getLevel(ac);
+//        void* auid;
+//        auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &auid); // 
+//        cout << "auid1: " << v6 << endl;
+//        auto v7 = *VirtualCall<ActorUniqueID*>(ads, 0x68, &auid); // 
+//        cout << "auid2: " << v7 << endl;
+//        if (v6&&v7&&v6.id != v7.id) {
+//            auto act1 = getActor(level, v6);
+//            auto act2 = getActor(level, v6);
+//        }
+//        pair<string, vector<string>> res;
+//        string name = ac->getNameTag();
+//        auto& msg = *VirtualCall<pair<string, vector<string>>*>(ads, 0x28, &res, &name , getActor(level, v6));
+//        cout << "key: " << msg.first << endl;
+//        for (auto& val : msg.second) {
+//            cout << "val: " << val << endl;
+//        }
+//    }
+//    return original(ac, ads, damage, unk1_1, unk2_0);
+//}
 
 
 
