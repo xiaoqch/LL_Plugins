@@ -3,6 +3,6 @@
 #include "mc/LevelChunk.h"
 
 BlockSource* getBlockSourceByDim(int dimid);
-LevelChunk* getChunkByXZ(BlockSource* bs, int x, int z);
+LevelChunk* getChunkAt(BlockSource* bs, BlockPos bpos);
 void setChunkUnsaved(LevelChunk* lc);
 bool isDirty(LevelChunk* lc);

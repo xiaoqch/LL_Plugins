@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GhostPortalCleaner", "Clean
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FixTrappedChestCrash", "FixTrappedChestCrash\FixTrappedChestCrash.vcxproj", "{1EEB3BAE-3454-4BB4-9A4B-965348798EBF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SymHelper", "SymHelper\SymHelper.vcxproj", "{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -111,6 +113,14 @@ Global
 		{1EEB3BAE-3454-4BB4-9A4B-965348798EBF}.Release|x64.Build.0 = Release|x64
 		{1EEB3BAE-3454-4BB4-9A4B-965348798EBF}.Release|x86.ActiveCfg = Release|Win32
 		{1EEB3BAE-3454-4BB4-9A4B-965348798EBF}.Release|x86.Build.0 = Release|Win32
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Debug|x64.ActiveCfg = Debug|x64
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Debug|x64.Build.0 = Debug|x64
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Debug|x86.ActiveCfg = Debug|Win32
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Debug|x86.Build.0 = Debug|Win32
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Release|x64.ActiveCfg = Release|x64
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Release|x64.Build.0 = Release|x64
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Release|x86.ActiveCfg = Release|Win32
+		{3E0AA338-3A84-4E52-BF39-55335EFA4EBA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

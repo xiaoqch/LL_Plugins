@@ -428,249 +428,16 @@ THook(bool, "?tryRepair@DBStorage@@QEBA_NAEBVPath@Core@@@Z",
     LOG_END_RTN
 }
 
-// DBStorage::getState2
 
-/*
-bool backupEnd(bool success);
-
-bool backupCopy(filesystem::path src, filesystem::path dst, size_t size) {
-    try {
-        auto dir = filesystem::path(dst).parent_path();
-        filesystem::create_directories(dir);
-        filesystem::copy_file(src, dst);
-        if (filesystem::file_size(dst) != size) {
-            cout << dst << ", old size: " << filesystem::file_size(dst);
-            filesystem::resize_file(dst, size);
-            cout << ", new size: " << filesystem::file_size(dst) << endl;;
-        }
-    }
-    catch (filesystem::filesystem_error e) {
-        cerr << "Error in Copy File, error code: " << e.code() << endl;
-        return backupEnd(false);
-    }
-    //cout << fullPath << endl;
-    return true;
-}
-bool backupCompress(filesystem::path dir, filesystem::path zipPath) {
-    try {
-        wstring cmd = L"a -mx0 \"";
-        cmd += zipPath.wstring() + L"\" \"" + dir.wstring() + L"\"";
-        //cout << cmd.c_str() << endl;
-        //auto rtn = system(cmd.c_str());
-        //auto result = ShellExecute(NULL, L"open", L".\\plugins\\LLBackup\\7z.exe", cmd.c_str() , L".", SW_HIDE);
-        SHELLEXECUTEINFO ShExecInfo = { 0 };
-        ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-        ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-        ShExecInfo.hwnd = NULL;
-        ShExecInfo.lpVerb = NULL;
-        ShExecInfo.lpFile = L".\\plugins\\LLBackup\\7z.exe";
-        ShExecInfo.lpParameters = cmd.c_str();
-        ShExecInfo.lpDirectory = NULL;
-        ShExecInfo.nShow = SW_HIDE;
-        ShExecInfo.hInstApp = NULL;
-        auto result=ShellExecuteEx(&ShExecInfo);
-        if (ShExecInfo.hProcess == 0) {
-            cerr << "Error in compress file: ShExecInfo.hProcess == 0" << endl;
-            return false;
-        }
-        WaitForSingleObjectEx(ShExecInfo.hProcess, 30000, true);
-        return result;
-    }
-    catch (filesystem::filesystem_error e) {
-        cerr << "Error in create zip file" << endl;
-        return backupEnd(false);
-    }
-    return true;
-}
-
-string backupDir = "F:\\mcbackup";
-bool backupEnd(bool success) {
-    try {
-        filesystem::remove_all(filesystem::path(backupDir).append("tmp"));
-    }
-    catch (filesystem::filesystem_error e) {
-        cerr << "Error in cleanup tmp files, error code: " << e.code() << endl;
-    }
-    if (success) {
-        cout << "备份成功" << endl;
-    }
-    else {
-        cout << "备份失败" << endl;
-    }
-    //liteloader::runcmd("save resume");
-    return success;
-}
-bool backup(vector<SnapshotFilenameAndLength>& fdetails, string& worldName) {
-    bool success;
-    cout << "正在复制备份文件..." << endl;
-    for (auto& fdetail : fdetails) {
-        filesystem::path srcPath = filesystem::path("./worlds").append(fdetail.path);
-        filesystem::path dstPath = filesystem::path(backupDir).append("tmp").append(fdetail.path);
-        auto& fileSize = fdetail.size;
-        success = backupCopy(srcPath, dstPath, fileSize);
-        if (!success)
-            return backupEnd(success);
-        //cout << s.filePath << ":" << s.fileSize << endl;
-    }
-    time_t timep=0;
-    time(&timep);
-    struct tm t_tm;
-    localtime_s(&t_tm, &timep);
-    char timeStr[64];
-    strftime(timeStr, sizeof(timeStr), "%Y%m%d-%H%M%S", &t_tm);
-    string backupName = worldName + "-" + timeStr +".zip";
-    filesystem::path backupPath = filesystem::path(backupDir).append("tmp").append(worldName);
-    filesystem::path zipPath = filesystem::path(backupDir).append("tmp/zip/").append(backupName);
-    cout << "正在打包备份文件..." << endl;
-    success = backupCompress(backupPath, zipPath);
-    //backupCopy();
-    return backupEnd(success);
-}
-
-int resumeDelay = 0;
-// DBStorage::createSnapshot
-THook(vector<SnapshotFilenameAndLength>&, "?createSnapshot@DBStorage@@UEAA?AV?$vector@USnapshotFilenameAndLength@@V?$allocator@USnapshotFilenameAndLength@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
-    DBStorage* _this, vector<SnapshotFilenameAndLength>& fdetails, string& worldName) {
-    LOG_START("DBStorage::createSnapshot");
-    auto& rtn = original(_this, fdetails, worldName);
-    //Sleep(10000000);
-    try {
-        LARGE_INTEGER freq;
-        LARGE_INTEGER begin;
-        LARGE_INTEGER end;
-        QueryPerformanceFrequency(&freq);
-        QueryPerformanceCounter(&begin);
-        auto res = backup(fdetails, worldName);
-        QueryPerformanceCounter(&end);
-        resumeDelay = 20;
-        if (!res) {
-            LOG_END_RTN
-        }
-        double timec = (double)(end.QuadPart - begin.QuadPart) / (double)freq.QuadPart;
-        cout << "Backup " << fdetails.size() << " Files, time: "<<timec<<"s" << endl;
-    }
-    catch (...) {
-        cerr << "Unknown Error in Backup" << endl;
-        LOG_END_RTN
-    }
-    LOG_END_RTN
-        printf_s("DBStorage::createSnapshot(%p, %p) -> %p\n", _this, &fdetails, &rtn);
-    return rtn;
-}
-typedef Actor ItemActor;
-struct ActorDefinitionGroup;
-struct ActorDefinitionIdentifier;
-THook(ItemActor*, "??0ItemActor@@QEAA@PEAVActorDefinitionGroup@@AEBUActorDefinitionIdentifier@@@Z"
-    , ItemActor* _this, struct ActorDefinitionGroup* adg, const struct ActorDefinitionIdentifier* adi) {
-    auto rtn = original(_this, adg, adi);
-    rtn->setNameTag("test");
-    SymCall("?setNameTagVisible@Actor@@UEAAX_N@Z",
-        void, Actor*, bool)(rtn, true);
-    auto& str = rtn->getNameTag();
-    return rtn;
-}
-THook(bool, "?canShowNameTag@Actor@@UEBA_NXZ"
-    , Actor* _this) {
-    auto rtn = original(_this);
-    return true;
-}
-
-int holdDelay=0;
-THook(void, "?tick@ServerLevel@@UEAAXXZ"
-    , ServerLevel* _this) {
-    original(_this);
-    if (resumeDelay) {
-        --resumeDelay;
-        if (!resumeDelay) {
-            auto res = liteloader::runcmdEx("save resume");
-            if (!res.first) {
-                cerr << "Error: " << res.second << endl;
-                resumeDelay = 100;
-            }else
-                cout << res.second << endl;
-            holdDelay = 100;
-        }
-    }
-    if (holdDelay) {
-        --holdDelay;
-        if (!holdDelay) {
-            auto res = liteloader::runcmdEx("save hold");
-            if (!res.first) {
-                cerr << "Error: " << res.second << endl;
-                holdDelay = 100;
-            }
-            else
-                cout << res.second << endl;
-        }
-    }
-}
-
-//Block::getDebugText(vector<string> &,BlockPos const &)
-//THook(bool, "?mayPlace@BlockSource@@QEAA_NAEBVBlock@@AEBVBlockPos@@EPEAVActor@@_N@Z",
-//    BlockSource* _this, Block* a2, BlockPos* a3, unsigned __int8 a4, Actor* a5, bool a6)
-//{
-//    auto rtn= original(_this, a2, a3, a4, a5, a6);
-//    string rawNameId;
-//    string buildDescriptionId;
-//    string getDescriptionId;
-//    string descriptionName;
-//    //void* item=SymCall("?asItemInstance@Block@@QEBA?AVItemInstance@@AEAVBlockSource@@AEBVBlockPos@@@Z",
-//    //    void*, BlockLegacy*)(offBlock::getLegacyBlock(a2));
-//    rawNameId = SymCall("?getRawNameId@BlockLegacy@@QEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-//        string&, BlockLegacy*)(offBlock::getLegacyBlock(a2));
-//    SymCall("?buildDescriptionId@Block@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-//        string&, Block*, string&)(a2, buildDescriptionId);
-//    SymCall("?getDescriptionId@Block@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-//        string&, Block*, string&)(a2, getDescriptionId);
-//    SymCall("?buildDescriptionName@Block@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-//        string&, Block*, string&)(a2, descriptionName);
-//    LOG_VAR(rawNameId)
-//    LOG_VAR(buildDescriptionId)
-//    LOG_VAR(getDescriptionId)
-//    LOG_VAR(descriptionName)
-//    return rtn;
-//}
-////Block::getDebugText(vector<string> &,BlockPos const &)
-//THook(void*, "?mSaveAllMutex@SaveCommand@@0Vmutex@std@@A",
-//    void* _this)
-//{
-//    return original(_this);
-//}
-*/
 Actor* getActor(Level* lv, ActorUniqueID id) {
     return SymCall("?fetchEntity@Level@@UEBAPEAVActor@@UActorUniqueID@@_N@Z",
         Actor*, Level*, ActorUniqueID, bool)(lv, id, 0);
 }
-//THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
-//    Mob* ac, ActorDamageSource* ads, int damage, bool unk1_1, bool unk2_0)
-//{
-//    if (false&&ac)
-//    {
-//        auto level = offPlayer::getLevel(ac);
-//        void* auid;
-//        auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &auid); // 
-//        cout << "auid1: " << v6 << endl;
-//        auto v7 = *VirtualCall<ActorUniqueID*>(ads, 0x68, &auid); // 
-//        cout << "auid2: " << v7 << endl;
-//        if (v6&&v7&&v6.id != v7.id) {
-//            auto act1 = getActor(level, v6);
-//            auto act2 = getActor(level, v6);
-//        }
-//        pair<string, vector<string>> res;
-//        string name = ac->getNameTag();
-//        auto& msg = *VirtualCall<pair<string, vector<string>>*>(ads, 0x28, &res, &name , getActor(level, v6));
-//        cout << "key: " << msg.first << endl;
-//        for (auto& val : msg.second) {
-//            cout << "val: " << val << endl;
-//        }
-//    }
-//    return original(ac, ads, damage, unk1_1, unk2_0);
-//}
 
 
 
 // IDA _dynamic_initializer_for__gDamageTypeParam__
-enum class DamageCause : int
+enum class DamageType : int
 {
     None = -1,
     Override = 0,
@@ -715,7 +482,25 @@ THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
     if (ac)
     {
         auto level = offPlayer::getLevel(ac);
-        DamageCause cause = dAccess<DamageCause>(ads, 8);
+        DamageType cause = dAccess<DamageType>(ads, 8); //
+        void* auid;
+        auto v6 = *VirtualCall<ActorUniqueID*>(ads, 0x40, &auid); // 
+        cout << "auid1: " << v6 << endl;
+        auto v7 = *VirtualCall<ActorUniqueID*>(ads, 0x68, &auid); // 
+        cout << "auid2: " << v7 << endl;
+        if (v6 && v7 && v6.id != v7.id) {
+            auto act1 = getActor(level, v6);
+            auto act2 = getActor(level, v6);
+        }
+        pair<string, vector<string>> res;
+        string name = ac->getNameTag();
+        auto& msg = *VirtualCall<pair<string, vector<string>>*>(ads, 0x28, &res, &name, getActor(level, v6));
+        cout << "key: " << msg.first << endl;
+        for (auto& val : msg.second) {
+            cout << "val: " << val << endl;
+        }
+        *(DamageType*)(ads + 1) = DamageType::None;
+        damage = 1000;
         //*((int*)ads + 1) = code++;
 
         //cout << "Cause: " << (int)cause << endl;
@@ -749,8 +534,6 @@ THook(void*, "?getDeathMessage@ActorDamageByBlockSource@@UEBA?AU?$pair@V?$basic_
     return rtn;
 }
 
-/*
-*/
 
 
 //vector<int> vec;
@@ -838,13 +621,138 @@ THook(void*, "?getSlot@LevelContainerManagerModel@@UEBAAEBVItemStack@@H@Z",
 
     return original(_this, slotNumber);
 }
+
+THook(void*, "?setSlot@LevelContainerManagerModel@@UEAAXHAEBVItemStack@@_N@Z",
+    class LevelContainerManagerModel* _this, int slotNumber, ItemStack const* newItem, bool unk) {
+
+    Player* pl = dAccess<Player*>(_this, 8);
+    byte ctnId = dAccess<byte>(_this, 40);
+    BlockPos* bpos = dAccess<BlockPos*>(_this, 216);
+    short baType = dAccess<short>(_this, 216);
+    auto csc = dAccess<class ContainerScreenContext*>(_this, 112);
+    auto ctn = SymCall("?_getContainer@LevelContainerModel@@EEBAPEAVContainer@@XZ",
+        class Container*, LevelContainerManagerModel*)(_this);
+    auto oldItem = SymCall("?getItem@FillingContainer@@UEBAAEBVItemStack@@H@Z",
+        ItemStack*, Container*, int)(ctn, slotNumber);
+    cout << "pl: " << pl->getNameTag() << endl;
+    cout << "slot: " << slotNumber << endl;
+    cout << "ctnId: " << (int)ctnId << endl;
+    cout << "bpos: " << bpos->toString() << endl;
+    cout << "baType: " << baType << endl;
+    if (oldItem)
+        cout << "oldItem: " << offItemStack::getCount(oldItem) << endl;
+
+    return original(_this, slotNumber, newItem, unk);
+}
 THook(void, "?releaseResources@LevelContainerModel@@UEAAXXZ",
     class LevelContainerModel* _this) {
 
-    auto v = (voids*)_this;
-    Player* pl = dAccess<Player*>(_this, 26 * 8);
-    if (pl)
-        cout<<"CloseContainer: " << pl->getNameTag() << endl;
-    original(_this);
+    //auto v = (voids*)_this;
+    auto containerEnumName = (int)dAccess<char>(_this, 48);
+    LOG_VAR(containerEnumName);
+    auto containerCategory = dAccess<int>(_this, 144);
+    LOG_VAR(containerCategory);
+    auto& slots = dAccess<vector<class SlotData*>>(_this, 152);
+    auto& items = dAccess<vector<ItemStack*>>(_this, 184);
 
+    auto& bpos = dAccess<BlockPos*>(_this, 216);
+    //LOG_VAR(bpos->toString());
+    auto& blockActorType = dAccess<int>(_this, 228);
+    LOG_VAR(blockActorType);
+    auto auid = dAccess<ActorUniqueID>(_this, 232).id;
+    LOG_VAR((void*)auid);
+    //auto& items = dAccess<vector<ItemStack*>>(_this, 184);
+    //int size = items.size();
+    //auto& slotData = dAccess<vector<class SlotData*>>(_this, 152);
+
+    //auto vo = SymCall("?ContainerCollectionNameMap@@3V?$unordered_map@W4ContainerEnumName@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@UContainerEnumNameHasher@@U?$equal_to@W4ContainerEnumName@@@3@V?$allocator@U?$pair@$$CBW4ContainerEnumName@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@3@@std@@A",
+    //    void*)();
+    //auto ctnmap = (std::map<enum ContainerEnumName, string*>*) &vo;
+    //int offset = SymCall("?_getContainerOffset@LevelContainerModel@@MEBAHXZ", int, LevelContainerModel*)(_this);
+    Player* pl = dAccess<Player*>(_this, 208);
+    if (pl)
+        cout << "CloseContainer: " << pl->getNameTag() << ", containerEnumName: " << containerEnumName << endl;
+    original(_this);
+}
+
+THook(enum ItemStackNetResult, "?handleRequestAction@ItemStackRequestActionHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestAction@@@Z",
+    class ItemStackRequestAction* _this, class ItemStackRequestAction const* isra) {
+
+    /*auto actionType=dAccess<*/
+    //printTypeName();
+    auto v = (voids*)_this;
+    auto v2 = (voids*)isra;
+
+    auto rtn = original(_this, isra);
+    return rtn;
+}
+
+
+THook(bool, "?IsLocalIP@RakPeer@RakNet@@UEAA_NPEBD@Z",
+    class RakPeer* _this, char* ip) {
+
+    /*auto actionType=dAccess<*/
+    
+    auto v = (voids*)_this;
+    *(void**)0 = 0;
+    auto rtn = original(_this, ip);
+    return rtn;
+}
+
+
+//THook(bool, "?inventoryChanged@Player@@UEAAXAEAVContainer@@HAEBVItemStack@@1_N@Z",
+//    class RakPeer* _this, char* ip) {
+//
+//    /*auto actionType=dAccess<*/
+//    
+//    auto v = (voids*)_this;
+//    *(void**)0 = 0;
+//    auto rtn = original(_this, ip);
+//    return rtn;
+//}
+
+//THook(bool, "?slotChanged@ServerPlayer@@UEAAXAEAVIContainerManager@@AEAVContainer@@HAEBVItemStack@@2_N@Z",
+//    class RakPeer* _this, char* ip) {
+//
+//    /*auto actionType=dAccess<*/
+//    
+//    auto v = (voids*)_this;
+//    *(void**)0 = 0;
+//    auto rtn = original(_this, ip);
+//    return rtn;
+//}
+
+
+//Block::getDebugText(vector<string> &,BlockPos const &)
+THook(bool, "?mayPlace@BlockSource@@QEAA_NAEBVBlock@@AEBVBlockPos@@EPEAVActor@@_N@Z",
+    BlockSource* _this, Block* a2, BlockPos* a3, unsigned __int8 a4, Actor* a5, bool a6)
+{
+    auto material = SymCall("??$tryGetComponent@UBlockMaterialInstancesComponent@@@Block@@QEBAPEBUBlockMaterialInstancesComponent@@XZ",
+        class BlockMaterialInstancesComponent*, Block*)(a2);
+    auto rtn= original(_this, a2, a3, a4, a5, a6);
+    string rawNameId;
+    string buildDescriptionId;
+    string getDescriptionId;
+    string descriptionName;
+    //void* item=SymCall("?asItemInstance@Block@@QEBA?AVItemInstance@@AEAVBlockSource@@AEBVBlockPos@@@Z",
+    //    void*, BlockLegacy*)(offBlock::getLegacyBlock(a2));
+    rawNameId = SymCall("?getRawNameId@BlockLegacy@@QEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, BlockLegacy*)(offBlock::getLegacyBlock(a2));
+    SymCall("?buildDescriptionId@Block@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, Block*, string&)(a2, buildDescriptionId);
+    SymCall("?getDescriptionId@Block@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, Block*, string&)(a2, getDescriptionId);
+    SymCall("?buildDescriptionName@Block@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, Block*, string&)(a2, descriptionName);
+    LOG_VAR(rawNameId)
+    LOG_VAR(buildDescriptionId)
+    LOG_VAR(getDescriptionId)
+    LOG_VAR(descriptionName)
+    return rtn;
+}
+//Block::getDebugText(vector<string> &,BlockPos const &)
+THook(void*, "?mSaveAllMutex@SaveCommand@@0Vmutex@std@@A",
+    void* _this)
+{
+    return original(_this);
 }
