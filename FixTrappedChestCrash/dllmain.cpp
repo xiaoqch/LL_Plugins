@@ -5,22 +5,22 @@
 
 using namespace std;
 
-#define VERSION "1.0.1"
+#define VERSION "1.0.2"
 
 void entry() {
     cout << "Fix Trapped Chest Crash Loaded. Version: " << VERSION << endl;
 };
 
 THook(void, "?serverInitItemStackIds@CraftingContainer@@UEAAXHHV?$function@$$A6AXHAEBVItemStack@@@Z@std@@@Z",
-    __int64 a1, void* a2) {
+    __int64 _this, int a1, int a2, void* a3) {
     // nullptr ChestBlockActor in ChestBlockActor::serverInitItemStackIds
     // and CraftingContainer is get from ChestBlockActor
     // offset 204 for bds 1.17.3x and 248 for bds 1.17.1x
     //if (a1 == 240 || a1 == 248)
     __int64 size = 640; // size of ChestBlockActor
-    if(a1 <= size)
+    if(_this <= size)
         return;
-    original(a1, a2);
+    original(_this, a1, a2, a3);
 }
 
 extern "C" {
