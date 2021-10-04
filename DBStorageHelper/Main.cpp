@@ -116,7 +116,31 @@ enum class OP_CHUNK_HELPER :int
     fromfile, // tofile filename
     key, // key cx cz dim [type] [cy]
 };
+struct span {
+    int count;
+    string* str;
+};
 bool oncmd_dbhelper(CommandOrigin const& ori, CommandOutput& outp) {
+    auto& name = SymCall("?getName@BlockGeometryDescription@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&)();
+    return true;
+    auto lv = ori.getLevel();
+    auto& dimIter = dAccess<void**>(lv, 272 * 8);
+    for (void* i = *dimIter; i != dimIter; i = *(void**)i) {
+        auto dim = dAccess<Dimension*>(i, 3 * 8);
+    }
+
+    Player* pl = (Player*)ori.getEntity();
+    cout << pl->getNameTag() << endl;
+
+    return true;
+    auto nid = offPlayer::getNetworkIdentifier(pl);
+    string snid;
+    SymCall("?toString@NetworkIdentifier@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, NetworkIdentifier*, string&)(nid, snid);
+    cout << snid << endl;
+
+    return true;
     Tag* tag = Tag::createTag(TagType::Compound);
     VirtualCall<Tag*>((void*)&ori, 0xD0, tag);
     cout << TagToSNBT(tag) << endl;
@@ -133,11 +157,11 @@ bool oncmd_dbhelper(CommandOrigin const& ori, CommandOutput& outp) {
     testDBStorage();
     return true;
     auto dbh = getDBStorage()->getHelper();
-    auto tags = dbh.getCompoundTags("mobevents");
-    for (auto& tag : tags) {
-        cout << TagToSNBT(tag) << endl;
-    }
-    dbh.saveTags("mobevents", tags);
+    //auto tags = dbh.getCompoundTags("mobevents");
+    //for (auto& tag : tags) {
+    //    cout << TagToSNBT(tag) << endl;
+    //}
+    //dbh.saveTags("mobevents", tags);
     return true;
 }
 

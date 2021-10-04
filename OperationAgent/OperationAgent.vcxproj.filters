@@ -5,9 +5,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Utils">
-      <UniqueIdentifier>{7abfb0a8-c841-45a0-8d49-fcb23aacbad2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>
@@ -21,6 +18,9 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{4f6a0eed-ff2b-475e-99dc-c26c16ae1971}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{7abfb0a8-c841-45a0-8d49-fcb23aacbad2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -30,19 +30,16 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="SymHelper.h">
-      <Filter>Utils</Filter>
+      <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="JsonHelper.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="OperationAgent.h">
-      <Filter>Main</Filter>
+      <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="seh_exception.hpp">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="ScheduleHelper.h">
-      <Filter>Utils</Filter>
+    <ClInclude Include="Util.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -50,10 +47,10 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="JsonHelper.cpp">
-      <Filter>Utils</Filter>
+      <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="SymHelper.cpp">
-      <Filter>Utils</Filter>
+      <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Base</Filter>
@@ -61,8 +58,8 @@
     <ClCompile Include="pch.cpp">
       <Filter>Base</Filter>
     </ClCompile>
-    <ClCompile Include="ScheduleHelper.cpp">
-      <Filter>Utils</Filter>
+    <ClCompile Include="Util.cpp">
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

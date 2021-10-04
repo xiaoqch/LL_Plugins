@@ -28,7 +28,6 @@ BlockSource* getBlockSourceByDim(int dimid)
     auto dim = (int*)getDimensionByDid(dimid);
     if (dim)
         return dAccess<BlockSource*>(dim, 96);
-        
     return nullptr;
 }
 
