@@ -8,7 +8,7 @@ using namespace std;
 #define LOG_VAR(var) std::cout << #var" :\t" << var << std::endl;
 
 struct voids {
-    void********** v[1000];
+    void* v[1000];
 };
 
 //Á´½Ó£ºhttps://www.nowcoder.com/questionTerminal/5a776e2954f545e0bcc01e6b04ef5f1d
@@ -216,6 +216,48 @@ void genBlockActorType() {
 //    cout << "};" << endl;
 //}
 
+
+void genEnchantType() {
+    cout << "enum EnchantType : char {" << endl;
+    //auto mEnchantmentNames = (vector<string>*)dlsym(
+    //    "?mEnchantmentNames@EnchantUtils@@0V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@A"
+    //);
+    //for (auto& name : *mEnchantmentNames) {
+    //    auto hname = HashedString(name.c_str());
+    //    char id = SymCall("?getEnchantmentId@EnchantUtils@@SA?AW4Type@Enchant@@AEBVHashedString@@@Z",
+    //        char, HashedString&)(hname);
+    //    cout << "    " << name << " = " << (int)id << "," << endl;
+    //}
+    class Enchant {
+        void**** filler[112 / 8 + 1];
+    };
+    auto mEnchantments = (vector<unique_ptr<Enchant>>*)dlsym(
+        "?mEnchants@Enchant@@2V?$vector@V?$unique_ptr@VEnchant@@U?$default_delete@VEnchant@@@std@@@std@@V?$allocator@V?$unique_ptr@VEnchant@@U?$default_delete@VEnchant@@@std@@@std@@@2@@std@@A"
+    );
+    for (auto& enptr : *mEnchantments) {
+        Enchant* en = enptr.get();
+        auto a = (voids*)en;
+        char id = dAccess<char>(en, 8);
+        int freq = dAccess<int>(en, 12);
+        char a8 = dAccess<char>(en, 16); //cost?
+        int a6 = dAccess<int>(en, 20);
+        int a7 = dAccess<int>(en, 24);
+        short maxLevel = dAccess<short>(en, 28);
+        if (maxLevel > 0)
+            *(short*)(((uintptr_t)en) + 28) = 10;
+        string nameKey = dAccess<string>(en, 32);
+        string name = dAccess<string>(en, 72);
+        //SymCall("?getDescriptionId@Enchant@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        //    string&, Enchant*, string&)(en, name);
+        //auto hstr = HashedString(name.c_str());
+        //char id =SymCall("?getEnchantmentId@EnchantUtils@@SA?AW4Type@Enchant@@AEBVHashedString@@@Z",
+        //    char, HashedString&)(hstr);
+        cout << "    " << name << " = " << (int)id << ", // max level: " << maxLevel << ", frequency: " << freq
+            << ", name key : " << nameKey << endl;
+    }
+    cout << "};" << endl;
+}
+
 void genEnum()
 {
     //genBlockType();
@@ -228,7 +270,8 @@ void genEnum()
     //genLegacyIDToNameMap();
     //genParticleType();
     //genBlockActorType();
-    //genJigsawStructureMap();
+    //genJigsawStructureMap(); //x
+    genEnchantType();
 }
 
 

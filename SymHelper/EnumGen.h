@@ -9,6 +9,7 @@ void genItemStackNetResult();
 void genContainerCollectionNameMap();
 void genLegacyIDToNameMap();
 void genParticleType();
+void genEnchantType();
 
 
 void genEnum();

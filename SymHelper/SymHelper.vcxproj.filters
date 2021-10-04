@@ -23,6 +23,9 @@
     <Filter Include="Enum">
       <UniqueIdentifier>{a31d4a67-9866-4a93-9d08-24b0eb09f0e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Recipe">
+      <UniqueIdentifier>{eaae59ae-418f-4c61-aff7-d67e71b662b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -43,6 +46,9 @@
     <ClInclude Include="TempEnum.h">
       <Filter>Enum</Filter>
     </ClInclude>
+    <ClInclude Include="RecipeHook.h">
+      <Filter>Recipe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -62,6 +68,9 @@
     </ClCompile>
     <ClCompile Include="EnumGen.cpp">
       <Filter>Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="RecipeHook.cpp">
+      <Filter>Recipe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

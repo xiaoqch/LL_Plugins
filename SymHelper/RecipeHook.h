@@ -1,0 +1,3 @@
+#pragma oncez
+
+void dynReg();

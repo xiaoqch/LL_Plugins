@@ -5,10 +5,10 @@
 
 using namespace std;
 
-#define VERSION "1.0.2"
+#define VERSION "1.0.3"
 
 void entry() {
-    cout << "Fix Trapped Chest Crash Loaded. Version: " << VERSION << endl;
+    cout << "Fix Chest Crash Pugin Loaded. Version: " << VERSION << endl;
 };
 
 THook(void, "?serverInitItemStackIds@CraftingContainer@@UEAAXHHV?$function@$$A6AXHAEBVItemStack@@@Z@std@@@Z",

@@ -1,5 +1,45 @@
 #pragma once
 
+enum EnchantType : char {
+    protection            = 0,  // max level: 3, frequency: 30, 
+    fire_protection       = 1,  // max level: 3, frequency: 10, 
+    feather_falling       = 2,  // max level: 0, frequency: 10, 
+    blast_protection      = 3,  // max level: 3, frequency: 3,  
+    projectile_protection = 4,  // max level: 3, frequency: 10, 
+    thorns                = 5,  // max level: 0, frequency: 1,  
+    respiration           = 6,  // max level: 0, frequency: 3,  
+    depth_strider         = 7,  // max level: 4, frequency: 3,  
+    aqua_affinity         = 8,  // max level: 0, frequency: 3,  
+    sharpness             = 9,  // max level: 1, frequency: 30, 
+    smite                 = 10, // max level: 1, frequency: 10, 
+    bane_of_arthropods    = 11, // max level: 1, frequency: 10, 
+    knockback             = 12, // max level: 0, frequency: 10, 
+    fire_aspect           = 13, // max level: 0, frequency: 3,  
+    looting               = 14, // max level: 0, frequency: 3,  
+    efficiency            = 15, // max level: 0, frequency: 30, 
+    silk_touch            = 16, // max level: 2, frequency: 1,  
+    unbreaking            = 17, // max level: 0, frequency: 10, 
+    fortune               = 18, // max level: 2, frequency: 3,  
+    power                 = 19, // max level: 0, frequency: 30, 
+    punch                 = 20, // max level: 0, frequency: 3,  
+    flame                 = 21, // max level: 0, frequency: 3,  
+    infinity              = 22, // max level: 5, frequency: 1,  
+    luck_of_the_sea       = 23, // max level: 0, frequency: 3,  
+    lure                  = 24, // max level: 0, frequency: 3,  
+    frost_walker          = 25, // max level: 4, frequency: 3,  
+    mending               = 26, // max level: 5, frequency: 3,  
+    binding               = 27, // max level: 0, frequency: 1,  
+    vanishing             = 28, // max level: 0, frequency: 1,  
+    impaling              = 29, // max level: 0, frequency: 10, 
+    riptide               = 30, // max level: 6, frequency: 3,  
+    loyalty               = 31, // max level: 6, frequency: 30, 
+    channeling            = 32, // max level: 0, frequency: 1,  
+    multishot             = 33, // max level: 0, frequency: 3,  
+    piercing              = 34, // max level: 0, frequency: 30, 
+    quick_charge          = 35, // max level: 0, frequency: 10, 
+    soul_speed            = 36, // max level: 0, frequency: 1,  
+};
+
 enum ItemStackRequestActionType : char {
     Take                                     = 0,
     Place                                    = 1,
@@ -611,3 +651,5 @@ enum ParticleType : unsigned int {
     electricspark         = 81,
     shriek                = 82,
 };
+
+
