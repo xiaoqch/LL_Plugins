@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "SymHelper.h"
 
-
-//======= Basic Function =======
-
 Minecraft* mc;
 
 THook(void, "?initAsDedicatedServer@Minecraft@@QEAAXXZ", void* self)
@@ -17,7 +14,4 @@ Level* getLevel() {
 };
 ServerNetworkHandler* getServerNetworkHandler() {
     return mc->getServerNetworkHandler();
-};
-NetworkHandler* getNetworkHandler() {
-    return mc->getNetworkHandler();
 };

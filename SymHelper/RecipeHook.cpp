@@ -310,7 +310,6 @@ void dynReg() {
     unordered_set<string> unkset = dAccess<unordered_set<string>>(recipes, 136);
     std::_Hash_vec<std::allocator<std::_List_unchecked_iterator<std::_List_val<std::_List_simple_types<std::pair<enum FilterSubject const, string>>>>>>
         unk95;
-    
     vector<ItemInstance> outputItems;;
     ItemInstance itemIns = {};
     newItemIns(itemIns, "minecraft:iron_ingot", 1, 0);
@@ -344,10 +343,85 @@ void dynReg() {
 //    original(nh, nid, str, b);
 //}
 
-//THook(float , "?getDestroyRate@GameMode@@QEAAMAEBVBlock@@@Z",
-//    class GameMode* _this, Block* bl) {
-//    auto rtn = original(_this, bl);
-//    offBlock::getFullName(bl);
-//    cout << rtn << endl;
-//    return 0.0f;
-//}
+
+THook(Item*, "?useTimeDepleted@SpyglassItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "SpyglassItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@SuspiciousStewItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "SuspiciousStewItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@ComponentItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "ComponentItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@PotionItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class PotionItem* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "PotionItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@Item@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "Item" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@ItemStack@@QEAA?AW4ItemUseMethod@@PEAVLevel@@PEAVPlayer@@@Z",
+    ItemStack* _this, Level* level,  Player* player) {
+    auto v5 = dAccess<void**, 8>(_this);
+    auto v6 = *v5;
+    if (v5 && (v6 = *v5) != 0) {
+        cout << "a" << endl;
+    }
+    cout << "ItemStack" << endl;
+    auto rtn = original(_this, level, player);
+
+    return rtn;
+}
+
+
+THook(Item*, "?useTimeDepleted@FoodItemComponent@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "FoodItemComponent" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@MedicineItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Level* level, Player* player) {
+    cout << "MedicineItem" << endl;
+    auto rtn = original(_this, item, level, player);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@BucketItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Level* level, Player* player) {
+    cout << "BucketItem" << endl;
+    auto rtn = original(_this, item, level, player);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@FoodItemComponentLegacy@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "FoodItemComponentLegacy" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}

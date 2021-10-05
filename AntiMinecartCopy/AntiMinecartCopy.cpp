@@ -10,7 +10,7 @@ using namespace std;
 
 void entry()
 {
-    std::cout << "[AntiMinecartCopy] AntiMinecartCopy Loaded. Version: " << VERSION << endl;
+    std::cout << "Anti Minecart Copy Plugin Loaded. Version: " << VERSION << endl;
 }
 
 THook(short, "?pullInItems@HopperComponent@@QEAA_NAEAVActor@@@Z", void* _this, Actor* actor)

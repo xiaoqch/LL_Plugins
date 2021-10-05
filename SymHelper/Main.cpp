@@ -8,20 +8,26 @@
 #include "SymHelper.h"
 //Recipes::_loadHardcodedRecipes
 
+struct voids;
 
+struct SystemAddress {
+    void* v[17];
+};
+struct RakNetGUID {
+    uint64_t unk;
+    short unk8;
+};
+
+template <typename T>
+struct DataList {
+    T* v;
+    int start;
+    int end;
+};
 
 bool oncmd_reg(CommandOrigin const& ori, CommandOutput& outp) {
 
-    dynReg();
-    auto snh = getServerNetworkHandler();
-    for (auto& pl : liteloader::getAllPlayers()) {
-        auto nid = offPlayer::getNetworkIdentifier(pl);
-        ServerPlayer* sp = MakeSP(pl);
-        //SymCall("?_sendLevelData@ServerNetworkHandler@@AEAAXAEAVServerPlayer@@AEBVNetworkIdentifier@@@Z",
-        //    void, ServerNetworkHandler*, ServerPlayer*, NetworkIdentifier*)(snh, sp, nid);
-        SymCall("?_sendAdditionalLevelData@ServerNetworkHandler@@AEAAXAEAVServerPlayer@@AEBVNetworkIdentifier@@@Z",
-            void, ServerNetworkHandler*, ServerPlayer*, NetworkIdentifier*)(snh, sp, nid);
-    }
+    //dynReg();
     return true;
 }
 

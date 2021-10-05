@@ -148,9 +148,9 @@ class Actor;
 class HashedString {
     uint64_t hash;
     std::string str;
-    int64_t unk;
 
 public:
+    int64_t unk;
     std::string const& getString() const { return str; }
     MCINLINE unsigned __int64 computeHash(char const* a0) {
         unsigned __int64 (HashedString:: * rv)(char const*);
