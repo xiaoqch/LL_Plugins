@@ -4,26 +4,10 @@
 #include "EnumGen.h"
 #include <api/scheduler/scheduler.h>
 #include <seh_exception/seh_exception.hpp>
-#include "RecipeHook.h"
 #include "SymHelper.h"
-//Recipes::_loadHardcodedRecipes
 
 struct voids;
 
-struct SystemAddress {
-    void* v[17];
-};
-struct RakNetGUID {
-    uint64_t unk;
-    short unk8;
-};
-
-template <typename T>
-struct DataList {
-    T* v;
-    int start;
-    int end;
-};
 
 bool oncmd_reg(CommandOrigin const& ori, CommandOutput& outp) {
 

@@ -2,3 +2,4 @@
 
 
 Level* getLevel();
+class Recipes* getRecipes();

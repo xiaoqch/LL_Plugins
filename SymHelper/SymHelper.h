@@ -4,3 +4,4 @@
 Level* getLevel();
 ServerNetworkHandler* getServerNetworkHandler();
 class NetworkHandler* getNetworkHandler();
+class Recipes* getRecipes();

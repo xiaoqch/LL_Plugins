@@ -15,3 +15,8 @@ Level* getLevel() {
 ServerNetworkHandler* getServerNetworkHandler() {
     return mc->getServerNetworkHandler();
 };
+
+class Recipes* getRecipes() {
+    return SymCall("?getRecipes@Level@@UEBAAEAVRecipes@@XZ",
+        Recipes*, Level*)(getLevel());
+}
