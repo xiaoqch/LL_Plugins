@@ -10,6 +10,7 @@ void genContainerCollectionNameMap();
 void genLegacyIDToNameMap();
 void genParticleType();
 void genEnchantType();
+void genEffectType();
 
 
 void genEnum();

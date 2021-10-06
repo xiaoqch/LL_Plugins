@@ -2,13 +2,14 @@
 #include <mc/OffsetHelper.h>
 #include "EnumGen.h"
 #include "SymHelper.h"
+
 using namespace std;
 
 
 #define LOG_VAR(var) std::cout << #var" :\t" << var << std::endl;
 
 struct voids {
-    void* v[1000];
+    void***** v[1000];
 };
 
 //Á´½Ó£ºhttps://www.nowcoder.com/questionTerminal/5a776e2954f545e0bcc01e6b04ef5f1d
@@ -258,6 +259,46 @@ void genEnchantType() {
     cout << "};" << endl;
 }
 
+
+void genEffectType() {
+    void* eff;
+    HashedString hstr = HashedString("");
+    SymCall("?getDisplayName@MobEffectInstance@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        HashedString&, void*, HashedString&)(eff, hstr);
+    cout << hstr.getString() << endl;
+
+    cout << "enum EffectType : short {" << endl;
+    for (short t = MININT16; t < MAXINT16; t++) {
+        auto effect = SymCall("?getById@MobEffect@@SAPEAV1@H@Z",
+            class Effect*, short)(t);
+        if (!effect)
+            continue;
+        auto& unk8 = dAccess<short>(effect, 8); //id
+        auto& unk12 = dAccess<char>(effect, 12);
+        auto& effectName = dAccess<string>(effect, 32); // effect type name?
+        auto& unk68 = dAccess<float>(effect, 68);
+        auto& name = dAccess<string>(effect, 80); // effect name
+        auto& unk112 = dAccess<string>(effect, 112);
+        auto& unk144 = dAccess<char>(effect, 144);
+        auto& fullName = dAccess<HashedString>(effect, 152); //full name
+        cout << "    " << name << " = " << (int)t << ", // effect: " << effectName << endl;
+    }
+    cout << "};" << endl;
+}
+
+void genDamageCause() {
+    cout << "enum ActorDagageCause : unsigned int {" << endl;
+    for (unsigned int t = 0; t < MAXUINT16; t++) {
+        auto& typeName = SymCall("?lookupCauseName@ActorDamageSource@@SAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4ActorDamageCause@@@Z",
+            string&, unsigned int)(t);
+        char newType = SymCall("?lookupCause@ActorDamageSource@@SA?AW4ActorDamageCause@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+            char, string&)(typeName);
+        if (t == newType)
+            cout << "    " << typeName << " = " << (int)t << "," << endl;
+    }
+    cout << "};" << endl;
+}
+
 void genEnum()
 {
     //genBlockType();
@@ -271,7 +312,7 @@ void genEnum()
     //genParticleType();
     //genBlockActorType();
     //genJigsawStructureMap(); //x
-    genEnchantType();
+    //genEnchantType();
+    //genEffectType();
+    //genDamageCause();
 }
-
-

@@ -8,39 +8,7 @@
 
 bool loadFirst = true;
 using namespace std;
-ItemStack* Raw_NewItem()
-{
-    try
-    {
-        ItemStack* a = (ItemStack*) new char[272];
-        ItemStack* item = SymCall("??0ItemStack@@QEAA@XZ", ItemStack*, ItemStack*)(a);
-        return item;
-    }
-    catch (...)
-    {
-        return nullptr;
-    }
-}
 
-ItemStack* Raw_NewItem(Tag* tag)
-{
-    ItemStack* item = Raw_NewItem();
-    if (!item)
-        return nullptr;
-    tag->setItem(item);
-
-    return item;
-}
-ItemStack* Raw_NewItem(std::string type, int count)
-{
-    Tag* nbt = Tag::createTag(TagType::Compound);
-    nbt->putByte("WasPickedUp", 0);
-    nbt->putShort("Damage", 0);
-    nbt->putString("Name", type);
-    nbt->putByte("Count", count);
-
-    return Raw_NewItem(nbt);
-}
 
 class SemVersion {
     unsigned short major{}, minor{}, patch{}; // 0, 2, 4
@@ -48,21 +16,6 @@ class SemVersion {
     bool           b104{}, valid{}, b106{};   // 104, 105, 106
 };
 
-bool JrParse(void* jr, string str, void* jv) {
-    return SymCall("?parse@Reader@Json@@QEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAVValue@2@_N@Z",
-        bool, void*, string&, void*, bool)(jr, str, jv, true);
-}
-string toStyledString(void* jv) {
-    string str;
-    return SymCall("?toStyledString@Value@Json@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-        string&, void*, string&)(jv, str);
-}
-SemVersion semVersionFromString(string str) {
-    SemVersion sv;
-    SymCall("?fromString@SemVersion@@SA?AW4MatchType@1@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAV1@W4ParseOption@1@@Z",
-        SemVersion&, string&, SemVersion&, bool)(str, sv, false);
-    return sv;
-}
 class ItemInstance {
     void* filler[17];
 };
@@ -117,6 +70,56 @@ struct strSpan {
     size_t size;
     char const* str;
 };
+
+ItemStack* Raw_NewItem()
+{
+    try
+    {
+        ItemStack* a = (ItemStack*) new char[272];
+        ItemStack* item = SymCall("??0ItemStack@@QEAA@XZ", ItemStack*, ItemStack*)(a);
+        return item;
+    }
+    catch (...)
+    {
+        return nullptr;
+    }
+}
+
+ItemStack* Raw_NewItem(Tag* tag)
+{
+    ItemStack* item = Raw_NewItem();
+    if (!item)
+        return nullptr;
+    tag->setItem(item);
+
+    return item;
+}
+ItemStack* Raw_NewItem(std::string type, int count)
+{
+    Tag* nbt = Tag::createTag(TagType::Compound);
+    nbt->putByte("WasPickedUp", 0);
+    nbt->putShort("Damage", 0);
+    nbt->putString("Name", type);
+    nbt->putByte("Count", count);
+
+    return Raw_NewItem(nbt);
+}
+
+bool JrParse(void* jr, string str, void* jv) {
+    return SymCall("?parse@Reader@Json@@QEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAVValue@2@_N@Z",
+        bool, void*, string&, void*, bool)(jr, str, jv, true);
+}
+string toStyledString(void* jv) {
+    string str;
+    return SymCall("?toStyledString@Value@Json@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, void*, string&)(jv, str);
+}
+SemVersion semVersionFromString(string str) {
+    SemVersion sv;
+    SymCall("?fromString@SemVersion@@SA?AW4MatchType@1@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAV1@W4ParseOption@1@@Z",
+        SemVersion&, string&, SemVersion&, bool)(str, sv, false);
+    return sv;
+}
 
 
 //Recipes::loadRecipe(std::pair<string ,Json::Value> const &,SemVersion const &)
@@ -208,7 +211,7 @@ THook(void, "?addShapedRecipe@Recipes@@QEAAXV?$basic_string@DU?$char_traits@D@st
     Block* bl = dAccess<Block*>(&types->at(0), 5 * 8);
     if (bl)
         string blstr = offBlock::getFullName(bl);
-    cout << itemInsToString(outputItems->at(0)) << endl;
+    //cout << itemInsToString(outputItems->at(0)) << endl;
 
     if (identifier == "minecraft:custom_command_block")
         setItemInsName(outputItems->at(0), "AAAAA");
@@ -279,7 +282,7 @@ typedef unsigned int TypedServerNetId;
 void dynReg() {
     auto recipes = SymCall("?getRecipes@Level@@UEBAAEAVRecipes@@XZ",
         Recipes*, Level*)(getLevel());
-    map<HashedString, std::map<string, std::shared_ptr<Recipe>>>        tag_identifier_recipe =
+    map<HashedString, std::map<string, std::shared_ptr<Recipe>>> tag_identifier_recipe =
         dAccess<map<HashedString, std::map<string, std::shared_ptr<Recipe>>>>(recipes, 16);
     int total_size_of_tag_identifier_recipe = 0;
     for (auto& recipe : tag_identifier_recipe) {
@@ -310,7 +313,6 @@ void dynReg() {
     unordered_set<string> unkset = dAccess<unordered_set<string>>(recipes, 136);
     std::_Hash_vec<std::allocator<std::_List_unchecked_iterator<std::_List_val<std::_List_simple_types<std::pair<enum FilterSubject const, string>>>>>>
         unk95;
-    
     vector<ItemInstance> outputItems;;
     ItemInstance itemIns = {};
     newItemIns(itemIns, "minecraft:iron_ingot", 1, 0);
@@ -344,10 +346,85 @@ void dynReg() {
 //    original(nh, nid, str, b);
 //}
 
-//THook(float , "?getDestroyRate@GameMode@@QEAAMAEBVBlock@@@Z",
-//    class GameMode* _this, Block* bl) {
-//    auto rtn = original(_this, bl);
-//    offBlock::getFullName(bl);
-//    cout << rtn << endl;
-//    return 0.0f;
-//}
+
+THook(Item*, "?useTimeDepleted@SpyglassItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "SpyglassItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@SuspiciousStewItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "SuspiciousStewItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@ComponentItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "ComponentItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@PotionItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class PotionItem* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "PotionItem" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@Item@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponentLegacy* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "Item" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@ItemStack@@QEAA?AW4ItemUseMethod@@PEAVLevel@@PEAVPlayer@@@Z",
+    ItemStack* _this, Level* level,  Player* player) {
+    auto v5 = dAccess<void**, 8>(_this);
+    auto v6 = *v5;
+    if (v5 && (v6 = *v5) != 0) {
+        cout << "a" << endl;
+    }
+    cout << "ItemStack" << endl;
+    auto rtn = original(_this, level, player);
+
+    return rtn;
+}
+
+
+THook(Item*, "?useTimeDepleted@FoodItemComponent@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "FoodItemComponent" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@MedicineItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Level* level, Player* player) {
+    cout << "MedicineItem" << endl;
+    auto rtn = original(_this, item, level, player);
+
+    return rtn;
+}
+
+THook(Item*, "?useTimeDepleted@BucketItem@@UEBA?AW4ItemUseMethod@@AEAVItemStack@@PEAVLevel@@PEAVPlayer@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Level* level, Player* player) {
+    cout << "BucketItem" << endl;
+    auto rtn = original(_this, item, level, player);
+
+    return rtn;
+}
+THook(Item*, "?useTimeDepleted@FoodItemComponentLegacy@@UEAAPEBVItem@@AEAVItemStack@@AEAVPlayer@@AEAVLevel@@@Z",
+    class FoodItemComponent* _this, ItemStack* item, Player* player, Level* level) {
+    cout << "FoodItemComponentLegacy" << endl;
+    auto rtn = original(_this, item, player, level);
+
+    return rtn;
+}

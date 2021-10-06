@@ -652,4 +652,69 @@ enum ParticleType : unsigned int {
     shriek                = 82,
 };
 
+enum EffectType : short {
+    empty           = 0,  // effect:
+    speed           = 1,  // effect: potion.moveSpeed
+    slowness        = 2,  // effect: potion.moveSlowdown
+    haste           = 3,  // effect: potion.digSpeed
+    mining_fatigue  = 4,  // effect: potion.digSlowDown
+    strength        = 5,  // effect: potion.damageBoost
+    instant_health  = 6,  // effect: potion.heal
+    instant_damage  = 7,  // effect: potion.harm
+    jump_boost      = 8,  // effect: potion.jump
+    nausea          = 9,  // effect: potion.confusion
+    regeneration    = 10, // effect: potion.regeneration
+    resistance      = 11, // effect: potion.resistance
+    fire_resistance = 12, // effect: potion.fireResistance
+    water_breathing = 13, // effect: potion.waterBreathing
+    invisibility    = 14, // effect: potion.invisibility
+    blindness       = 15, // effect: potion.blindness
+    night_vision    = 16, // effect: potion.nightVision
+    hunger          = 17, // effect: potion.hunger
+    weakness        = 18, // effect: potion.weakness
+    poison          = 19, // effect: potion.poison
+    wither          = 20, // effect: potion.wither
+    health_boost    = 21, // effect: potion.healthBoost
+    absorption      = 22, // effect: potion.absorption
+    saturation      = 23, // effect: potion.saturation
+    levitation      = 24, // effect: potion.levitation
+    fatal_poison    = 25, // effect: potion.poison
+    conduit_power   = 26, // effect: potion.conduitPower
+    slow_falling    = 27, // effect: potion.slowFalling
+    bad_omen        = 28, // effect: effect.badOmen
+    village_hero    = 29, // effect: effect.villageHero
+};
 
+enum ActorDagageCause : unsigned int {
+    override = 0,
+    contact = 1,
+    entity_attack = 2,
+    projectile = 3,
+    suffocation = 4,
+    fall = 5,
+    fire = 6,
+    fire_tick = 7,
+    lava = 8,
+    drowning = 9,
+    block_explosion = 10,
+    entity_explosion = 11,
+    void = 12,
+    suicide = 13,
+    magic = 14,
+    wither = 15,
+    starve = 16,
+    anvil = 17,
+    thorns = 18,
+    falling_block = 19,
+    piston = 20,
+    fly_into_wall = 21,
+    magma = 22,
+    fireworks = 23,
+    lightning = 24,
+    charging = 25,
+    temperature = 26,
+    freezing = 27,
+    stalactite = 28,
+    stalagmite = 29,
+    all = 31,
+};

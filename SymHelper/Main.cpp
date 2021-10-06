@@ -4,24 +4,14 @@
 #include "EnumGen.h"
 #include <api/scheduler/scheduler.h>
 #include <seh_exception/seh_exception.hpp>
-#include "RecipeHook.h"
 #include "SymHelper.h"
-//Recipes::_loadHardcodedRecipes
 
+struct voids;
 
 
 bool oncmd_reg(CommandOrigin const& ori, CommandOutput& outp) {
 
-    dynReg();
-    auto snh = getServerNetworkHandler();
-    for (auto& pl : liteloader::getAllPlayers()) {
-        auto nid = offPlayer::getNetworkIdentifier(pl);
-        ServerPlayer* sp = MakeSP(pl);
-        //SymCall("?_sendLevelData@ServerNetworkHandler@@AEAAXAEAVServerPlayer@@AEBVNetworkIdentifier@@@Z",
-        //    void, ServerNetworkHandler*, ServerPlayer*, NetworkIdentifier*)(snh, sp, nid);
-        SymCall("?_sendAdditionalLevelData@ServerNetworkHandler@@AEAAXAEAVServerPlayer@@AEBVNetworkIdentifier@@@Z",
-            void, ServerNetworkHandler*, ServerPlayer*, NetworkIdentifier*)(snh, sp, nid);
-    }
+    //dynReg();
     return true;
 }
 

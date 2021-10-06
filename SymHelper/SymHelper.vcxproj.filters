@@ -49,6 +49,9 @@
     <ClInclude Include="RecipeHook.h">
       <Filter>Recipe</Filter>
     </ClInclude>
+    <ClInclude Include="StrHelper.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -72,6 +75,9 @@
     <ClCompile Include="RecipeHook.cpp">
       <Filter>Recipe</Filter>
     </ClCompile>
+    <ClCompile Include="StrHelper.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib">
@@ -85,5 +91,8 @@
     <Text Include="assignBlocks.txt">
       <Filter>资源文件</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

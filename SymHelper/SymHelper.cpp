@@ -18,3 +18,6 @@ Level* getLevel() {
 ServerNetworkHandler* getServerNetworkHandler() {
     return mc->getServerNetworkHandler();
 };
+NetworkHandler* getNetworkHandler() {
+    return mc->getNetworkHandler();
+};
