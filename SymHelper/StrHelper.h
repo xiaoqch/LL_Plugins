@@ -37,5 +37,16 @@ namespace StrHelper
         return SymCall("?isValidUTF8@Util@@YA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
             bool, string&)(src);
     }
+    string seriJson(void* json) {
+        string str;
+        return SymCall("?serialize@JsonHelpers@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVValue@Json@@@Z",
+            string&, string&, void*)(str, json);
+    }
+
+    void* parseJson(void* json, string& str) {
+        SymCall("?parseJson@JsonHelpers@@YA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAVValue@Json@@@Z",
+            bool, string&, void*)(str, json);
+        return json;
+    }
 };
 

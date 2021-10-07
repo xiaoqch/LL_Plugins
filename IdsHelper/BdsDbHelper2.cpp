@@ -14,11 +14,11 @@ bool queryReadDB(DBStorageQueryType type, string key) {
     queryType = type;
     globalKey = key;
     // [0] = MsaId
-    // [1] = // Unknown，似乎与读取数据无关
+    // [1] = PlatformId，似乎与读取数据无关
     // [2] = PlatformOnlineId // Create New If Not Exist!
     // [3] = PlatformOfflineId // Create New If Not Exist!
     // [4] = SelfSignedId // Create New If Not Exist!
-    // [5] = // Unknown，但与读取数据有关，形如：5695722221326097789 的字符串，意义不明
+    // [5] = RandomClientId，但与读取数据有关，形如：5695722221326097789 的字符串，意义不明
     // 5695722221326097789 == 0x4F0B452EDD70DD7D，半个id长度
     string playerStorageIds[6];
     playerStorageIds[0] = "~local_player";

@@ -26,6 +26,9 @@
     <Filter Include="Recipe">
       <UniqueIdentifier>{eaae59ae-418f-4c61-aff7-d67e71b662b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{b9fadccf-f46f-4d8c-9502-010d0eda1e21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -52,6 +55,9 @@
     <ClInclude Include="StrHelper.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="TextureTest.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -77,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="StrHelper.cpp">
       <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureTest.cpp">
+      <Filter>Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
