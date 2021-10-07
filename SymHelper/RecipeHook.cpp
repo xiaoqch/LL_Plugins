@@ -43,6 +43,7 @@ struct ItemDescriptorCount {
 };
 typedef ItemDescriptorCount RecipeIngredient;
 class ShapelessRecipe;
+typedef function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)> AddShapedRecipeCallback_t;
 class Recipes {
 public:
     struct FurnaceRecipeKey {
@@ -56,11 +57,11 @@ public:
         RecipeIngredient ingredient;
         char type;
     };
-    void addShapedRecipe(string, vector<ItemInstance> const&, vector<string> const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>) {};
-    void addShapedRecipe(string, ItemInstance const&, string const&, string const&, string const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>) {};
-    void addShapedRecipe(string, ItemInstance const&, string const&, string const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>) {};
-    void addShapedRecipe(string, ItemInstance const&, string const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>) {};
-    void addShapedRecipe(string, ItemInstance const&, vector<string> const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>) {};
+    void addShapedRecipe(string, vector<ItemInstance> const&, vector<string> const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, AddShapedRecipeCallback_t) {};
+    void addShapedRecipe(string, ItemInstance const&, string const&, string const&, string const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, AddShapedRecipeCallback_t) {};
+    void addShapedRecipe(string, ItemInstance const&, string const&, string const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, AddShapedRecipeCallback_t) {};
+    void addShapedRecipe(string, ItemInstance const&, string const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, AddShapedRecipeCallback_t) {};
+    void addShapedRecipe(string, ItemInstance const&, vector<string> const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, AddShapedRecipeCallback_t) {};
     void addShapelessRecipe(string, ItemInstance const&, vector<Recipes::Type> const&, vector<HashedString> const&, int, function<unique_ptr<ShapelessRecipe>(string, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>) {};
     void addShulkerBoxRecipe(string&, ItemInstance const&, vector<Recipes::Type> const&, vector<HashedString> const&) {};
 
@@ -217,7 +218,7 @@ THook(void, "?addShapedRecipe@Recipes@@QEAAXV?$basic_string@DU?$char_traits@D@st
         setItemInsName(outputItems->at(0), "AAAAA");
     auto& working_block = craftingTags->at(0).getString();
 
-    ////function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>* func
+    ////AddShapedRecipeCallback_t* func
     //auto fakeFunc = [&func, priority](string identifier, int row, int column, vector<RecipeIngredient> const& ingredients, vector<ItemInstance>& outputItems, HashedString craftingTags) -> unique_ptr<ShapedRecipe> {
     //    cout << itemInsToString(outputItems.at(0)) << endl;
     //    if (!func) {
@@ -332,7 +333,7 @@ void dynReg() {
     SymCall("?addShapedRecipe@Recipes@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV?$vector@VItemInstance@@V?$allocator@VItemInstance@@@std@@@3@AEBV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@3@AEBV?$vector@VType@Recipes@@V?$allocator@VType@Recipes@@@std@@@3@AEBV?$vector@VHashedString@@V?$allocator@VHashedString@@@std@@@3@HV?$function@$$A6A?AV?$unique_ptr@VShapedRecipe@@U?$default_delete@VShapedRecipe@@@std@@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@HHAEBV?$vector@VRecipeIngredient@@V?$allocator@VRecipeIngredient@@@std@@@2@AEBV?$vector@VItemInstance@@V?$allocator@VItemInstance@@@std@@@2@VHashedString@@@Z@3@@Z",
         void, Recipes * _this, string identifier, vector<ItemInstance> const& outputItems, vector<string> const& shapeMatrix,
         vector<Recipes::Type> const& types, vector<HashedString> const& craftingTags, int priority,
-        function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)> func)(
+        AddShapedRecipeCallback_t func)(
             recipes, "custom:dynamic_register", outputItems, shapeMatrix, types, craftingTags, 2, nullptr);
     cout << itemInsToString(itemIns) << endl;;
 }

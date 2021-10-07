@@ -299,6 +299,29 @@ void genDamageCause() {
     cout << "};" << endl;
 }
 
+void genBlockGeometry() {
+    cout << "enum ActorDagageCause : unsigned int {" << endl;
+    unordered_map<string, class BlockGraphics*> mBlockLookupMap = 
+        *(unordered_map<string, class BlockGraphics*>*)dlsym(
+        "?mBlockLookupMap@BlockGraphics@@2V?$unordered_map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PEAVBlockGraphics@@U?$hash@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@U?$equal_to@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PEAVBlockGraphics@@@std@@@2@@std@@A"
+    );
+    map<string, class Model*> mModels = *(map<string, class Model*>*)dlsym(
+        "?mModels@BlockGraphics@@0V?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@UModel@BlockGeometry@@U?$default_delete@UModel@BlockGeometry@@@std@@@2@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@UModel@BlockGeometry@@U?$default_delete@UModel@BlockGeometry@@@std@@@2@@std@@@2@@std@@A"
+    );
+    map<string, class TessellatedModel*> mTessellatedModels = *(map<string, class TessellatedModel*>*)dlsym(
+        "?mTessellatedModels@BlockGraphics@@0V?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VTessellatedModel@BlockGeometry@@U?$default_delete@VTessellatedModel@BlockGeometry@@@std@@@2@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VTessellatedModel@BlockGeometry@@U?$default_delete@VTessellatedModel@BlockGeometry@@@std@@@2@@std@@@2@@std@@A"
+    );
+    unordered_map<unsigned int, class BlockGraphics*> mBlocks = *(unordered_map<unsigned int, class BlockGraphics*>*)dlsym(
+        "?mBlocks@BlockGraphics@@0V?$unordered_map@IPEAVBlockGraphics@@U?$hash@I@std@@U?$equal_to@I@3@V?$allocator@U?$pair@$$CBIPEAVBlockGraphics@@@std@@@3@@std@@A"
+    );
+    void** mTerrainTextureAtlas = (void**)dlsym(
+        "?mTerrainTextureAtlas@BlockGraphics@@1V?$weak_ptr@VAtlasItemManager@@@std@@A"
+    );
+
+
+    cout << "};" << endl;
+}
+
 void genEnum()
 {
     //genBlockType();
@@ -315,4 +338,6 @@ void genEnum()
     //genEnchantType();
     //genEffectType();
     //genDamageCause();
+    genBlockGeometry();
 }
+

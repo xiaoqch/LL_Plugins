@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SymHelper.h"
+#include <mc/OffsetHelper.h>
 
 Minecraft* mc;
 
@@ -20,3 +21,4 @@ class Recipes* getRecipes() {
     return SymCall("?getRecipes@Level@@UEBAAEAVRecipes@@XZ",
         Recipes*, Level*)(getLevel());
 }
+

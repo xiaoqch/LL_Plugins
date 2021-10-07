@@ -2,6 +2,7 @@
 #include <api/scheduler/scheduler.h>
 #include <seh_exception/seh_exception.hpp>
 #include "RecipeHelper.h"
+#include <mc/OffsetHelper.h>
 
 using namespace std;
 
@@ -29,3 +30,4 @@ void entry() {
     _set_se_translator(seh_exception::TranslateSEHtoCE);
     regListener();
 }
+
