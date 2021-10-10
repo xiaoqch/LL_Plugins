@@ -18,13 +18,12 @@ using namespace std;
 //#define RECIPES_PATH "./plugins/AntiCutter/cutter_recipes.json"
 #define LOG_PATH "./logs/cutter_modify_detected.log"
 
-rapidjson::Document config;
-
-// config var
+// config 
 bool autoKick;
 bool autoCmd;
 string kickMssage;
 vector<string> cmds;
+
 std::ofstream logfile;
 
 // ======== Some Operation ========
@@ -69,6 +68,7 @@ void detectedOperate(Player* player) {
 }
 
 bool initConf() {
+    rapidjson::Document config;
     std::ifstream fs(CONF_PATH, std::ios::in);
     if (!fs) {
         std::cout << "[AntiCutter] [" + getTimeStr() + "] Config file \"" << CONF_PATH << "\" not found, create it" << std::endl;
@@ -163,10 +163,10 @@ ItemStackNetResult vaildifyCrafting(ItemStack* inputItem, ItemInstance* outputIt
 THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftResults_DEPRECATEDASKTYLAING@@@Z",
     ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftResults* ircr) {
     ItemStackRequestActionHandler* irh = getHandlerFromCraftHandler(irch);
+
     auto containerType = getRequestContainerType(irh);
-    if (containerType != ContainerType::STONECUTTER) {
+    if (containerType != ContainerType::STONECUTTER)
         return original(irch, ircr);
-    }
 
     auto ctn = getOrInitSparseContainer(irh, ContainerEnumName::stonecutterInputItems);
     ItemStack* inputItem = getItemFromSparseContainer(ctn, ContainerOffset::stonecutterInputItems);
