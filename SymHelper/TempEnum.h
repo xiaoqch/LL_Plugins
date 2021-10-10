@@ -1,6 +1,6 @@
 #pragma once
 
-enum EnchantType : char {
+enum class EnchantType : char {
     protection            = 0,  // max level: 3, frequency: 30, 
     fire_protection       = 1,  // max level: 3, frequency: 10, 
     feather_falling       = 2,  // max level: 0, frequency: 10, 
@@ -40,7 +40,7 @@ enum EnchantType : char {
     soul_speed            = 36, // max level: 0, frequency: 1,  
 };
 
-enum ItemStackRequestActionType : char {
+enum class ItemStackRequestActionType : char {
     Take                                     = 0,
     Place                                    = 1,
     Swap                                     = 2,
@@ -59,7 +59,7 @@ enum ItemStackRequestActionType : char {
     CraftResults_DEPRECATEDASKTYLAING        = 15,
 };
 
-enum ComplexInventoryTransactionType : unsigned int {
+enum class ComplexInventoryTransactionType : unsigned int {
     NormalTransaction          = 0,
     InventoryMismatch          = 1,
     ItemUseTransaction         = 2,
@@ -67,7 +67,7 @@ enum ComplexInventoryTransactionType : unsigned int {
     ItemReleaseTransaction     = 4,
 };
 
-enum ContainerType : char {
+enum class ContainerType : char {
     NONE                   = -9,
     INVENTORY              = -1,
     CONTAINER              = 0,
@@ -96,7 +96,7 @@ enum ContainerType : char {
     SMITHING_TABLE         = 33,
 };
 
-enum ActorType : unsigned short {
+enum ActorType : int {
     item                 = 64,    // minecraft:item
     tnt                  = 65,    // minecraft:tnt
     falling_block        = 66,    // minecraft:falling_block
@@ -171,7 +171,7 @@ enum ActorType : unsigned short {
     bat                  = 33043, // minecraft:bat
 };
 
-enum ItemStackNetResult : char {
+enum class ItemStackNetResult : char {
     Success                                          = 0,
     Error                                            = 1,
     InvalidRequestActionType                         = 2,
@@ -241,7 +241,7 @@ enum ItemStackNetResult : char {
     ScreenStackError                                 = 67,
 };
 
-enum ContainerCollectionNameMap : char {
+enum class ContainerEnumName : char {
     beaconPaymentItems              = 8,  //beacon_payment_items
     anvilInputItems                 = 0,  //anvil_input_items
     anvilMaterialItems              = 1,  //anvil_material_items
@@ -274,7 +274,7 @@ enum ContainerCollectionNameMap : char {
     tradeIngredient1Items           = 30, //trade_ingredient1_items
     tradeIngredient2Items           = 31, //trade_ingredient2_items
     tradeResultItem                 = 32, //trade_result_item
-    containerItems                  = 29, //container_items
+    containerItems2                  = 29, //container_items
     offhandItems                    = 33, //offhand_items
     compcreateInput                 = 34, //compcreate_input
     compcreateOutput                = 35, //compcreate_output
@@ -286,8 +286,8 @@ enum ContainerCollectionNameMap : char {
     loomDyeItems                    = 41, //loom_dye_items
     loomMaterialItems               = 42, //loom_material_items
     loomResultItems                 = 43, //loom_result_items
-    furnaceIngredientItems          = 44, //furnace_ingredient_items
-    furnaceIngredientItems          = 45, //furnace_ingredient_items
+    furnaceIngredientItems2          = 44, //furnace_ingredient_items
+    furnaceIngredientItems3          = 45, //furnace_ingredient_items
     trade2Ingredient1Item           = 46, //trade2_ingredient1_item
     trade2Ingredient2Item           = 47, //trade2_ingredient2_item
     trade2ResultItem                = 48, //trade2_result_item
@@ -299,12 +299,12 @@ enum ContainerCollectionNameMap : char {
     cartographyInputItems           = 54, //cartography_input_items
     cartographyAdditionalItems      = 55, //cartography_additional_items
     cartographyResultItems          = 56, //cartography_result_items
-    containerItems                  = 57, //container_items
+    containerItems3                  = 57, //container_items
     cursorItems                     = 58, //cursor_items
     creativeOutputItems             = 59, //creative_output_items
 };
 
-enum ContainerOffset : char {
+enum class ContainerOffset : char {
     beaconPaymentItems         = 27, //beacon_payment_items
     anvilInputItems            = 1,  //anvil_input_items
     anvilMaterialItems         = 2,  //anvil_material_items
@@ -330,7 +330,7 @@ enum ContainerOffset : char {
     creativeOutputItems        = 50, //creative_output_items
 };
 
-enum LegacyIDToNameMap : char {
+enum class LegacyIDToNameMap : unsigned short {
     apple                    = 260,
     mushroom_stew            = 282,
     stone_pickaxe            = 274,
@@ -598,7 +598,7 @@ enum LegacyIDToNameMap : char {
     end_crystal              = 426,
 };
 
-enum ParticleType : unsigned int {
+enum class ParticleType : unsigned int {
     none                  = 0,
     bubble                = 1,
     bubblemanual          = 2,
@@ -678,7 +678,7 @@ enum ParticleType : unsigned int {
     shriek                = 82,
 };
 
-enum EffectType : short {
+enum class EffectType : short {
     empty           = 0,  // effect:
     speed           = 1,  // effect: potion.moveSpeed
     slowness        = 2,  // effect: potion.moveSlowdown
@@ -711,7 +711,7 @@ enum EffectType : short {
     village_hero    = 29, // effect: effect.villageHero
 };
 
-enum ActorDagageCause : unsigned int {
+enum class ActorDagageCause : unsigned int {
     override = 0,
     contact = 1,
     entity_attack = 2,
@@ -724,7 +724,7 @@ enum ActorDagageCause : unsigned int {
     drowning = 9,
     block_explosion = 10,
     entity_explosion = 11,
-    void = 12,
+    _void = 12,
     suicide = 13,
     magic = 14,
     wither = 15,

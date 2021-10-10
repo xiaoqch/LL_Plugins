@@ -166,6 +166,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BlockType.h" />
+    <ClInclude Include="CraftingLogger.h" />
     <ClInclude Include="EnumGen.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -177,6 +178,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp" />
+    <ClCompile Include="CraftingLogger.cpp" />
     <ClCompile Include="EnumGen.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Main.cpp" />

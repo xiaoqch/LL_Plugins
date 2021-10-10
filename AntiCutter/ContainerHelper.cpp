@@ -12,7 +12,7 @@ ItemStack* getItemFromSparseContainer(SparseContainer* ctn, ContainerOffset offs
     }
     //ItemStack* item = VirtualCall<ItemStack*>(ctn, 40, offset);
     auto item = SymCall("?getItem@SparseContainer@@UEBAAEBVItemStack@@H@Z",
-        ItemStack*, SparseContainer*, ContainerOffset)(ctn, offset);
+        ItemStack*, SparseContainer*, size_t)(ctn, (size_t)offset);
     return item;
 }
 

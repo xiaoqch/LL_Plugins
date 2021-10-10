@@ -28,11 +28,11 @@
     <ClInclude Include="framework.h">
       <Filter>Other</Filter>
     </ClInclude>
-    <ClInclude Include="ItemHelper.h">
-      <Filter>Other</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemHelper.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
