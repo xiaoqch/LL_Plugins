@@ -1,29 +1,25 @@
 #include "pch.h"
-#include "RecipeHelper.h"
 #include "SymHelper.h"
+#include <wangheader/SortItemInstanceIdAux.hpp>
+#include "RecipeHelper.h"
 
 //#include <wangheader/TextureUVCoordinateSet.hpp>
 
 using namespace std;
-
-Recipes::Type buildRecipesType(string const& name, char c, int count, int aux) {
+//PotionBrewing
+Recipes::Type buildRecipesType(string const& name, char c, int aux, unsigned short count) {
     Recipes::Type type = {};
-    class BlockPalette* bp = SymCall("?getBlockPalette@Level@@UEBAAEBVBlockPalette@@XZ",
-        BlockPalette*, Level*)(getLevel());
-    BlockLegacy* bl = SymCall("?getBlockLegacy@BlockPalette@@QEBAPEBVBlockLegacy@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-        BlockLegacy*, BlockPalette*, string const&)(bp, name);
-    type.ingredient.descriptor = SymCall("??0ItemDescriptorCount@@QEAA@AEBVBlockLegacy@@G@Z",
-        ItemDescriptor&, ItemDescriptor&, BlockLegacy*, int)(type.ingredient.descriptor, bl, count);
-    type.ingredient.descriptor.aux = aux;
+    Item* item = ItemRegistry::lookupByName(name);
+    if (!item)
+        throw("Item " + name + " Not Exists");
+    type.ingredient = SymCall("??0ItemDescriptorCount@@QEAA@AEBVItem@@HG@Z",
+        ItemDescriptorCount&, ItemDescriptorCount&, Item*, int, unsigned int)(type.ingredient, item, aux, count);
+    assert(type.ingredient.descriptor.aux == aux);
+    assert(type.ingredient.count == count);
     type.c = c;
     return type;
 }
 
-ItemInstance& buildItemIns(string const& name, char c, int count) {
-    ItemInstance item{};
-    
-    return item;
-}
 
 struct voids {
     void****** v[1000];
@@ -47,8 +43,8 @@ void testRexipes(Recipes* recipes) {
             ++recipe;
         }
     }
-    map<ItemInstance, unordered_map<string, Recipe*>, SortItemInstanceIdAux>        item_identifier_recipe =
-        dAccess<map<ItemInstance, unordered_map<string, Recipe*>, SortItemInstanceIdAux>>(recipes, 56);
+    map<ItemInstance, unordered_map<string, Recipe*>> item_identifier_recipe =
+        dAccess<map<ItemInstance, unordered_map<string, Recipe*>>>(recipes, 56);
     int total_size_of_item_identifier_recipe = 0;
     for (auto& recipe : item_identifier_recipe) {
         total_size_of_item_identifier_recipe += recipe.second.size();
@@ -77,27 +73,29 @@ void testRexipes(Recipes* recipes) {
 
 void dynReg() {
     auto recipes = getRecipes();
-    testRexipes(recipes);
+    //testRexipes(recipes);
 
-    ItemInstance& itemIns = buildItemIns("minecraft:iron_ingot", 1, 0);
-    //setItenewItemInsmInsName(itemIns, "自定义铁块");
+    auto itemIns = *newItem("minecraft:command_block", 1);
+    //setItemName(itemIns, "自定义铁块");
     vector<ItemInstance> outputItems;
     outputItems.push_back(itemIns);
 
     vector<string> shapeMatrix;
+    shapeMatrix.push_back("AAA");
     shapeMatrix.push_back("A A");
-    shapeMatrix.push_back(" A ");
-    shapeMatrix.push_back("A A");
+    shapeMatrix.push_back("AAA");
 
     vector<HashedString> craftingTags;
     craftingTags.push_back("crafting_table");
+
     vector<Recipes::Type> types;
 
-    auto type = buildRecipesType("command_block", 'A', 1, 0x7fff);
+    auto type = buildRecipesType("minecraft:iron_ingot", 'A', 1, 0x7fff);
     string identifier = "custom::custom_test";
 
     types.push_back(type);
     int priority = 2;
+    registerCreativeItem(itemIns);
     recipes->addShapedRecipe(identifier, outputItems, shapeMatrix, types, craftingTags, priority, nullptr);
 }
 

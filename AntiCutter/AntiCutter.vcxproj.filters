@@ -21,6 +21,18 @@
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ItemHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RecipeHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ContainerHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -30,6 +42,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AntiCutter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RecipeHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RequestHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ContainerHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

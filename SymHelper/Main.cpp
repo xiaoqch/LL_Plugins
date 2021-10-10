@@ -30,8 +30,8 @@ void regListener() {
     Event::addEventListener([](PlayerUseItemEV ev) {
         auto itemstack = ev.ItemStack;
         auto item = SymCall("?getItem@ItemStackBase@@QEBAPEBVItem@@XZ", void*, ItemStack*)(itemstack);
-        SymCall("?getTextureUVCoordinateSet@Item@@SA?AUTextureUVCoordinateSet@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@H@Z",
-            void*, void*, string&)();
+        //SymCall("?getTextureUVCoordinateSet@Item@@SA?AUTextureUVCoordinateSet@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@H@Z",
+        //    void*, void*, string&)();
         });
 }
 
