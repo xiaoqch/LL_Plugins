@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define VERSION "1.1.0"
+#define VERSION "1.1.1"
 #define CONF_DIR "./plugins/AntiCutter/"
 #define CONF_PATH "./plugins/AntiCutter/config.json"
 //#define RECIPES_PATH "./plugins/AntiCutter/cutter_recipes.json"
@@ -158,6 +158,24 @@ ItemStackNetResult vaildifyCrafting(ItemStack* inputItem, ItemInstance* outputIt
 //    ItemInstance itemIns{};
 //    return SymCall("??0ItemInstance@@QEAA@AEBVItem@@HH@Z",
 //        ItemInstance*, ItemInstance*, Item*, int, unsigned int)(&itemIns, item, count, aux);
+//}
+
+//void iterContainer(SparseContainer* ctn) {
+//    size_t size = SymCall("?getContainerSize@SparseContainer@@UEBAHXZ",
+//        size_t, SparseContainer*)(ctn);
+//    for (size_t slot = 0; slot < size; ++slot) {
+//        auto item = SymCall("?getItem@SparseContainer@@UEBAAEBVItemStack@@H@Z",
+//            ItemStack*, SparseContainer*, size_t)(ctn, slot);
+//        auto isNull = SymCall("?isNull@ItemStackBase@@QEBA_NXZ",
+//            bool, ItemStackBase*)(item);
+//        if (!isNull) {
+//            string itemString;
+//            SymCall("?toString@ItemStack@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+//                string&, ItemStack*, string&)(item, itemString);
+//            cout << slot << endl;
+//            cout << itemString << endl;
+//        }
+//    }
 //}
 
 THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftResults_DEPRECATEDASKTYLAING@@@Z",
