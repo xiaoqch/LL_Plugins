@@ -17,6 +17,9 @@
     <Filter Include="Other">
       <UniqueIdentifier>{024c93fa-de73-4f15-8eed-997649612eed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="third-party">
+      <UniqueIdentifier>{c18cec2f-f7a7-4060-afe6-47bdaea79d17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,9 +57,15 @@
     <ClCompile Include="CustomCrafting.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp">
+      <Filter>third-party</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\LiteLoader.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib">
       <Filter>Lib</Filter>
     </Library>
   </ItemGroup>

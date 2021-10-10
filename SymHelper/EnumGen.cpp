@@ -2,6 +2,7 @@
 #include <mc/OffsetHelper.h>
 #include "EnumGen.h"
 #include "SymHelper.h"
+#include "StrHelper.h"
 
 using namespace std;
 
@@ -12,15 +13,15 @@ struct voids {
     void***** v[1000];
 };
 
-//Á´½Ó£ºhttps://www.nowcoder.com/questionTerminal/5a776e2954f545e0bcc01e6b04ef5f1d
-//À´Ô´£ºÅ£¿ÍÍø
+//é“¾æ¥ï¼šhttps://www.nowcoder.com/questionTerminal/5a776e2954f545e0bcc01e6b04ef5f1d
+//æ¥æºï¼šç‰›å®¢ç½‘
 
 /**
-* ´úÂëÖĞµÄÀàÃû¡¢·½·¨Ãû¡¢²ÎÊıÃûÒÑ¾­Ö¸¶¨£¬ÇëÎğĞŞ¸Ä£¬Ö±½Ó·µ»Ø·½·¨¹æ¶¨µÄÖµ¼´¿É
+* ä»£ç ä¸­çš„ç±»åã€æ–¹æ³•åã€å‚æ•°åå·²ç»æŒ‡å®šï¼Œè¯·å‹¿ä¿®æ”¹ï¼Œç›´æ¥è¿”å›æ–¹æ³•è§„å®šçš„å€¼å³å¯
 *
 *
-* @param newString string×Ö·û´®
-* @return string×Ö·û´®
+* @param newString stringå­—ç¬¦ä¸²
+* @return stringå­—ç¬¦ä¸²
 */
 string camelCase(string newString) {
     // write code here
@@ -156,8 +157,24 @@ void genContainerCollectionNameMap() {
     cout << "enum ContainerCollectionNameMap : char {" << endl;
     auto containerNameMap = (unordered_map<char, string>*)dlsym("?ContainerCollectionNameMap@@3V?$unordered_map@W4ContainerEnumName@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@UContainerEnumNameHasher@@U?$equal_to@W4ContainerEnumName@@@3@V?$allocator@U?$pair@$$CBW4ContainerEnumName@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@3@@std@@A");
 
-    for (auto& ctn : *containerNameMap)
-        cout << "    " << ctn.second << " = " << (int)ctn.first << "," << endl;
+    for (auto& ctn : *containerNameMap) {
+        string enumName = StrHelper::toCamelCase(ctn.second);
+        cout << "    " << enumName << " = " << (int)ctn.first << ", //" << ctn.second << endl;
+    }
+    cout << "};" << endl;
+}
+void genContainerOffset() {
+    cout << "enum ContainerOffset : char {" << endl;
+    auto containerNameMap = (unordered_map<char, string>*)dlsym("?ContainerCollectionNameMap@@3V?$unordered_map@W4ContainerEnumName@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@UContainerEnumNameHasher@@U?$equal_to@W4ContainerEnumName@@@3@V?$allocator@U?$pair@$$CBW4ContainerEnumName@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@3@@std@@A");
+
+    for (auto& ctn : *containerNameMap) {
+        string enumName = StrHelper::toCamelCase(ctn.second);
+        char fakeContainer[49];
+        fakeContainer[48] = ctn.first;
+        char offset = SymCall("?_getContainerOffset@PlayerUIContainerModel@@MEBAHXZ", char, void*)((void*)fakeContainer);
+        if(offset)
+            cout << "    " << enumName << " = " << (int)offset << ", //" << ctn.second << endl;
+    }
     cout << "};" << endl;
 }
 
@@ -331,6 +348,7 @@ void genEnum()
     //genActorType();
     //genItemStackNetResult();
     //genContainerCollectionNameMap();
+    //genContainerOffset();
     //genLegacyIDToNameMap();
     //genParticleType();
     //genBlockActorType();

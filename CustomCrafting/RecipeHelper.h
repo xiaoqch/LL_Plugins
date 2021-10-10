@@ -6,6 +6,9 @@ typedef ItemDescriptorCount RecipeIngredient;
 
 typedef unsigned int TypedServerNetId;
 
+//#define AddShapedRecipeCallback_t function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>
+//#define AddShaplessRecipeCallback_t function<unique_ptr<ShapelessRecipe>(string, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>
+
 class UUID {
 public:
     std::uint64_t a = 0, b = 0;
@@ -48,20 +51,20 @@ public:
         [15]	0x00007ff777c73730 {bedrock_server_mod.exe!ShapedRecipe::loadResultList(class BlockPalette const &)const }	void *
     */
     virtual ~Recipe();
-    virtual class std::vector<class ItemInstance, class std::allocator<class ItemInstance> > const& assemble(class CraftingContainer&);
+    virtual class std::vector<ItemInstance> const& assemble(class CraftingContainer&);
     virtual int getCraftingSize(void);
     virtual RecipeIngredient* getIngredient(int, int)const;
     virtual void unk_vfn_4();
     virtual void unk_vfn_5();
-    virtual bool matches(class CraftingContainer&, class Level&);
+    virtual bool matches(CraftingContainer&, class Level&);
     virtual int size(void);
     virtual class mce::UUID const& getId(void);
     virtual void unk_vfn_9();
     virtual void unk_vfn_10();
-    virtual bool itemValidForRecipe(class ItemDescriptor const&, class ItemStack const&);
-    virtual bool itemsMatch(class ItemDescriptor const&, int, int, class CompoundTag const*);
-    virtual bool itemsMatch(class ItemDescriptor const&, class ItemDescriptor const&, class CompoundTag const*);
-    virtual bool itemsMatch(class ItemDescriptor const&, class ItemDescriptor const&);
+    virtual bool itemValidForRecipe(ItemDescriptor const&, ItemStack const&);
+    virtual bool itemsMatch(ItemDescriptor const&, int, int, class CompoundTag const*);
+    virtual bool itemsMatch(ItemDescriptor const&, ItemDescriptor const&, CompoundTag const*);
+    virtual bool itemsMatch(ItemDescriptor const&, ItemDescriptor const&);
     virtual void* loadResultList(class BlockPalette const&)const;
 };//160
 
@@ -116,7 +119,7 @@ public:
     map<Recipes::FurnaceRecipeKey const, ItemInstance> furnaceRecipes; // 32
     bool initializing;// 48
     // map<output, unorder_map<identifier, recipe>
-    map<ItemInstance, unordered_map<string, Recipe*>, SortItemInstanceIdAux> recipesByOutput; //56
+    map<ItemInstance, unordered_map<string, Recipe*>> recipesByOutput; //56
     unordered_map<TypedServerNetId, Recipe*> unk72; // 72
     unordered_set<string> identifiers; // 136
 
@@ -216,7 +219,7 @@ public:
         int priority,
         AddShaplessRecipeCallback_t func) {
         SymCall("?addShapedRecipe@Recipes@@QEAAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV?$vector@VItemInstance@@V?$allocator@VItemInstance@@@std@@@3@AEBV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@3@AEBV?$vector@VType@Recipes@@V?$allocator@VType@Recipes@@@std@@@3@AEBV?$vector@VHashedString@@V?$allocator@VHashedString@@@std@@@3@HV?$function@$$A6A?AV?$unique_ptr@VShapedRecipe@@U?$default_delete@VShapedRecipe@@@std@@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@2@HHAEBV?$vector@VRecipeIngredient@@V?$allocator@VRecipeIngredient@@@std@@@2@AEBV?$vector@VItemInstance@@V?$allocator@VItemInstance@@@std@@@2@VHashedString@@@Z@3@@Z",
-            void, Recipes * _this, string identifier, ItemInstance const& outputItem, 
+            void, Recipes * _this, string identifier, ItemInstance const& outputItem,
             vector<Recipes::Type> const& types, vector<HashedString> const& craftingTags, int priority,
             AddShaplessRecipeCallback_t func)(
                 this, identifier, outputItem, types, craftingTags, priority, func);
@@ -231,6 +234,10 @@ public:
                 this, identifier, outputItem, types, craftingTags);
     };
 
+    inline Recipe* getRecipeFor(ItemInstance& item, HashedString& tag) {
+        return SymCall("?getRecipeFor@Recipes@@QEBAPEAVRecipe@@AEBVItemInstance@@AEBVHashedString@@@Z",
+            Recipe*, Recipes*, ItemInstance&, HashedString&)(this, item, tag);
+    }
 };
 
 void dynReg();

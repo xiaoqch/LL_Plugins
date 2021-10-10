@@ -168,6 +168,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
     <ClInclude Include="SymHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\third-party\nbt-from-lxl\NBT.cpp" />
     <ClCompile Include="CustomCrafting.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="ItemHelper.cpp" />
@@ -182,6 +183,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\LiteLoader.lib" />
+    <Library Include="..\third-party\nbt-cpp\lib\nbt-cpp.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

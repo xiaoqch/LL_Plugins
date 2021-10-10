@@ -1,6 +1,7 @@
 #pragma once
+#pragma once
 #include <mc/Item.h>
-#include <nbt-from-lxl/NBT.h>
+#include <mc/Command.h>
 
 using namespace std;
 
@@ -52,7 +53,7 @@ public:
         Item** item;
         auto res = SymCall("?lookupByName@ItemRegistry@@SA?AV?$WeakPtr@VItem@@@@AEAH0AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
             Item**&, Item**&, int64_t&, unsigned int&, string const&)(item, id, aux, name);
-        if(res&&*res)
+        if (res && *res)
             return *res;
         return nullptr;
     };
@@ -81,9 +82,26 @@ public:
     };
 };
 
-ItemInstance* newItem(string const& name, int count);
-ItemInstance* newItem(string const& name);
-ItemInstance* newItem(Tag* tag);
+inline string itemInsToString(ItemInstance const& item) {
+    string str;
+    SymCall("?toString@ItemStackBase@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, ItemInstance const&, string&)(item, str);
+    return str;
+}
 
-void setItemName(ItemInstance& item, string const& name);
-void registerCreativeItem(ItemInstance& item);
+inline string itemStackToString(ItemStack const& item) {
+    string str;
+    SymCall("?toString@ItemStack@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        string&, ItemStack const&, string&)(item, str);
+    return str;
+}
+
+inline ItemDescriptor* getDescriptor(ItemStackBase* item, ItemDescriptor* descriptor) {
+    SymCall("?getDescriptor@ItemStackBase@@QEBA?AVItemDescriptor@@XZ",
+        ItemDescriptor*, ItemStackBase*, ItemDescriptor*)(item, (ItemDescriptor*)descriptor);
+    return (ItemDescriptor*)descriptor;
+}
+
+inline unsigned char getItemCount(ItemStackBase* item) {
+    return dAccess<char>(item, 34); // ItemStackBase::init
+}
