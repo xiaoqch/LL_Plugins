@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "SymHelper.h"
-#include <wangheader/SortItemInstanceIdAux.hpp>
 #include "RecipeHelper.h"
 
 //#include <wangheader/TextureUVCoordinateSet.hpp>
@@ -19,6 +18,8 @@ Recipes::Type buildRecipesType(string const& name, char c, int aux, unsigned sho
     type.c = c;
     return type;
 }
+
+
 
 
 struct voids {

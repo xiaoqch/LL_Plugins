@@ -7,17 +7,24 @@
 #include <mc/OffsetHelper.h>
 #include <api/scheduler/scheduler.h>
 #include <seh_exception/seh_exception.hpp>
+#include <mutex>
 
+std::mutex log_lock;
 
 #define LOG_START(name) \
 string fun_name=name;\
 string space="                                       ";\
 if(level<0) level=0;\
-//cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;
+log_lock.lock();\
+cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;\
+log_lock.unlock();
+
 #define LOG_START_WITH_KEY(name) \
 string space="                                       ";\
 if(level<0) level=0;\
-//cout<<space.substr(0, 2*level++)<<name<<": "<<keyToString(key)<<endl;
+log_lock.lock();\
+cout<<space.substr(0, 2*level++)<<name<<": "<<keyToString(key)<<endl;\
+log_lock.unlock(); 
 #define LOG_END \
 --level;\
 return;
@@ -499,8 +506,6 @@ THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
         for (auto& val : msg.second) {
             cout << "val: " << val << endl;
         }
-        *(DamageType*)(ads + 1) = DamageType::None;
-        damage = 1000;
         //*((int*)ads + 1) = code++;
 
         //cout << "Cause: " << (int)cause << endl;
@@ -510,29 +515,29 @@ THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
     return original(ac, ads, damage, unk1_1, unk2_0);
 }
 
-THook(void*, "?getDeathMessage@ActorDamageSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
-    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
-    auto rtn = original(ads, res, name, actor);
-    return rtn;
-}
-
-THook(void*, "?getDeathMessage@ActorDamageByActorSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
-    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
-    auto rtn = original(ads, res, name, actor);
-    return rtn;
-}
-
-THook(void*, "?getDeathMessage@ActorDamageByChildActorSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
-    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
-    auto rtn = original(ads, res, name, actor);
-    return rtn;
-}
-
-THook(void*, "?getDeathMessage@ActorDamageByBlockSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
-    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
-    auto rtn = original(ads, res, name, actor);
-    return rtn;
-}
+//THook(void*, "?getDeathMessage@ActorDamageSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+//    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+//    auto rtn = original(ads, res, name, actor);
+//    return rtn;
+//}
+//
+//THook(void*, "?getDeathMessage@ActorDamageByActorSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+//    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+//    auto rtn = original(ads, res, name, actor);
+//    return rtn;
+//}
+//
+//THook(void*, "?getDeathMessage@ActorDamageByChildActorSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+//    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+//    auto rtn = original(ads, res, name, actor);
+//    return rtn;
+//}
+//
+//THook(void*, "?getDeathMessage@ActorDamageByBlockSource@@UEBA?AU?$pair@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@PEAVActor@@@Z",
+//    ActorDamageSource* ads, pair<string, vector<string>>& res, string& name, Actor* actor) {
+//    auto rtn = original(ads, res, name, actor);
+//    return rtn;
+//}
 
 
 
@@ -622,28 +627,6 @@ THook(void*, "?getSlot@LevelContainerManagerModel@@UEBAAEBVItemStack@@H@Z",
     return original(_this, slotNumber);
 }
 
-THook(void*, "?setSlot@LevelContainerManagerModel@@UEAAXHAEBVItemStack@@_N@Z",
-    class LevelContainerManagerModel* _this, int slotNumber, ItemStack const* newItem, bool unk) {
-
-    Player* pl = dAccess<Player*>(_this, 8);
-    byte ctnId = dAccess<byte>(_this, 40);
-    BlockPos* bpos = dAccess<BlockPos*>(_this, 216);
-    short baType = dAccess<short>(_this, 216);
-    auto csc = dAccess<class ContainerScreenContext*>(_this, 112);
-    auto ctn = SymCall("?_getContainer@LevelContainerModel@@EEBAPEAVContainer@@XZ",
-        class Container*, LevelContainerManagerModel*)(_this);
-    auto oldItem = SymCall("?getItem@FillingContainer@@UEBAAEBVItemStack@@H@Z",
-        ItemStack*, Container*, int)(ctn, slotNumber);
-    cout << "pl: " << pl->getNameTag() << endl;
-    cout << "slot: " << slotNumber << endl;
-    cout << "ctnId: " << (int)ctnId << endl;
-    cout << "bpos: " << bpos->toString() << endl;
-    cout << "baType: " << baType << endl;
-    if (oldItem)
-        cout << "oldItem: " << offItemStack::getCount(oldItem) << endl;
-
-    return original(_this, slotNumber, newItem, unk);
-}
 THook(void, "?releaseResources@LevelContainerModel@@UEAAXXZ",
     class LevelContainerModel* _this) {
 
@@ -674,31 +657,6 @@ THook(void, "?releaseResources@LevelContainerModel@@UEAAXXZ",
         cout << "CloseContainer: " << pl->getNameTag() << ", containerEnumName: " << containerEnumName << endl;
     original(_this);
 }
-
-THook(enum ItemStackNetResult, "?handleRequestAction@ItemStackRequestActionHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestAction@@@Z",
-    class ItemStackRequestAction* _this, class ItemStackRequestAction const* isra) {
-
-    /*auto actionType=dAccess<*/
-    //printTypeName();
-    auto v = (voids*)_this;
-    auto v2 = (voids*)isra;
-
-    auto rtn = original(_this, isra);
-    return rtn;
-}
-
-
-THook(bool, "?IsLocalIP@RakPeer@RakNet@@UEAA_NPEBD@Z",
-    class RakPeer* _this, char* ip) {
-
-    /*auto actionType=dAccess<*/
-    
-    auto v = (voids*)_this;
-    *(void**)0 = 0;
-    auto rtn = original(_this, ip);
-    return rtn;
-}
-
 
 //THook(bool, "?inventoryChanged@Player@@UEAAXAEAVContainer@@HAEBVItemStack@@1_N@Z",
 //    class RakPeer* _this, char* ip) {
