@@ -2,30 +2,39 @@
 #include <mc/Item.h>
 #include "TempEnum.h"
 #include "CraftingLogger.h"
-#include <wangheader/CraftingContainer.hpp>
 
 
 #define LOG_VAR(var) std::cout << #var" :\t" << var << std::endl;
 
+string const space = "                                                     ";
+
 #define LOG_START(name) \
 string fun_name=name;\
-string space="                                       ";\
 if(level<0) level=0;\
 cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;
 
 #define LOG(var)\
-cout<<space.substr(0, 2*(level+1))<< #var" :\t" << var << std::endl;
+cout<<space.substr(0, 2*level)<< #var" :\t" << var << std::endl;
 
 #define LOG_END \
 --level;
 
 #define LOG_END_RTN \
---level;\
+if(rtn!=ItemStackNetResult::Success)\
+cout<<space.substr(0, 2*--level)<<"return"<<":"<<(int)rtn<<endl;\
+else --level;\
 return rtn;
+
+#define LOG_PREFIX cout<<space.substr(0, 2*level);
 
 using namespace std;
 
 size_t level=0;
+
+
+struct voids {
+    void***** v[1000];
+};
 
 void iterContainer(SparseContainer* ctn) {
     if (!ctn)
@@ -41,6 +50,7 @@ void iterContainer(SparseContainer* ctn) {
             string itemString;
             SymCall("?toString@ItemStack@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
                 string&, ItemStack*, string&)(item, itemString);
+            LOG_PREFIX
             cout << "Slot: " << slot << ", Item: " << itemString << endl;
         }
     }
@@ -61,6 +71,17 @@ ContainerType getRequestContainerType(ItemStackRequestActionHandler* handler) {
         return ContainerType::NONE;
     auto containerType = dAccess<ContainerType>(screen, 8);
     return containerType;
+}
+
+
+void iterContainer(ItemStackRequestActionCraftHandler* irch) {
+    auto ctn = irch->_getOrInitSparseContainer(ContainerEnumName::creativeOutputItems);
+    iterContainer(ctn);
+    auto& ctx = irch->handler->getScreenContext();
+    LOG((int)ctx.ctnType);
+    LOG((int)ctx.type);
+    LOG(ctx.player->getNameTag());
+    auto v = (voids*)&ctx;
 }
 
 //THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftResults_DEPRECATEDASKTYLAING@@@Z",
@@ -95,6 +116,8 @@ THook(ItemStackNetResult, "?handleCraftAction@ItemStackRequestActionCraftHandler
     ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* irc) {
     LOG_START("handleCraftAction")
 
+        auto rtn = original(irch, irc);
+
         auto actionType = dAccess<ItemStackRequestActionType>(irc, 8);
         string actionTypeName;
         actionTypeName = SymCall("?getActionTypeName@ItemStackRequestAction@@SA?BV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4ItemStackRequestActionType@@@Z",
@@ -107,22 +130,22 @@ THook(ItemStackNetResult, "?handleCraftAction@ItemStackRequestActionCraftHandler
             string&, ContainerType)(screenType);
         LOG(screenTypeName);
 
-    auto rtn = original(irch, irc);
+        iterContainer(irch);
 
     LOG_END_RTN
 }
 
-THook(ItemStackNetResult, "?preHandleAction@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@W4ItemStackRequestActionType@@@Z",
-    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionType actionType) {
-    LOG_START("preHandleAction")
-
-        auto rtn = original(irch, actionType);
-
-    LOG_END_RTN
-}
+//THook(ItemStackNetResult, "?preHandleAction@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@W4ItemStackRequestActionType@@@Z",
+//    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionType actionType) {
+//    LOG_START("preHandleAction")
+//
+//        auto rtn = original(irch, actionType);
+//
+//    LOG_END_RTN
+//}
 
 THook(ItemStackNetResult, "?handleCreate@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCreate@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, class ItemStackRequestActionCreate* a1) {
     LOG_START("handleCreate")
 
     auto rtn = original(irch, a1);
@@ -131,7 +154,7 @@ THook(ItemStackNetResult, "?handleCreate@ItemStackRequestActionCraftHandler@@QEA
 }
 
 THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftResults_DEPRECATEDASKTYLAING@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, class ItemStackRequestActionCraftResults* a1) {
     LOG_START("handleCraftResults")
 
         auto rtn = original(irch, a1);
@@ -140,7 +163,7 @@ THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandle
 }
 
 THook(ItemStackNetResult, "?handleConsume@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionConsume@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, class ItemStackRequestActionConsume* a1) {
     LOG_START("handleConsume")
 
         auto rtn = original(irch, a1);
@@ -149,16 +172,16 @@ THook(ItemStackNetResult, "?handleConsume@ItemStackRequestActionCraftHandler@@QE
 }
 
 THook(ItemStackNetResult, "?_setCreatedItemOutputSlot@ItemStackRequestActionCraftHandler@@AEAA?AW4ItemStackNetResult@@E@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, unsigned char slot) {
     LOG_START("_setCreatedItemOutputSlot")
 
-        auto rtn = original(irch, a1);
+        auto rtn = original(irch, slot);
 
     LOG_END_RTN
 }
 
 THook(ItemStackNetResult, "?postRequest@ItemStackRequestActionCraftHandler@@QEAAX_N@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, bool a1) {
     LOG_START("postRequest")
 
         auto rtn = original(irch, a1);
@@ -169,7 +192,7 @@ THook(ItemStackNetResult, "?postRequest@ItemStackRequestActionCraftHandler@@QEAA
 }
 
 THook(ItemStackNetResult, "?endRequest@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@W42@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackNetResult a1) {
     LOG_START("endRequest")
 
         auto rtn = original(irch, a1);
@@ -178,16 +201,16 @@ THook(ItemStackNetResult, "?endRequest@ItemStackRequestActionCraftHandler@@QEAA?
 }
 
 THook(ItemStackNetResult, "?_initCraftResults@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBV?$vector@VItemInstance@@V?$allocator@VItemInstance@@@std@@@std@@E@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, vector<ItemInstance> const& a1, unsigned char a2) {
     LOG_START("_initCraftResults")
 
-        auto rtn = original(irch, a1);
+        auto rtn = original(irch, a1, a2);
 
     LOG_END_RTN
 }
 
 THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerMap@@MEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftBase@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* a1) {
     LOG_START("CraftHandlerMap")
 
         auto rtn = original(irch, a1);
@@ -196,7 +219,7 @@ THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerMap@@MEAA?AW4ItemStac
 }
 
 THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerTrade@@MEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftBase@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* a1) {
     LOG_START("CraftHandlerTrade")
 
         auto rtn = original(irch, a1);
@@ -205,7 +228,7 @@ THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerTrade@@MEAA?AW4ItemSt
 }
 
 THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerEnchant@@MEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftBase@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* a1) {
     LOG_START("CraftHandlerEnchant")
 
         auto rtn = original(irch, a1);
@@ -214,7 +237,7 @@ THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerEnchant@@MEAA?AW4Item
 }
 
 THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerCrafting@@MEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftBase@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* a1) {
     LOG_START("CraftHandlerCrafting")
 
         auto rtn = original(irch, a1);
@@ -223,7 +246,7 @@ THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerCrafting@@MEAA?AW4Ite
 }
 
 THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerAnvil@@MEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftBase@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* a1) {
     LOG_START("CraftHandlerAnvil")
 
         auto rtn = original(irch, a1);
@@ -232,7 +255,7 @@ THook(ItemStackNetResult, "?_handleCraftAction@CraftHandlerAnvil@@MEAA?AW4ItemSt
 }
 
 THook(ItemStackNetResult, "?_handleCraftAction@CraftHandleNonImplemented_DEPRECATEDASKTYLAING@@MEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftBase@@@Z",
-    ItemStackRequestActionCraftHandler* irch, void* a1) {
+    ItemStackRequestActionCraftHandler* irch, ItemStackRequestActionCraftBase* a1) {
     LOG_START("CraftHandleNonImplemented_DEPRECATEDASKTYLAING")
 
         auto rtn = original(irch, a1);
@@ -248,3 +271,19 @@ THook(ItemStackNetResult, "?handleConsumedItem@CraftHandlerBase@@UEAA?AW4ItemSta
 
     LOG_END_RTN
 }
+
+//THook(bool, "?_tryPullInItemsFromAboveContainer@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVec3@@@Z",
+//    void* _this, BlockSource* bs, void* container, Vec3* pos) {
+//
+//    bool isMinecart = dAccess<bool>(_this, 5);
+//    auto v = (voids*)_this;
+//    if (isMinecart) {
+//
+//    }
+//    else {
+//        auto ba = dAccess<BlockActor*>(_this, -424);
+//    }
+//    auto rtn = original(_this, bs, container, pos);
+//
+//    return rtn;
+//}

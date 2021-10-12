@@ -11,7 +11,7 @@
 
 std::mutex log_lock;
 
-#define LOG_START(name) \
+#define LOG_START(name) //\
 string fun_name=name;\
 string space="                                       ";\
 if(level<0) level=0;\
@@ -19,19 +19,20 @@ log_lock.lock();\
 cout<<space.substr(0, 2*level++)<<fun_name<<":"<<endl;\
 log_lock.unlock();
 
-#define LOG_START_WITH_KEY(name) \
+#define LOG_START_WITH_KEY(name) //\
 string space="                                       ";\
 if(level<0) level=0;\
 log_lock.lock();\
 cout<<space.substr(0, 2*level++)<<name<<": "<<keyToString(key)<<endl;\
 log_lock.unlock(); 
-#define LOG_END \
+#define LOG_END //\
 --level;\
 return;
 #define LOG_END_RTN \
 --level;\
 return rtn;
-#define LOG_VAR(var) cout << #var" :\t" << var <<endl;
+#define LOG_VAR(var) //\
+ cout << #var" :\t" << var <<endl;
 
 //#define LOG_END \
 //cout<<space.substr(0, 2*--level)<<fun_name<<endl;\

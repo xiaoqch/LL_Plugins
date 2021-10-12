@@ -44,8 +44,8 @@ void testRexipes(Recipes* recipes) {
             ++recipe;
         }
     }
-    map<ItemInstance, unordered_map<string, Recipe*>> item_identifier_recipe =
-        dAccess<map<ItemInstance, unordered_map<string, Recipe*>>>(recipes, 56);
+    map<ItemInstance, unordered_map<string, Recipe*>, SortItemInstanceIdAux> item_identifier_recipe =
+        dAccess<map<ItemInstance, unordered_map<string, Recipe*>, SortItemInstanceIdAux>>(recipes, 56);
     int total_size_of_item_identifier_recipe = 0;
     for (auto& recipe : item_identifier_recipe) {
         total_size_of_item_identifier_recipe += recipe.second.size();
