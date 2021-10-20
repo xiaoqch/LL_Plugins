@@ -1,43 +1,43 @@
 #pragma once
 
 enum class EnchantType : char {
-    protection            = 0,  // max level: 3, frequency: 30, 
-    fire_protection       = 1,  // max level: 3, frequency: 10, 
-    feather_falling       = 2,  // max level: 0, frequency: 10, 
-    blast_protection      = 3,  // max level: 3, frequency: 3,  
-    projectile_protection = 4,  // max level: 3, frequency: 10, 
-    thorns                = 5,  // max level: 0, frequency: 1,  
-    respiration           = 6,  // max level: 0, frequency: 3,  
-    depth_strider         = 7,  // max level: 4, frequency: 3,  
-    aqua_affinity         = 8,  // max level: 0, frequency: 3,  
-    sharpness             = 9,  // max level: 1, frequency: 30, 
-    smite                 = 10, // max level: 1, frequency: 10, 
-    bane_of_arthropods    = 11, // max level: 1, frequency: 10, 
-    knockback             = 12, // max level: 0, frequency: 10, 
-    fire_aspect           = 13, // max level: 0, frequency: 3,  
-    looting               = 14, // max level: 0, frequency: 3,  
-    efficiency            = 15, // max level: 0, frequency: 30, 
-    silk_touch            = 16, // max level: 2, frequency: 1,  
-    unbreaking            = 17, // max level: 0, frequency: 10, 
-    fortune               = 18, // max level: 2, frequency: 3,  
-    power                 = 19, // max level: 0, frequency: 30, 
-    punch                 = 20, // max level: 0, frequency: 3,  
-    flame                 = 21, // max level: 0, frequency: 3,  
-    infinity              = 22, // max level: 5, frequency: 1,  
-    luck_of_the_sea       = 23, // max level: 0, frequency: 3,  
-    lure                  = 24, // max level: 0, frequency: 3,  
-    frost_walker          = 25, // max level: 4, frequency: 3,  
-    mending               = 26, // max level: 5, frequency: 3,  
-    binding               = 27, // max level: 0, frequency: 1,  
-    vanishing             = 28, // max level: 0, frequency: 1,  
-    impaling              = 29, // max level: 0, frequency: 10, 
-    riptide               = 30, // max level: 6, frequency: 3,  
-    loyalty               = 31, // max level: 6, frequency: 30, 
-    channeling            = 32, // max level: 0, frequency: 1,  
-    multishot             = 33, // max level: 0, frequency: 3,  
-    piercing              = 34, // max level: 0, frequency: 30, 
-    quick_charge          = 35, // max level: 0, frequency: 10, 
-    soul_speed            = 36, // max level: 0, frequency: 1,  
+    Protection           = 0,  //maxLevel: 4, frequency: 30, name: 保护     , description: protection
+    FireProtection       = 1,  //maxLevel: 4, frequency: 10, name: 火焰保护   , description: fire_protection
+    FeatherFalling       = 2,  //maxLevel: 4, frequency: 10, name: 摔落保护   , description: feather_falling
+    BlastProtection      = 3,  //maxLevel: 4, frequency: 3 , name: 爆炸保护   , description: blast_protection
+    ProjectileProtection = 4,  //maxLevel: 4, frequency: 10, name: 弹射物保护  , description: projectile_protection
+    Thorns               = 5,  //maxLevel: 3, frequency: 1 , name: 荆棘     , description: thorns
+    Respiration          = 6,  //maxLevel: 3, frequency: 3 , name: 水下呼吸   , description: respiration
+    DepthStrider         = 7,  //maxLevel: 3, frequency: 3 , name: 深海探索者  , description: depth_strider
+    AquaAffinity         = 8,  //maxLevel: 1, frequency: 3 , name: 水下速掘   , description: aqua_affinity
+    Sharpness            = 9,  //maxLevel: 5, frequency: 30, name: 锋利     , description: sharpness
+    Smite                = 10, //maxLevel: 5, frequency: 10, name: 亡灵杀手   , description: smite
+    BaneOfArthropods     = 11, //maxLevel: 5, frequency: 10, name: 节肢杀手   , description: bane_of_arthropods
+    Knockback            = 12, //maxLevel: 2, frequency: 10, name: 击退     , description: knockback
+    FireAspect           = 13, //maxLevel: 2, frequency: 3 , name: 火焰附加   , description: fire_aspect
+    Looting              = 14, //maxLevel: 3, frequency: 3 , name: 抢夺     , description: looting
+    Efficiency           = 15, //maxLevel: 5, frequency: 30, name: 效率     , description: efficiency
+    SilkTouch            = 16, //maxLevel: 1, frequency: 1 , name: 精准采集   , description: silk_touch
+    Unbreaking           = 17, //maxLevel: 3, frequency: 10, name: 耐久     , description: unbreaking
+    Fortune              = 18, //maxLevel: 3, frequency: 3 , name: 时运     , description: fortune
+    Power                = 19, //maxLevel: 5, frequency: 30, name: 力量     , description: power
+    Punch                = 20, //maxLevel: 2, frequency: 3 , name: 冲击     , description: punch
+    Flame                = 21, //maxLevel: 1, frequency: 3 , name: 火矢     , description: flame
+    Infinity             = 22, //maxLevel: 1, frequency: 1 , name: 无限     , description: infinity
+    LuckOfTheSea         = 23, //maxLevel: 3, frequency: 3 , name: 海之眷顾   , description: luck_of_the_sea
+    Lure                 = 24, //maxLevel: 3, frequency: 3 , name: 饵钓     , description: lure
+    FrostWalker          = 25, //maxLevel: 2, frequency: 3 , name: 冰霜行者   , description: frost_walker
+    Mending              = 26, //maxLevel: 1, frequency: 3 , name: 经验修补   , description: mending
+    Binding              = 27, //maxLevel: 1, frequency: 1 , name: 绑定诅咒   , description: binding
+    Vanishing            = 28, //maxLevel: 1, frequency: 1 , name: 消失诅咒   , description: vanishing
+    Impaling             = 29, //maxLevel: 5, frequency: 10, name: 穿刺     , description: impaling
+    Riptide              = 30, //maxLevel: 3, frequency: 3 , name: 激流     , description: riptide
+    Loyalty              = 31, //maxLevel: 3, frequency: 30, name: 忠诚     , description: loyalty
+    Channeling           = 32, //maxLevel: 1, frequency: 1 , name: 引雷     , description: channeling
+    Multishot            = 33, //maxLevel: 1, frequency: 3 , name: 多重箭    , description: multishot
+    Piercing             = 34, //maxLevel: 4, frequency: 30, name: 穿透     , description: piercing
+    QuickCharge          = 35, //maxLevel: 3, frequency: 10, name: 快速装填   , description: quick_charge
+    SoulSpeed            = 36, //maxLevel: 3, frequency: 1 , name: 灵魂疾行   , description: soul_speed
 };
 
 enum class ItemStackRequestActionType : char {
@@ -678,37 +678,37 @@ enum class ParticleType : unsigned int {
     shriek                = 82,
 };
 
-enum class EffectType : short {
-    empty           = 0,  // effect:
-    speed           = 1,  // effect: potion.moveSpeed
-    slowness        = 2,  // effect: potion.moveSlowdown
-    haste           = 3,  // effect: potion.digSpeed
-    mining_fatigue  = 4,  // effect: potion.digSlowDown
-    strength        = 5,  // effect: potion.damageBoost
-    instant_health  = 6,  // effect: potion.heal
-    instant_damage  = 7,  // effect: potion.harm
-    jump_boost      = 8,  // effect: potion.jump
-    nausea          = 9,  // effect: potion.confusion
-    regeneration    = 10, // effect: potion.regeneration
-    resistance      = 11, // effect: potion.resistance
-    fire_resistance = 12, // effect: potion.fireResistance
-    water_breathing = 13, // effect: potion.waterBreathing
-    invisibility    = 14, // effect: potion.invisibility
-    blindness       = 15, // effect: potion.blindness
-    night_vision    = 16, // effect: potion.nightVision
-    hunger          = 17, // effect: potion.hunger
-    weakness        = 18, // effect: potion.weakness
-    poison          = 19, // effect: potion.poison
-    wither          = 20, // effect: potion.wither
-    health_boost    = 21, // effect: potion.healthBoost
-    absorption      = 22, // effect: potion.absorption
-    saturation      = 23, // effect: potion.saturation
-    levitation      = 24, // effect: potion.levitation
-    fatal_poison    = 25, // effect: potion.poison
-    conduit_power   = 26, // effect: potion.conduitPower
-    slow_falling    = 27, // effect: potion.slowFalling
-    bad_omen        = 28, // effect: effect.badOmen
-    village_hero    = 29, // effect: effect.villageHero
+enum EffectType : short {
+    Empty          = 0,  //resourceName: empty          , name:
+    Speed          = 1,  //resourceName: speed          , name: 速度
+    Slowness       = 2,  //resourceName: slowness       , name: 缓慢
+    Haste          = 3,  //resourceName: haste          , name: 急速
+    MiningFatigue  = 4,  //resourceName: mining_fatigue , name: 开采疲劳
+    Strength       = 5,  //resourceName: strength       , name: 力量
+    InstantHealth  = 6,  //resourceName: instant_health , name: 瞬间治疗
+    InstantDamage  = 7,  //resourceName: instant_damage , name: 瞬间伤害
+    JumpBoost      = 8,  //resourceName: jump_boost     , name: 跳跃增强
+    Nausea         = 9,  //resourceName: nausea         , name: 反胃
+    Regeneration   = 10, //resourceName: regeneration   , name: 生命恢复
+    Resistance     = 11, //resourceName: resistance     , name: 抗性
+    FireResistance = 12, //resourceName: fire_resistance, name: 抗火
+    WaterBreathing = 13, //resourceName: water_breathing, name: 水下呼吸
+    Invisibility   = 14, //resourceName: invisibility   , name: 隐身
+    Blindness      = 15, //resourceName: blindness      , name: 失明
+    NightVision    = 16, //resourceName: night_vision   , name: 夜视
+    Hunger         = 17, //resourceName: hunger         , name: 饥饿
+    Weakness       = 18, //resourceName: weakness       , name: 虚弱
+    Poison         = 19, //resourceName: poison         , name: 中毒
+    Wither         = 20, //resourceName: wither         , name: 凋零
+    HealthBoost    = 21, //resourceName: health_boost   , name: 生命提升
+    Absorption     = 22, //resourceName: absorption     , name: 伤害吸收
+    Saturation     = 23, //resourceName: saturation     , name: 饱和
+    Levitation     = 24, //resourceName: levitation     , name: 飘浮
+    FatalPoison    = 25, //resourceName: fatal_poison   , name: 中毒
+    ConduitPower   = 26, //resourceName: conduit_power  , name: 潮涌能量
+    SlowFalling    = 27, //resourceName: slow_falling   , name: 缓降
+    BadOmen        = 28, //resourceName: bad_omen       , name: 凶兆
+    VillageHero    = 29, //resourceName: village_hero   , name: 村庄英雄
 };
 
 enum class ActorDagageCause : unsigned int {

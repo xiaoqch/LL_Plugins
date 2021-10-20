@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <vector>
 #include "Core.h"
 
@@ -9,12 +9,12 @@ class ItemStackBase {
     MCINLINE class std::
         basic_string<char, struct std::char_traits<char>, class std::allocator<char>>
         toString() const {
+        string str;
         class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>> (
-            ItemStackBase::*rv)() const;
+            ItemStackBase::*rv)(string&) const;
         *((void **)&rv) = dlsym(
-            "?toString@ItemStackBase@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@"
-            "2@@std@@XZ");
-        return (this->*rv)();
+            "?toString@ItemStackBase@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ");
+        return (this->*rv)(str);
     } MCINLINE bool operator!=(class ItemStackBase const &a0) const {
         bool (ItemStackBase::*rv)(class ItemStackBase const &) const;
         *((void **)&rv) = dlsym("??9ItemStackBase@@QEBA_NAEBV0@@Z");

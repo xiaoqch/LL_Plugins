@@ -9,7 +9,8 @@
 
 // 添加要在此处预编译的标头
 #include <iostream>
-#include <mc/Player.h>
+#include <loader/Loader.h>
+#include <api/LiteLoaderApi.h>
 #include <api/basicEvent.h>
 #include <mc/Command.h>
 #include <mc/CommandReg.h>

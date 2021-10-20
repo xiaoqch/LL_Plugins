@@ -287,3 +287,16 @@ THook(ItemStackNetResult, "?handleConsumedItem@CraftHandlerBase@@UEAA?AW4ItemSta
 //
 //    return rtn;
 //}
+
+THook(void, "?_onItemChanged@PlayerUIContainerModelBase@@MEAAXHAEBVItemStack@@0@Z", 
+    class PlayerUIContainerModelBase* _this, int slot, ItemStack const* item, ItemStack const* item2) {
+    cout << "PlayerUIContainerModelBase::_onItemChanged" << endl;
+    char enumName = dAccess<char, 48>(_this);
+    LOG_VAR((int)enumName);
+    string unk = dAccess<string, 16>(_this);
+    LOG_VAR(unk);
+    LOG_VAR(slot);
+    LOG_VAR(item->toString());
+    LOG_VAR(item2->toString());
+    original(_this, slot, item, item2);
+}

@@ -99,11 +99,11 @@ THook(void*, "?createChunkStorage@DBStorage@@UEAA?AV?$unique_ptr@VChunkSource@@U
 }
 
 // DBStorage::saveLevelData
-THook(void*, "?saveLevelData@DBStorage@@UEAAXAEBVLevelData@@@Z",
-    void* _this, LevelData* data) {
+THook(void, "?saveLevelData@DBStorage@@UEAAXAEBVLevelData@@@Z",
+    void* _this, struct LevelData* data) {
     LOG_START("DBStorage::saveLevelData");
-    auto rtn = original(_this, data);
-    LOG_END_RTN
+    original(_this, data);
+    LOG_END
 }
 
 // DBStorage::getFullPath

@@ -8,9 +8,8 @@
 
 struct voids;
 
-
 bool oncmd_reg(CommandOrigin const& ori, CommandOutput& outp) {
-    genEnum();
+    genActorFlags(ori.getEntity());
     //dynReg();
     return true;
 }

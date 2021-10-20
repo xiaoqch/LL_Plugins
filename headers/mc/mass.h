@@ -69,7 +69,7 @@ namespace mce {
 class UUID;
 };
 class NetworkIdentifier {
-    char filler[144];
+    char filler[160];
 };
 namespace Util {
 class HashString;

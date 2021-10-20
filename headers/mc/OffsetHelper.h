@@ -20,8 +20,8 @@ class BaseCommandBlock;
 typedef unsigned long long xuid_t;
 namespace offPlayer {
 inline NetworkIdentifier *getNetworkIdentifier(Player *pl) {
-    return SymCall("?getClientId@Player@@QEBAAEBVNetworkIdentifier@@XZ", NetworkIdentifier*,
-     Player*)(pl);
+    return SymCall("??$tryGetComponent@VUserEntityIdentifierComponent@@@Actor@@QEAAPEAVUserEntityIdentifierComponent@@XZ",
+        NetworkIdentifier*, Actor*)(pl);
     //return (NetworkIdentifier *)((uintptr_t)pl + 2712);  // ServerPlayer::isHostingPlayer
 }
 inline Level *getLevel(Actor *pl) {
