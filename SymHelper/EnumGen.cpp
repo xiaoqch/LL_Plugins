@@ -290,12 +290,11 @@ Block* getBlockFromLegacy(BlockLegacy* bl) {
 }
 
 void genBlockType() {
-    uintptr_t weakPtrBlockLegacyStart = (uintptr_t)dlsym("?mAir@BedrockBlockTypes@@3V?$WeakPtr@VBlockLegacy@@@@A");
-    uintptr_t weakPtrBlockLegacyEnd = (uintptr_t)dlsym("?mSculkShrieker@VanillaBlockTypes@@3V?$WeakPtr@VBlockLegacy@@@@A");
-    size_t size = sizeof(weakPtrBlockLegacyStart);
+    auto mBlockLookupMap = (map<string, shared_ptr<BlockLegacy>*>*)dlsym("?mBlockLookupMap@BlockTypeRegistry@@0V?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$SharedPtr@VBlockLegacy@@@@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$SharedPtr@VBlockLegacy@@@@@std@@@2@@std@@A");
+
     std::cout << "enum BlockType : short{" << std::endl;
-    for (uintptr_t ptr = weakPtrBlockLegacyStart; ptr <= weakPtrBlockLegacyEnd; ptr += size) {
-        auto blockLegacy = getFromWeakPtr((void*)ptr);
+    for (auto& [name, blockptr]:*mBlockLookupMap) {
+        auto blockLegacy = blockptr->get();
         if (!blockLegacy) {
             //cout << (ptr - weakPtrBlockLegacyStart) / 8 << endl;
             continue;
@@ -303,7 +302,6 @@ void genBlockType() {
         auto blockName = offBlockLegacy::getFullName(blockLegacy);
         auto blockItemId = getBlockItemId(blockLegacy);
         auto block = getBlockFromLegacy(blockLegacy);
-        auto offset = (ptr - weakPtrBlockLegacyStart) / 8;
         string tmp = "m_" + blockName.substr(blockName.find(':') + 1);
         auto enumName = StrHelper::toCamelCase(tmp);
         //LOG_VAR(blockName)
@@ -658,12 +656,12 @@ void genEnum()
     //genLegacyIDToNameMap();
     //genParticleType();
     //genBlockActorType();
-    //genJigsawStructureMap(); //x
-    genActorCategory();
-    genEnchantType();
-    genEffectType();
+    ////genJigsawStructureMap(); //x
+    //genActorCategory();
+    //genEnchantType();
+    //genEffectType();
     //genDamageCause();
-    genBlockGeometry();
+    //genBlockGeometry();
 }
 
 

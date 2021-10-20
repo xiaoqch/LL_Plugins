@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 //#include<lbpch.h>
 #define MCAPI __declspec(dllimport)
 #define MCINLINE inline
