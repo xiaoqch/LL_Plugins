@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <api/types/types.h>
 #include <loader/Loader.h>
 #include <mc/Core.h>
@@ -148,28 +148,28 @@ class Actor;
 class HashedString {
     uint64_t hash;
     std::string str;
-
-public:
     int64_t unk;
-    std::string const& getString() const { return str; }
-    MCINLINE static unsigned __int64 computeHash(char const* a0) {
-        return ((unsigned __int64 (*)(char const*))dlsym(
+
+  public:
+    std::string const &getString() const { return str; }
+    MCINLINE static unsigned __int64 computeHash(char const *a0) {
+        return ((unsigned __int64 (*)(char const *))dlsym(
             "?computeHash@HashedString@@SA_KPEBD@Z"))(a0);
     }
-    MCINLINE bool operator==(class HashedString const& a0) {
-        bool (HashedString:: * rv)(class HashedString const&);
-        *((void**)&rv) = dlsym("??8HashedString@@QEBA_NAEBV0@@Z");
+    MCINLINE bool operator==(class HashedString const &a0) {
+        bool (HashedString::*rv)(class HashedString const &);
+        *((void **)&rv) = dlsym("??8HashedString@@QEBA_NAEBV0@@Z");
         return (this->*rv)(a0);
     }
-    MCINLINE bool operator!=(class HashedString const& a0) {
-        bool (HashedString:: * rv)(class HashedString const&);
-        *((void**)&rv) = dlsym("??9HashedString@@QEBA_NAEBV0@@Z");
+    MCINLINE bool operator!=(class HashedString const &a0) {
+        bool (HashedString::*rv)(class HashedString const &);
+        *((void **)&rv) = dlsym("??9HashedString@@QEBA_NAEBV0@@Z");
         return (this->*rv)(a0);
     }
-    MCINLINE HashedString(const char* ch) {
-        str = ch;
+    MCINLINE HashedString(const char *ch) {
+        str  = ch;
         hash = computeHash(ch);
-        unk = 0;
+        unk  = 0;
     }
 };
 struct ActorDefinitionIdentifier {

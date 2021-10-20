@@ -6,13 +6,6 @@
 #define VERSION "0.0.1"
 #define PLUGIN_NAME "LL TEMPLATE"
 
-class UserEntityIdentifierComponent {
-    NetworkIdentifier nid; //0
-    char unk;              //160
-    void* uuid[2];         //168
-    Certificate* cert;     //184
-};
-
 using namespace std;
 
 enum class OPERATION_0 : int {

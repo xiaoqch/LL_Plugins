@@ -93,7 +93,6 @@ enum class ContainerOffset : char {
 };
 
 enum class ContainerType : char {
-    NONE                   = -9,
     INVENTORY              = -1,
     CONTAINER              = 0,
     WORKBENCH              = 1,
@@ -107,8 +106,8 @@ enum class ContainerType : char {
     CAULDRON               = 9,
     MINECART_CHEST         = 10,
     MINECART_HOPPER        = 11,
-    HORSE                  = 12,
     MINECART_COMMAND_BLOCK = 16,
+    HORSE                  = 12,
     JUKEBOX                = 17,
     COMPOUND_CREATOR       = 20,
     ELEMENT_CONSTRUCTOR    = 21,
@@ -119,6 +118,7 @@ enum class ContainerType : char {
     STONECUTTER            = 29,
     HUD                    = 31,
     SMITHING_TABLE         = 33,
+    NONE                   = -9,
 };
 
 

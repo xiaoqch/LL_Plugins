@@ -150,7 +150,7 @@ Block* getBlockEx(BlockSource* bs, BlockPos bpos) {
 
 // 快速判断
 bool isPortalBlock(BlockSource* bs, BlockPos bpos) {
-    Block* bl = SymCall("?getBlock@BlockSource@@QEBAAEBVBlock@@AEBVBlockPos@@@Z",
+    Block* bl = SymCall("?getBlock@BlockSource@@UEBAAEBVBlock@@AEBVBlockPos@@@Z",
         Block*, BlockSource*, BlockPos&)(bs, bpos);
     //cout << offBlock::getFullName(bl) << ":" << bpos.toString() << endl;
     return offBlock::getFullName(bl) == "minecraft:portal";

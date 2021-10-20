@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{1ac0b5f6-d0e5-47cd-beff-df1876da5a0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{6e792209-3349-4a0a-a87c-6eccfa494eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third-party">
+      <UniqueIdentifier>{5b9ad4b1-806e-4749-b0b4-b76ab83c5a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{577c0e9d-69b2-46c8-af05-95734baf097b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other">
+      <UniqueIdentifier>{27f71a07-8181-4df8-a495-ade38d92bd19}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third-party\seh_exception\seh_exception.hpp">
+      <Filter>third-party</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulatedPlayer.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SymHelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulatedPlayer.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="SymHelper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\LiteLoader.lib">
+      <Filter>Lib</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
