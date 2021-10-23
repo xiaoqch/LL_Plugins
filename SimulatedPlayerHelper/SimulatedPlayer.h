@@ -120,6 +120,15 @@ public:
     inline void reloadHardcode() {
         SymCall("?reloadHardcoded@Player@@UEAAXW4InitializationMethod@Actor@@AEBVVariantParameterList@@@Z", void, ServerPlayer*)(this);
     }
+    inline int getExpectedSpawnDimensionId() {
+        return SymCall("?getExpectedSpawnDimensionId@Player@@QEBA?AV?$AutomaticID@VDimension@@H@@XZ", int&, ServerPlayer*)(this);
+    }
+    inline BlockPos const* getExpectedSpawnPosition() {
+        return SymCall("?getExpectedSpawnPosition@Player@@QEBAAEBVBlockPos@@XZ", BlockPos const*, ServerPlayer*)(this);
+    }
+    inline void clearRespawnPosition() {
+        SymCall("?clearRespawnPosition@Player@@QEAAXXZ", void, ServerPlayer*)(this);
+    }
 };
 
 class SimulatedPlayerHelper
@@ -132,6 +141,7 @@ public:
     inline static SimulatedPlayer* createSP(string const& name, BlockPos const& bpos, int dimid) {
         auto snh = getServerNetworkHandler();
         auto sp = SimulatedPlayer::create(name, bpos, 0, snh);
+        sp->clearRespawnPosition();
         if (dimid)
             WPlayer(*sp).teleport({ bpos.x + 0.5f,bpos.y + 0.0f,bpos.z + 0.5f }, dimid);
         return sp;

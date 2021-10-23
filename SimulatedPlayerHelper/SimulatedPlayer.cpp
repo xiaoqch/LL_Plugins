@@ -9,8 +9,11 @@ THook(void, "?die@ServerPlayer@@UEAAXAEBVActorDamageSource@@@Z",
     ServerPlayer* _this, ActorDamageSource* ads) {
     if (isSimulatedPlayer(_this)) {
         auto sp = ((SimulatedPlayer*)_this);
-        WPlayer(*sp).teleport({ 0,0,0 }, 0);
         original(_this, ads);
+        int spanwnDid = sp->getExpectedSpawnDimensionId();
+        int did = sp->getDimensionId();
+        if(spanwnDid!=did)
+            WPlayer(*sp).teleport(sp->getPos(), spanwnDid);
         return sp->respawn();
     }
     original(_this, ads);
