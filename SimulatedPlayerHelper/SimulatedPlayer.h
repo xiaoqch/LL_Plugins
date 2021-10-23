@@ -18,6 +18,10 @@ public:
     inline const struct PlayerMovementSettings* getMovementSettings() {
         SymCall("?getMovementSettings@SimulatedPlayer@@UEBAAEBUPlayerMovementSettings@@XZ", PlayerMovementSettings*, SimulatedPlayer*)(this);
     }
+    inline void initializeComponents() {
+        SymCall("?initializeComponents@SimulatedPlayer@@UEAAXW4InitializationMethod@Actor@@AEBVVariantParameterList@@@Z",
+            void, SimulatedPlayer*)(this);
+    }
     inline bool simulateAttack(Actor* ac) {
         SymCall("?simulateAttack@SimulatedPlayer@@QEAA_NAEAVActor@@@Z", bool, SimulatedPlayer*, Actor*)(this, ac);
     }
@@ -99,11 +103,22 @@ public:
     inline static SimulatedPlayer* tryGetFromEntity(struct EntityContext* a1, bool a2) {
         SymCall("?tryGetFromEntity@SimulatedPlayer@@SAPEAV1@AEAVEntityContext@@_N@Z", SimulatedPlayer*, EntityContext*, bool)(a1, a2);
     }
+
+
     inline void teleportTo(Vec3 const& pos, bool shouldStopRiding, int cause, int sourceEntityType) {
         SymCall("?teleportTo@Player@@UEAAXAEBVVec3@@_NHH@Z", void, SimulatedPlayer*, Vec3 const&, bool, int, int)(this, pos, shouldStopRiding, cause, sourceEntityType);
     }
     inline void changeDimension(unsigned int dimid, bool usePortal) {
         SymCall("?changeDimension@ServerPlayer@@UEAAXV?$AutomaticID@VDimension@@H@@_N@Z", void, ServerPlayer*, unsigned int, bool)(this, dimid, usePortal);
+    }
+    inline void resetPos(bool clearMore) {
+        SymCall("?resetPos@Player@@UEAAX_N@Z", void, Player*)(this);
+    }
+    inline void respawn() {
+        SymCall("?respawn@Player@@UEAAXXZ", void, ServerPlayer*)(this);
+    }
+    inline void reloadHardcode() {
+        SymCall("?reloadHardcoded@Player@@UEAAXW4InitializationMethod@Actor@@AEBVVariantParameterList@@@Z", void, ServerPlayer*)(this);
     }
 };
 
@@ -114,27 +129,27 @@ public:
     inline SimulatedPlayerHelper(SimulatedPlayer* sp) {
         this->sp = sp;
     };
+    inline static SimulatedPlayer* createSP(string const& name, BlockPos const& bpos, int dimid) {
+        auto snh = getServerNetworkHandler();
+        auto sp = SimulatedPlayer::create(name, bpos, 0, snh);
+        if (dimid)
+            WPlayer(*sp).teleport({ bpos.x + 0.5f,bpos.y + 0.0f,bpos.z + 0.5f }, dimid);
+        return sp;
+    };
     inline static SimulatedPlayer* createSP(string const& name) {
         int dimid = 0;
         auto& pos = SymCall("?getDefaultSpawn@Level@@UEBAAEBVBlockPos@@XZ", const BlockPos&, Level*)(getLevel());
-        auto snh = getServerNetworkHandler();
-        return SimulatedPlayer::create(name, pos, dimid, snh);
+        return createSP(name, pos, dimid);
     }
     inline static SimulatedPlayer* createSP(string const& name, Vec3 const& pos, int dimid) {
-        auto sp = createSP(name);
-        WPlayer(*sp).teleport(pos, dimid);
-        return sp;
+        return createSP(name, ((Vec3)pos).toBlockPos(), dimid);;
     };
     inline static SimulatedPlayer* createSP(string const& name, float x, float y, float z, int dimid) {
         Vec3 pos = { x, y, z };
         return createSP(name, pos, dimid);
     }
-    inline static SimulatedPlayer* createSP(string const& name, BlockPos const& bpos, int dimid) {
-        Vec3 pos = { bpos.x + 0.5f, bpos.y + 0.0f, bpos.z + 0.5 };
-        return createSP(name, pos, dimid);
-    };
     inline static SimulatedPlayer* createSP(string const& name, int x, int y, int z, int dimid) {
-        Vec3 pos = { x, y, z };
+        BlockPos pos = { x, y, z };
         return createSP(name, pos, dimid);
     }
     inline void remove() {

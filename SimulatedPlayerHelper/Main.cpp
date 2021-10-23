@@ -25,7 +25,7 @@ bool oncmd_sp(CommandOrigin const& ori, CommandOutput& outp, string name, int x,
 bool oncmd_sp_quick(CommandOrigin const& ori, CommandOutput& outp, string name) {
     auto actor = ori.getEntity();
     if (actor) {
-        SimulatedPlayerHelper::createSP(name, (Vec3)actor->getPos(), actor->getDimensionId());
+        SimulatedPlayerHelper::createSP(name, ori.getBlockPosition(), actor->getDimensionId());
     }
     else {
         int dimid = 0;
