@@ -17,5 +17,4 @@ void regListener() {
 
 void entry() {
     regListener();
-    cout << PLUGIN_NAME << "Loaded, Version: " << VERSION_STRING << endl;
 }
