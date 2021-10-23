@@ -37,6 +37,9 @@
     <ClInclude Include="SymHelper.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="SyncHelper.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="SymHelper.cpp">
       <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="SyncHelper.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

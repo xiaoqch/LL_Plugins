@@ -170,6 +170,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
     <ClInclude Include="pch.h" />
     <ClInclude Include="SimulatedPlayer.h" />
     <ClInclude Include="SymHelper.h" />
+    <ClInclude Include="SyncHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -182,6 +183,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
     </ClCompile>
     <ClCompile Include="SimulatedPlayer.cpp" />
     <ClCompile Include="SymHelper.cpp" />
+    <ClCompile Include="SyncHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\LiteLoader.lib" />

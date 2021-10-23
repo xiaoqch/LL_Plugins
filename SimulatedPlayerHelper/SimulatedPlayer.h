@@ -13,95 +13,95 @@ public:
             SimulatedPlayer*, string const&, BlockPos const&, int, ServerNetworkHandler*)(name, bpos, dimid, snh);
     }
     inline void aiStep() {
-        SymCall("?aiStep@SimulatedPlayer@@UEAAXXZ", void, SimulatedPlayer*)(this);
+        return SymCall("?aiStep@SimulatedPlayer@@UEAAXXZ", void, SimulatedPlayer*)(this);
     }
     inline const struct PlayerMovementSettings* getMovementSettings() {
-        SymCall("?getMovementSettings@SimulatedPlayer@@UEBAAEBUPlayerMovementSettings@@XZ", PlayerMovementSettings*, SimulatedPlayer*)(this);
+        return SymCall("?getMovementSettings@SimulatedPlayer@@UEBAAEBUPlayerMovementSettings@@XZ", PlayerMovementSettings*, SimulatedPlayer*)(this);
     }
     inline void initializeComponents() {
-        SymCall("?initializeComponents@SimulatedPlayer@@UEAAXW4InitializationMethod@Actor@@AEBVVariantParameterList@@@Z",
+        return SymCall("?initializeComponents@SimulatedPlayer@@UEAAXW4InitializationMethod@Actor@@AEBVVariantParameterList@@@Z",
             void, SimulatedPlayer*)(this);
     }
     inline bool simulateAttack(Actor* ac) {
-        SymCall("?simulateAttack@SimulatedPlayer@@QEAA_NAEAVActor@@@Z", bool, SimulatedPlayer*, Actor*)(this, ac);
+        return SymCall("?simulateAttack@SimulatedPlayer@@QEAA_NAEAVActor@@@Z", bool, SimulatedPlayer*, Actor*)(this, ac);
     }
     inline bool simulateAttack() {
-        SymCall("?simulateAttack@SimulatedPlayer@@QEAA_NXZ", bool, SimulatedPlayer*)(this);
+        return SymCall("?simulateAttack@SimulatedPlayer@@QEAA_NXZ", bool, SimulatedPlayer*)(this);
     }
-    inline bool simulateDestroyBlock(BlockPos const& bpos, unsigned char unk) {
-        SymCall("?simulateDestroyBlock@SimulatedPlayer@@QEAA_NAEBVBlockPos@@E@Z", bool, SimulatedPlayer*, BlockPos const&, unsigned char)(this, bpos, unk);
+    inline bool simulateDestroyBlock(BlockPos const& bpos, unsigned char direction) {
+        return SymCall("?simulateDestroyBlock@SimulatedPlayer@@QEAA_NAEBVBlockPos@@E@Z", bool, SimulatedPlayer*, BlockPos const&, unsigned char)(this, bpos, direction);
     }
     inline void simulateDisconnect() {
-        SymCall("?simulateDisconnect@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
+        return SymCall("?simulateDisconnect@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
     }
     inline bool simulateInteract(Actor* ac) {
-        SymCall("?simulateInteract@SimulatedPlayer@@QEAA_NAEAVActor@@@Z", bool, SimulatedPlayer*, Actor*)(this, ac);
+        return SymCall("?simulateInteract@SimulatedPlayer@@QEAA_NAEAVActor@@@Z", bool, SimulatedPlayer*, Actor*)(this, ac);
     }
-    inline bool simulateInteract(BlockPos const& bpos, unsigned char unk) {
-        SymCall("?simulateInteract@SimulatedPlayer@@QEAA_NAEBVBlockPos@@E@Z", bool, SimulatedPlayer*, BlockPos const&, unsigned char)(this, bpos, unk);
+    inline bool simulateInteract(BlockPos const& bpos, unsigned char direction) {
+        return SymCall("?simulateInteract@SimulatedPlayer@@QEAA_NAEBVBlockPos@@E@Z", bool, SimulatedPlayer*, BlockPos const&, unsigned char)(this, bpos, direction);
     }
     inline bool simulateInteract() {
-        SymCall("?simulateInteract@SimulatedPlayer@@QEAA_NXZ", bool, SimulatedPlayer*)(this);
+        return SymCall("?simulateInteract@SimulatedPlayer@@QEAA_NXZ", bool, SimulatedPlayer*)(this);
     }
     inline bool simulateJump() {
-        SymCall("?simulateJump@SimulatedPlayer@@QEAA_NXZ", bool, SimulatedPlayer*)(this);
+        return SymCall("?simulateJump@SimulatedPlayer@@QEAA_NXZ", bool, SimulatedPlayer*)(this);
     }
-    inline void simulateLocalMove(Vec3 const* pos, float unk) {
-        SymCall("?simulateLocalMove@SimulatedPlayer@@QEAAXAEBVVec3@@M@Z", void, SimulatedPlayer*, Vec3 const*, float)(this, pos, unk);
+    inline void simulateLocalMove(Vec3 const& pos, float speed) {
+        return SymCall("?simulateLocalMove@SimulatedPlayer@@QEAAXAEBVVec3@@M@Z", void, SimulatedPlayer*, Vec3 const&, float)(this, pos, speed);
     }
     inline void simulateLookAt(Actor* ac) {
-        SymCall("?simulateLookAt@SimulatedPlayer@@QEAAXAEAVActor@@@Z", void, SimulatedPlayer*, Actor*)(this, ac);
+        return SymCall("?simulateLookAt@SimulatedPlayer@@QEAAXAEAVActor@@@Z", void, SimulatedPlayer*, Actor*)(this, ac);
     }
     inline void simulateLookAt(BlockPos const& bpos) {
-        SymCall("?simulateLookAt@SimulatedPlayer@@QEAAXAEBVBlockPos@@@Z", void, SimulatedPlayer*, BlockPos const&)(this, bpos);
+        return SymCall("?simulateLookAt@SimulatedPlayer@@QEAAXAEBVBlockPos@@@Z", void, SimulatedPlayer*, BlockPos const&)(this, bpos);
     }
     inline void simulateLookAt(Vec3 const& pos) {
-        SymCall("?simulateLookAt@SimulatedPlayer@@QEAAXAEBVVec3@@@Z", void, SimulatedPlayer*, Vec3 const&)(this, pos);
+        return SymCall("?simulateLookAt@SimulatedPlayer@@QEAAXAEBVVec3@@@Z", void, SimulatedPlayer*, Vec3 const&)(this, pos);
     }
-    inline void* simulateNavigateToEntity(Actor* ac, float unk) {
-        SymCall("?simulateNavigateToEntity@SimulatedPlayer@@QEAA?AUScriptNavigationResult@@AEAVActor@@M@Z", void*, SimulatedPlayer*, Actor*, float)(this, ac, unk);
+    inline void* simulateNavigateToEntity(Actor* ac, float speed) {
+        return SymCall("?simulateNavigateToEntity@SimulatedPlayer@@QEAA?AUScriptNavigationResult@@AEAVActor@@M@Z", void*, SimulatedPlayer*, Actor*, float)(this, ac, speed);
     }
-    inline void* simulateMoveToLocation(Vec3 const& pos, float unk) {
-        SymCall("?simulateNavigateToLocation@SimulatedPlayer@@QEAA?AUScriptNavigationResult@@AEBVVec3@@M@Z", void*, SimulatedPlayer*, Vec3 const&, float)(this, pos, unk);
+    inline void* simulateMoveToLocation(Vec3 const& pos, float speed) {
+        return SymCall("?simulateNavigateToLocation@SimulatedPlayer@@QEAA?AUScriptNavigationResult@@AEBVVec3@@M@Z", void*, SimulatedPlayer*, Vec3 const&, float)(this, pos, speed);
     }
-    inline void simulateNavigateToLocations(std::vector<Vec3>** pos, float unk) {
-        SymCall("?simulateNavigateToLocations@SimulatedPlayer@@QEAAX$$QEAV?$vector@VVec3@@V?$allocator@VVec3@@@std@@@std@@M@Z", void, SimulatedPlayer*, std::vector<Vec3>**, float)(this, pos, unk);
+    inline void simulateNavigateToLocations(std::vector<Vec3>** pos, float speed) {
+        return SymCall("?simulateNavigateToLocations@SimulatedPlayer@@QEAAX$$QEAV?$vector@VVec3@@V?$allocator@VVec3@@@std@@@std@@M@Z", void, SimulatedPlayer*, std::vector<Vec3>**, float)(this, pos, speed);
     }
     inline ItemStack* simulateSelectSlot(int slot) {
-        SymCall("?simulateSelectSlot@SimulatedPlayer@@QEAAAEBVItemStack@@H@Z", ItemStack*, SimulatedPlayer*, int)(this, slot);
+        return SymCall("?simulateSelectSlot@SimulatedPlayer@@QEAAAEBVItemStack@@H@Z", ItemStack*, SimulatedPlayer*, int)(this, slot);
     }
     inline void simulateSetBodyRotation(float rotation) {
-        SymCall("?simulateSetBodyRotation@SimulatedPlayer@@QEAAXM@Z", void, SimulatedPlayer*, int)(this, rotation);
+        return SymCall("?simulateSetBodyRotation@SimulatedPlayer@@QEAAXM@Z", void, SimulatedPlayer*, int)(this, rotation);
     }
     inline void simulateStopDestroyingBlock() {
-        SymCall("?simulateStopDestroyingBlock@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
+        return SymCall("?simulateStopDestroyingBlock@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
     }
     inline void simulateStopInteracting() {
-        SymCall("?simulateStopInteracting@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
+        return SymCall("?simulateStopInteracting@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
     }
     inline void simulateStopMoving() {
-        SymCall("?simulateStopMoving@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
+        return SymCall("?simulateStopMoving@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
     }
     inline void simulateStopUsingItem() {
-        SymCall("?simulateStopUsingItem@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
+        return SymCall("?simulateStopUsingItem@SimulatedPlayer@@QEAAXXZ", void, SimulatedPlayer*)(this);
     }
     inline bool simulateUseItem(ItemStack* item) {
-        SymCall("?simulateUseItem@SimulatedPlayer@@QEAA_NAEAVItemStack@@@Z", bool, SimulatedPlayer*, ItemStack*)(this, item);
+        return SymCall("?simulateUseItem@SimulatedPlayer@@QEAA_NAEAVItemStack@@@Z", bool, SimulatedPlayer*, ItemStack*)(this, item);
     }
     inline bool simulateUseItemInSlot(int slot) {
-        SymCall("?simulateUseItemInSlot@SimulatedPlayer@@QEAA_NH@Z", bool, SimulatedPlayer*, int)(this, slot);
+        return SymCall("?simulateUseItemInSlot@SimulatedPlayer@@QEAA_NH@Z", bool, SimulatedPlayer*, int)(this, slot);
     }
-    inline bool simulateUseItemInSlotOnBlock(int slot, BlockPos const& bpos, uchar unk, Vec3 const& unk2) {
-        SymCall("?simulateUseItemInSlotOnBlock@SimulatedPlayer@@QEAA_NHAEBVBlockPos@@EAEBVVec3@@@Z", bool, SimulatedPlayer*, int, BlockPos const&, uchar, Vec3 const&)(this, slot, bpos, unk, unk2);
+    inline bool simulateUseItemInSlotOnBlock(int slot, BlockPos const& bpos, uchar direction, Vec3 const& faceLocation) {
+        return SymCall("?simulateUseItemInSlotOnBlock@SimulatedPlayer@@QEAA_NHAEBVBlockPos@@EAEBVVec3@@@Z", bool, SimulatedPlayer*, int, BlockPos const&, uchar, Vec3 const&)(this, slot, bpos, direction, faceLocation);
     }
-    inline bool simulateUseItemOnBlock(ItemStack* item, BlockPos const& bpos, uchar unk, Vec3 const& unk2) {
-        SymCall("?simulateUseItemOnBlock@SimulatedPlayer@@QEAA_NAEAVItemStack@@AEBVBlockPos@@EAEBVVec3@@@Z", bool, SimulatedPlayer*, ItemStack*, BlockPos const&, uchar, Vec3 const&)(this, item, bpos, unk, unk2);
+    inline bool simulateUseItemOnBlock(ItemStack* item, BlockPos const& bpos, uchar direction, Vec3 const& faceLocation) {
+        return SymCall("?simulateUseItemOnBlock@SimulatedPlayer@@QEAA_NAEAVItemStack@@AEBVBlockPos@@EAEBVVec3@@@Z", bool, SimulatedPlayer*, ItemStack*, BlockPos const&, uchar, Vec3 const&)(this, item, bpos, direction, faceLocation);
     }
-    inline void simulateWorldMove(Vec3 const& pos, float unk) {
-        SymCall("?simulateWorldMove@SimulatedPlayer@@QEAAXAEBVVec3@@M@Z", void, SimulatedPlayer*, Vec3 const&, float)(this, pos, unk);
+    inline void simulateWorldMove(Vec3 const& pos, float speed) {
+        return SymCall("?simulateWorldMove@SimulatedPlayer@@QEAAXAEBVVec3@@M@Z", void, SimulatedPlayer*, Vec3 const&, float)(this, pos, speed);
     }
     inline static SimulatedPlayer* tryGetFromEntity(struct EntityContext* a1, bool a2) {
-        SymCall("?tryGetFromEntity@SimulatedPlayer@@SAPEAV1@AEAVEntityContext@@_N@Z", SimulatedPlayer*, EntityContext*, bool)(a1, a2);
+        return SymCall("?tryGetFromEntity@SimulatedPlayer@@SAPEAV1@AEAVEntityContext@@_N@Z", SimulatedPlayer*, EntityContext*, bool)(a1, a2);
     }
 
 
@@ -129,7 +129,12 @@ public:
     inline void clearRespawnPosition() {
         SymCall("?clearRespawnPosition@Player@@QEAAXXZ", void, ServerPlayer*)(this);
     }
+    inline void updateSpawnChunkView() {
+        SymCall("?updateSpawnChunkView@Player@@QEAAXXZ", void, ServerPlayer*)(this);
+    }
 };
+
+bool isSimulatedPlayer(Actor* actor);
 
 class SimulatedPlayerHelper
 {
