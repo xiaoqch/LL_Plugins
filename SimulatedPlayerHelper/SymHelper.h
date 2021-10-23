@@ -6,3 +6,6 @@ inline ServerNetworkHandler* getServerNetworkHandler() {
     return mc->getServerNetworkHandler();
 };
 
+inline Level* getLevel() {
+    return mc->getLevel();
+};

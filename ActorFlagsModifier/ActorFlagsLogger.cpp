@@ -1,9 +1,9 @@
 #include "pch.h"
+#include "Config.h"
 #include "SymHelper.h"
 #include "ActorFlags.h"
 
-/*
-
+#ifdef ENABLE_LOGGER
 void logFlag(Actor* actor, ActorFlags flag, bool value) {
     bool oldValue = getStatusFlag(actor, flag);
     int i = (int)flag;
@@ -31,5 +31,4 @@ THook(bool, "?setStatusFlag@Actor@@SA_NAEAVSynchedActorData@@W4ActorFlags@@_N@Z"
     logFlag(actor, flag, value);
     return original(data, flag, value);
 }
-
-*/
+#endif // ENABLE_LOGGER

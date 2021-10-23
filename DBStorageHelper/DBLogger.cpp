@@ -57,10 +57,10 @@ THook(void*, "?addStorageObserver@DBStorage@@UEAAXV?$unique_ptr@VLevelStorageObs
 }
 
 // DBStorage::getCompoundTag
-THook(unique_ptr<Tag>*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z",
-    LevelStorage* _this, unique_ptr<Tag>& tagPtr, string& key) {
+THook(unique_ptr<Tag>*, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@W4Category@DBHelpers@@@Z",
+    LevelStorage* _this, unique_ptr<Tag>& tagPtr, string& key, unsigned int dbCategory) {
     LOG_START_WITH_KEY("DBStorage::getCompoundTag");
-    auto rtn = original(_this, tagPtr, key);
+    auto rtn = original(_this, tagPtr, key, dbCategory);
     LOG_END_RTN
 }
 

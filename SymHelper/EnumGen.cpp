@@ -254,8 +254,6 @@ BiomeRegistry::lookupById
 
 */
 
-#define LOG_VAR(var) std::cout << #var" :\t" << var << std::endl;
-
 #define ITER_TYPE_MAP(typeMap) \
 for (auto& [type, name] : typeMap) {\
 cout << "    " << name << " = " << (int)type << "," << endl;\
@@ -627,8 +625,10 @@ void genActorFlags(Actor* actor) {
             continue;
         string flagName = text[5].substr(1);
         string enumName = StrHelper::toCamelCase("m_" + flagName).substr(1);
-        //cout << "    " << camelName << " = " << (int)i << "," << endl;
-        cout << "    {ActorFlags::" << flagName << ", \"" << flagName << "\"}," << endl;
+        cout << "    " << enumName << " = " << (int)i << "," << endl;
+        //cout << "    " << enumName << "," << endl;
+        //cout << "    {ActorFlagsForCmd::" << flagName << ", ActorFlags::" << flagName << "}," << endl;
+        //cout << "    {ActorFlags::" << flagName << ", \"" << flagName << "\"}," << endl;
     }
     cout << "};" << endl;
 }
@@ -641,6 +641,21 @@ void genActorCategory() {
     auto offset = (uintptr_t)tmp2 - (uintptr_t)tmp;
     auto m = (unordered_map<string, int>*)((uintptr_t)tmp + 0x18);
     cout << m->size() << endl;
+}
+enum class ActorTypeNamespaceRules : unsigned int {
+    ReturnWithoutNamespace = 0,
+    ReturnWithNamespace = 1,
+};
+void genEntityType() {
+    string typeName;
+    for (int i = 0; i < 500; i++) {
+        for (int j = 0; j < 2; j++) {
+            SymCall("?EntityTypeToString@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4ActorType@@W4ActorTypeNamespaceRules@@@Z",
+                string&, string&, int, unsigned int)(typeName, i, j);
+            if(typeName!="unknown")
+                cout << i << ", " << j << ": " << typeName << endl;
+        }
+    }
 }
 
 void genEnum()
@@ -662,6 +677,7 @@ void genEnum()
     //genEffectType();
     //genDamageCause();
     //genBlockGeometry();
+    genEntityType();
 }
 
 

@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "framework.h"
 
-#define VERSION "1.0.0"
+#define VERSION "1.0.1"
 
 void entry() {
     std::cout << "Fix Thorns Copy And Crash Loaded. Version: " << VERSION << std::endl;

@@ -1,7 +1,5 @@
 #include "pch.h"
-
-#define VERSION "0.0.1"
-#define PLUGIN_NAME "LL TEMPLATE"
+#include "Config.h"
 
 using namespace std;
 
@@ -12,12 +10,12 @@ bool oncmd_cmd(CommandOrigin const& ori, CommandOutput& outp) {
 void regListener() {
     Event::addEventListener([](RegCmdEV ev) {
         CMDREG::SetCommandRegistry(ev.CMDRg);
-        MakeCommand("cmd", "Dynamic Register Recipe", 0);
+        MakeCommand("cmd", "CMD Description", 0);
         CmdOverload(cmd, oncmd_cmd);
         });
 }
 
 void entry() {
     regListener();
-    cout << PLUGIN_NAME << "Loaded, Version: " << VERSION << endl;
+    cout << PLUGIN_NAME << "Loaded, Version: " << VERSION_STRING << endl;
 }

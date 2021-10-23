@@ -145,6 +145,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,11 +167,14 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
   <ItemGroup>
     <ClInclude Include="..\third-party\seh_exception\seh_exception.hpp" />
     <ClInclude Include="ActorFlags.h" />
+    <ClInclude Include="ActorFlagsGen.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SymHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActorFlagsGen.cpp" />
     <ClCompile Include="ActorFlagsLogger.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Main.cpp" />

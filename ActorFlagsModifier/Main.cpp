@@ -1,10 +1,9 @@
 #include "pch.h"
+#include "Config.h"
 #include "ActorFlags.h"
 #include "SymHelper.h"
+#include "ActorFlagsGen.h"
 #include <mc/OffsetHelper.h>
-
-#define VERSION "0.0.1"
-#define PLUGIN_NAME "LL TEMPLATE"
 
 using namespace std;
 
@@ -18,7 +17,6 @@ enum class OPERATION_1 : int {
 };
 
 bool oncmd_actorflags_0(CommandOrigin const& ori, CommandOutput& outp, CommandSelector<Actor>& target, MyEnum<OPERATION_0>& op) {
-    WPlayer(*(Player*)ori.getEntity()).sendText("text");
     auto actors = target.results(ori);
     switch (op.val)
     {
@@ -96,14 +94,22 @@ void regListener() {
         MakeCommand("actorflags", "modifier actor flags", 0);
         CEnum<OPERATION_0> _0("list", { "list" });
         CEnum<OPERATION_1> _1("op", { "add", "remove" });
-        CEnum<ActorFlagsForCmd> _2("flag", { "onfire", "sneaking", "riding", "sprinting", "usingitem", "invisible", "tempted", "inlove", "saddled", "powered", "ignited", "baby", "converting", "critical", "showname", "noai", "silent", "wallclimbing", "resting", "sitting", "angry", "interested", "charged", "tamed", "orphaned", "leashed", "sheared", "gliding", "elder", "moving", "breathing", "chested", "stackable", "idling", "has_gravity", "swimming", "bribed", "layingdown", "sneezing", "trusting", "scared", "blocking", "is_illager_captain", "stunned", "roaring", "is_avoiding_mobs", "out_of_control", "playing_dead" });
+        CEnum<ActorFlagsForCmd> _2("flag", CMD_FLAG_OPTIONS);
         CmdOverload(actorflags, oncmd_actorflags_0, "actor", "list");
         CmdOverload(actorflags, oncmd_actorflags_1, "actor", "op", "flag");
         });
 }
 
+#ifdef GEN_ACTOR_FLAGS
+void entry() {
+    Event::addEventListener([](ServerStartedEV ev) {
+        startGenActorFlags();
+        });
+}
+#else
 void entry() {
     regListener();
-    cout << PLUGIN_NAME << "Loaded, Version: " << VERSION << endl;
+    cout << PLUGIN_NAME << "Loaded, Version: " << getVersionString() << endl;
 }
+#endif // GEN_ACTOR_FLAGS
 

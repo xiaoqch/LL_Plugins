@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define VERSION "1.0.3"
+#define VERSION "1.0.4"
 
 void entry() {
     cout << "Fix Chest Crash Pugin Loaded. Version: " << VERSION << endl;

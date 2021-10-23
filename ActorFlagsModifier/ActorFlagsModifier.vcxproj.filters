@@ -37,6 +37,12 @@
     <ClInclude Include="SymHelper.h">
       <Filter>Util</Filter>
     </ClInclude>
+    <ClInclude Include="ActorFlagsGen.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -50,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="ActorFlagsLogger.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorFlagsGen.cpp">
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

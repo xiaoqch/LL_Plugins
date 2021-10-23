@@ -1,5 +1,7 @@
 #pragma once
 
+// \s+= -?\d+,\r\n\s*
+
 enum class ItemStackRequestActionType : char {
     Take                                     = 0,
     Place                                    = 1,

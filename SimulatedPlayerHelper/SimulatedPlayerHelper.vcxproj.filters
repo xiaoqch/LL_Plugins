@@ -34,7 +34,9 @@
     <ClInclude Include="SimulatedPlayer.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="SymHelper.h" />
+    <ClInclude Include="SymHelper.h">
+      <Filter>Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -49,7 +51,9 @@
     <ClCompile Include="SimulatedPlayer.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="SymHelper.cpp" />
+    <ClCompile Include="SymHelper.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\LiteLoader.lib">

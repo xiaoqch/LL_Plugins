@@ -12,10 +12,9 @@
 
 using namespace std;
 
-#define VERSION "1.1.3"
+#define VERSION "1.1.4"
 #define CONF_DIR "./plugins/AntiCutter/"
 #define CONF_PATH "./plugins/AntiCutter/config.json"
-//#define RECIPES_PATH "./plugins/AntiCutter/cutter_recipes.json"
 #define LOG_PATH "./logs/cutter_modify_detected.log"
 
 // config 
