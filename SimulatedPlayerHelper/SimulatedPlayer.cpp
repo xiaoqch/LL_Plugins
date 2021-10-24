@@ -12,8 +12,10 @@ THook(void, "?die@ServerPlayer@@UEAAXAEBVActorDamageSource@@@Z",
         original(_this, ads);
         int spanwnDid = sp->getExpectedSpawnDimensionId();
         int did = sp->getDimensionId();
-        if(spanwnDid!=did)
-            WPlayer(*sp).teleport(sp->getPos(), spanwnDid);
+        if (spanwnDid != did) {
+            auto pos = sp->getExpectedSpawnPosition();
+            WPlayer(*sp).teleport({ pos->x + 0.5f, pos->y + 0.0f, pos->z + 0.5f }, spanwnDid);
+        }
         return sp->respawn();
     }
     original(_this, ads);

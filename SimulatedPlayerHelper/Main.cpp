@@ -23,6 +23,21 @@ bool oncmd_sp(CommandOrigin const& ori, CommandOutput& outp, string name, int x,
     outp.success("创建模拟玩家 " + name + " 成功");
     return true;
 }
+bool oncmd_sp_bpos(CommandOrigin const& ori, CommandOutput& outp, string name, CommandPosition cpos, optional<int>& optDimid) {
+    int dimid = 0;
+    if (optDimid.set)
+        dimid = optDimid.val();
+    else {
+        auto dim = ori.getDimension();
+        if (!dim)
+            dimid = 0;
+        else
+            dimid = SymCall("?getDimensionId@Dimension@@QEBA?AV?$AutomaticID@VDimension@@H@@XZ", int, Dimension*)(dim);
+    }
+    auto sp = SimulatedPlayerHelper::createSP(name, cpos.getBlockPos(&ori, {}), dimid);
+    outp.success("创建模拟玩家 " + name + " 成功");
+    return true;
+}
 
 bool oncmd_sp_quick(CommandOrigin const& ori, CommandOutput& outp, string name) {
     auto actor = ori.getEntity();
@@ -168,6 +183,7 @@ void regListener() {
         MakeCommand("spsync", "sync", 0);
         CmdOverload(sp, oncmd_sp_quick, "name");
         CmdOverload(sp, oncmd_sp, "name", "x", "y", "z", "dimid");
+        CmdOverload(sp, oncmd_sp_bpos, "name", "pos", "dimid");
         CmdOverload(sprm, oncmd_rmsp, "simulatedplayer");
         CmdOverload(spmv, oncmd_spmv, "simulatedplayer");
         CmdOverload(spstopmv, oncmd_spstopmv, "simulatedplayer");

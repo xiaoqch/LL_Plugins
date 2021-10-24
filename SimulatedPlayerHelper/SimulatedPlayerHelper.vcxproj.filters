@@ -38,7 +38,7 @@
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="SyncHelper.h">
-      <Filter>Main</Filter>
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -58,7 +58,7 @@
       <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="SyncHelper.cpp">
-      <Filter>Main</Filter>
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

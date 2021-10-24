@@ -12,8 +12,13 @@
 #include <map>
 #include <stl/Logger.h>
 #include <stl/langPack.h>
-#include <loader/Loader.h>
 #include <mc/Player.h>
 #include <seh_exception/seh_exception.hpp>
+#include <loader/Loader.h>
+#include <api/LiteLoaderApi.h>
+#include <api/basicEvent.h>
+#include <mc/Command.h>
+#include <mc/CommandReg.h>
+#include <api/regCommandHelper.h>
 
 #endif //PCH_H
