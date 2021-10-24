@@ -149,6 +149,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,10 +166,12 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActorFlags.h" />
     <ClInclude Include="BlockType.h" />
     <ClInclude Include="CraftingLogger.h" />
     <ClInclude Include="EnumGen.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="McStructure.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RecipeHook.h" />
     <ClInclude Include="StrHelper.h" />
@@ -182,6 +185,7 @@ copy $(OutDir)$(TargetName).pdb $(LocalDebuggerWorkingDirectory)\plugins\
     <ClCompile Include="EnumGen.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="McStructure.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

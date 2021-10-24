@@ -14,6 +14,18 @@ class CommandMessage {
         return (this->*rv)(x);
     }
 };
+struct CommandPosition {
+    float x;
+    float y;
+    float z;
+    int unk;
+
+    BlockPos getBlockPos(CommandOrigin const* ori, Vec3 const& pos) {
+        BlockPos bpos = {};
+        return SymCall("?getBlockPos@CommandPosition@@QEBA?AVBlockPos@@AEBVCommandOrigin@@AEBVVec3@@@Z",
+            BlockPos&, CommandPosition*, BlockPos&, CommandOrigin const*, Vec3 const&)(this, bpos, ori, pos);
+    }
+};
 
 static std::unordered_map<string, void *> parse_ptr = {
     {typeid(CommandMessage).name(),
@@ -55,7 +67,11 @@ static std::unordered_map<string, void *> parse_ptr = {
          "??$parse@V?$CommandSelector@VPlayer@@@@@CommandRegistry@@AEBA_NPEAXAEBUParseToken@0@"
          "AEBVCommandOrigin@@HAEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@"
          "AEAV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@"
-         "V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@4@@Z")}};
+         "V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@4@@Z")},
+    {typeid(CommandPosition).name(),
+     dlsym_real(
+         "??$parse@VCommandPosition@@@CommandRegistry@@AEBA_NPEAXAEBUParseToken@0@AEBVCommandOrigin@@HAEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@4@@Z")},
+};
 template <typename T>
 class typeid_t {
   public:

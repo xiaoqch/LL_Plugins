@@ -12,8 +12,7 @@ class ItemStackBase {
         class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>> (
             ItemStackBase::*rv)() const;
         *((void **)&rv) = dlsym(
-            "?toString@ItemStackBase@@QEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@"
-            "2@@std@@XZ");
+            "?toString@ItemStackBase@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ");
         return (this->*rv)();
     } MCINLINE bool operator!=(class ItemStackBase const &a0) const {
         bool (ItemStackBase::*rv)(class ItemStackBase const &) const;

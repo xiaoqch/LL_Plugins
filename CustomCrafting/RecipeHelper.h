@@ -9,6 +9,13 @@ typedef unsigned int TypedServerNetId;
 //#define AddShapedRecipeCallback_t function<unique_ptr<ShapedRecipe>(string, int, int, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>
 //#define AddShaplessRecipeCallback_t function<unique_ptr<ShapelessRecipe>(string, vector<RecipeIngredient> const&, vector<ItemInstance> const&, HashedString)>
 
+struct SortItemInstanceIdAux {
+    bool operator() (ItemInstance const& left, ItemInstance const& right) const {
+        return SymCall("??RSortItemInstanceIdAux@@QEBA_NAEBVItemInstance@@0@Z",
+            bool, SortItemInstanceIdAux*, ItemInstance const&, ItemInstance const&)(nullptr, left, right);
+    };
+};
+
 class UUID {
 public:
     std::uint64_t a = 0, b = 0;
@@ -74,6 +81,7 @@ class ShapedRecipe :Recipe {
 };//264
 
 class ShapelessRecipe : Recipe {
+public:
     //void* filler[0x108/8 - sizeof(Recipe) / 8];
     char unk160[208 - 160];// 160
     byte unk208 = byte(1); // 208
@@ -81,6 +89,7 @@ class ShapelessRecipe : Recipe {
     vector<ItemInstance> items; // 216
     void* unk240[3] = { 0,0,0 }; //240
     //pair<enum BlockActorType, const string> 
+
 }; //0x264
 
 class BlockReducer {
@@ -119,7 +128,7 @@ public:
     map<Recipes::FurnaceRecipeKey const, ItemInstance> furnaceRecipes; // 32
     bool initializing;// 48
     // map<output, unorder_map<identifier, recipe>
-    map<ItemInstance, unordered_map<string, Recipe*>> recipesByOutput; //56
+    map<ItemInstance, unordered_map<string, Recipe*>, SortItemInstanceIdAux> recipesByOutput; //56
     unordered_map<TypedServerNetId, Recipe*> unk72; // 72
     unordered_set<string> identifiers; // 136
 

@@ -47,15 +47,22 @@ Mob* getMobByAUID(long long auid) {
     return getMobByAUID(ActorUniqueID(auid));
 }
 
+bool isSimulatedPlayer(Actor* actor) {
+    if (!actor)
+        return false;
+    auto vtbl = dlsym("??_7SimulatedPlayer@@6B@");
+    return *(void**)actor == vtbl;
+}
+
 bool isPlayer(Actor* actor) {
     if (!actor)
         return false;
     auto vtbl = dlsym("??_7ServerPlayer@@6B@");
-    return *(void**)actor == vtbl;
+    return *(void**)actor == vtbl || isSimulatedPlayer(actor);
 }
 
 bool isSleeping(Player* player) {
-    return *((bool*)player + 7648); //Player::isSleeping
+    return SymCall("?isSleeping@Player@@UEBA_NXZ",bool,Player*)(player); //Player::isSleeping
 }
 bool isSleeping(Mob* mob) {//Mob::isSleeping
     return SymCall("?getStatusFlag@Actor@@QEBA_NW4ActorFlags@@@Z",

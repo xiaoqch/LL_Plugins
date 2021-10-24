@@ -12,10 +12,9 @@
 
 using namespace std;
 
-#define VERSION "1.1.1"
+#define VERSION "1.1.4"
 #define CONF_DIR "./plugins/AntiCutter/"
 #define CONF_PATH "./plugins/AntiCutter/config.json"
-//#define RECIPES_PATH "./plugins/AntiCutter/cutter_recipes.json"
 #define LOG_PATH "./logs/cutter_modify_detected.log"
 
 // config 
@@ -130,23 +129,42 @@ void entry() {
     cout << "[AntiCutter] Anti Cutter Item Modify Plugin Loaded. Version: " << VERSION << endl;
 }
 
-// VirtualCall
-template<typename RTN = void, typename... Args>
-RTN inline VirtualCall(void* _this, uintptr_t off, Args... args) {
-    return (*(RTN(**)(void*, Args...))(*(uintptr_t*)_this + off))(_this, args...);
-}
-
 ItemStackNetResult vaildifyCrafting(ItemStack* inputItem, ItemInstance* outputItem) {
-    auto recipe = getCutterRecipeFor(*outputItem);
-    if (!recipe)
+    auto recipes = getRecipesFor(outputItem);
+    if (recipes.empty())
         return ItemStackNetResult::InvalidCraftResultItem;
-    auto result = outputMatch(recipe, outputItem);
-    if(!result)
-        return ItemStackNetResult::InvalidCraftResultStackSize;
-    result = ingredientMatch(recipe, inputItem);
-    if (!result)
-        return ItemStackNetResult::FailedToMatchExpectedAllowedAnywhereConsumedItem;
-    return ItemStackNetResult::Success;
+
+    char tmp[256] = {};
+    auto ctn = SymCall("??0CraftingContainer@@QEAA@HH@Z",
+        CraftingContainer*, CraftingContainer*, int, int)((CraftingContainer*)tmp, 1, 1);
+    ctn->setItem(0, inputItem);
+
+    for (auto& [identifier, recipe] : recipes) {
+        // 此处不验证合成台tag，防止自定义合成台合成误报
+        //if (dAccess<HashedString>(recipe, 160) != HashedString("stonecutter"))
+        //    continue;
+
+        // 无序合成
+        if (*(void**)recipe != dlsym("??_7ShapelessRecipe@@6B@"))
+            continue;
+
+        // 验证材料, ShapelessRecipe::matches
+        auto match = recipeMatches((Recipe*)recipe, ctn, getLevel());
+        if (!match)
+            continue;
+
+        // 验证输出物品数量
+        auto recipeOutputs = getRecipeOutput((ShapelessRecipe*)recipe);
+        if (recipeOutputs.size() != 1)
+            continue;
+        auto& recipeOutput = recipeOutputs[0];
+        auto expectedCount = getItemCount((ItemStackBase*)&recipeOutput);
+        auto outputCount = getItemCount((ItemStackBase*)outputItem);
+        if (expectedCount == outputCount)
+            return ItemStackNetResult::Success;
+    }
+
+    return ItemStackNetResult::MismatchSlotExpectedConsumedItem;
 }
 
 //ItemInstance* newItem(string const& name, int count) {
@@ -158,24 +176,6 @@ ItemStackNetResult vaildifyCrafting(ItemStack* inputItem, ItemInstance* outputIt
 //    ItemInstance itemIns{};
 //    return SymCall("??0ItemInstance@@QEAA@AEBVItem@@HH@Z",
 //        ItemInstance*, ItemInstance*, Item*, int, unsigned int)(&itemIns, item, count, aux);
-//}
-
-//void iterContainer(SparseContainer* ctn) {
-//    size_t size = SymCall("?getContainerSize@SparseContainer@@UEBAHXZ",
-//        size_t, SparseContainer*)(ctn);
-//    for (size_t slot = 0; slot < size; ++slot) {
-//        auto item = SymCall("?getItem@SparseContainer@@UEBAAEBVItemStack@@H@Z",
-//            ItemStack*, SparseContainer*, size_t)(ctn, slot);
-//        auto isNull = SymCall("?isNull@ItemStackBase@@QEBA_NXZ",
-//            bool, ItemStackBase*)(item);
-//        if (!isNull) {
-//            string itemString;
-//            SymCall("?toString@ItemStack@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
-//                string&, ItemStack*, string&)(item, itemString);
-//            cout << slot << endl;
-//            cout << itemString << endl;
-//        }
-//    }
 //}
 
 THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandler@@QEAA?AW4ItemStackNetResult@@AEBVItemStackRequestActionCraftResults_DEPRECATEDASKTYLAING@@@Z",
@@ -193,9 +193,12 @@ THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandle
     if (outputItems.size() != 1)
         return ItemStackNetResult::InvalidCraftResultItem;
     ItemInstance& outputItem = outputItems.at(0);
-    //outputItem = *newItem("minecraft:stone_slab", 3); // test
 
     ItemStackNetResult result = vaildifyCrafting(inputItem, &outputItem);
+
+    // 测试
+    //outputItem = *newItem("minecraft:stone_slab", 3);
+    //result = vaildifyCrafting(inputItem, &outputItem);
 
     if (result == ItemStackNetResult::Success) {
         result = original(irch, ircr);
@@ -204,6 +207,7 @@ THook(ItemStackNetResult, "?handleCraftResults@ItemStackRequestActionCraftHandle
         auto player = dAccess<Player*>(irch, 2 * 8);
         log("[AntiCutter] [" + getTimeStr() + "] Detected Invaild Craft By Player: " + player->getNameTag());
         log("[AntiCutter] [" + getTimeStr() + "] Detail: " + itemStackToString(*inputItem) + " -> " + itemInsToString(outputItem));
+        log("[AntiCutter] [" + getTimeStr() + "] Reason Code: " + to_string((int)result));
         detectedOperate(player);
     }
     return result;

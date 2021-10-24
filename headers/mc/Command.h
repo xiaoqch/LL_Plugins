@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <api/types/types.h>
 #include <loader/Loader.h>
 #include <mc/Core.h>
@@ -137,6 +137,7 @@ class CommandOrigin {
     virtual bool isSelectorExpansionAllowed() const                 = 0;
     virtual NetworkIdentifier getSourceId_net() const               = 0;
     virtual char getSourceSubId() const                             = 0;
+    virtual void unk_vfn_20()                                       = 0;
     virtual CommandOrigin *getOutputReceiver() const                = 0;
     virtual OriginType getOriginType() const                        = 0;
     virtual mce::UUID const &getUUID() const                        = 0;
@@ -148,28 +149,28 @@ class Actor;
 class HashedString {
     uint64_t hash;
     std::string str;
-
-public:
     int64_t unk;
-    std::string const& getString() const { return str; }
-    MCINLINE static unsigned __int64 computeHash(char const* a0) {
-        return ((unsigned __int64 (*)(char const*))dlsym(
+
+  public:
+    std::string const &getString() const { return str; }
+    MCINLINE static unsigned __int64 computeHash(char const *a0) {
+        return ((unsigned __int64 (*)(char const *))dlsym(
             "?computeHash@HashedString@@SA_KPEBD@Z"))(a0);
     }
-    MCINLINE bool operator==(class HashedString const& a0) {
-        bool (HashedString:: * rv)(class HashedString const&);
-        *((void**)&rv) = dlsym("??8HashedString@@QEBA_NAEBV0@@Z");
+    MCINLINE bool operator==(class HashedString const &a0) {
+        bool (HashedString::*rv)(class HashedString const &);
+        *((void **)&rv) = dlsym("??8HashedString@@QEBA_NAEBV0@@Z");
         return (this->*rv)(a0);
     }
-    MCINLINE bool operator!=(class HashedString const& a0) {
-        bool (HashedString:: * rv)(class HashedString const&);
-        *((void**)&rv) = dlsym("??9HashedString@@QEBA_NAEBV0@@Z");
+    MCINLINE bool operator!=(class HashedString const &a0) {
+        bool (HashedString::*rv)(class HashedString const &);
+        *((void **)&rv) = dlsym("??9HashedString@@QEBA_NAEBV0@@Z");
         return (this->*rv)(a0);
     }
-    MCINLINE HashedString(const char* ch) {
-        str = ch;
+    MCINLINE HashedString(const char *ch) {
+        str  = ch;
         hash = computeHash(ch);
-        unk = 0;
+        unk  = 0;
     }
 };
 struct ActorDefinitionIdentifier {
@@ -227,7 +228,7 @@ struct InvertableFilter {
 };
 class CommandSelectorBase {
   public:
-    void *filler[192 / 8];
+    void *filler[200 / 8];
 #ifdef MC_COMMAND_EXTRA
     MCINLINE bool isExplicitIdSelector() const { return explicitIdSelector; }
     MCINLINE void addNameFilter(InvertableFilter<std::string> const &filter) {

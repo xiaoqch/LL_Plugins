@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#define VERSION "v1.0.0"
+#define VERSION "1.0.2"
 
 class PortalForcer;
 
@@ -34,10 +34,13 @@ BlockSource* getBlockSourceByDim(int dimid)
 // 单传送门记录
 struct PortalRecord {
     int DimId;
+    //传送门宽度
     char Span;
+    //目标传送门坐标
     int TpX;
     int TpY;
     int TpZ;
+    //传送偏移
     char Xa;
     char Za;
     Tag* toTag() {
@@ -97,10 +100,32 @@ struct Portals {
         catch (...) {};
     }
 };
+int cleanPortals();
+
+bool oncmd_cleanportal(CommandOrigin const& ori, CommandOutput& outp) {
+    int count = cleanPortals();
+    if (count) {
+        outp.success("Found and clean " + to_string(count) + " Ghost Portal" + (count > 1 ? "s." : "."));
+        return true;
+    }
+    else {
+        outp.error("Ghost Portal not found.");
+        return false;
+    }
+    return false;
+}
+
+void regListener() {
+    Event::addEventListener([](RegCmdEV ev) {
+        CMDREG::SetCommandRegistry(ev.CMDRg);
+        MakeCommand("cleanportal", "CMD Description", 0);
+        CmdOverload(cleanportal, oncmd_cleanportal);
+        });
+}
 
 void entry() {
     _set_se_translator(seh_exception::TranslateSEHtoCE);
-
+    regListener();
     cout << "Ghost Portal Cleaner has loaded. Version: " << VERSION << endl;
 }
 
@@ -125,7 +150,7 @@ Block* getBlockEx(BlockSource* bs, BlockPos bpos) {
     if (!chunk)
         return nullptr;
 
-    short cby = bpos.y - dAccess<short>(bs, 42);
+    short cby = bpos.y - dAccess<short>(bs, 88);
     char cbx = bpos.x & 0xF;
     char cbz = bpos.z & 0xF;
     ChunkBlockPos cbpos{ cbx, cbz, cby };
@@ -143,14 +168,45 @@ Block* getBlockEx(BlockSource* bs, BlockPos bpos) {
     //    *((uintptr_t*)v3 + 6),
     //    (unsigned __int16)((cbpos.y & 0xF)
     //        + 16 * (cbpos.z + 16 * cbpos.x)));
-
     return SymCall("?getBlock@LevelChunk@@QEBAAEBVBlock@@AEBVChunkBlockPos@@@Z",
         Block*, LevelChunk*, ChunkBlockPos*)(chunk, &cbpos);
 }
 
+struct string_span {
+    size_t count;
+    char const* str;
+};
+
+// 是否从未加载过
+bool neverLoaded(int dimid, BlockPos const& bpos) {
+    ChunkPos cpos = {};
+    SymCall("??0ChunkPos@@QEAA@AEBVBlockPos@@@Z", ChunkPos&, ChunkPos&, BlockPos const&)(cpos, bpos);
+
+    int dbKey[3] = { cpos.x, cpos.z, dimid };
+    string key;
+    if (dimid)
+        key.append((char*)dbKey, 12);
+    else
+        key.append((char*)dbKey, 8);
+    key.append("\x2f", 1);
+    char subChunkKey = bpos.y >> 4;
+    key.append(&subChunkKey, 1);
+
+    class DbStorage* dbs = SymCall("?getLevelStorage@Level@@UEBAAEBVLevelStorage@@XZ", DbStorage*, Level*)(mc->getLevel());
+    bool loaded = SymCall("?hasKey@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@W4Category@DBHelpers@@@Z",
+        bool, DbStorage*, string_span const, int)(dbs, { key.size(), key.c_str() }, 0);
+
+    //SymCall("?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@$$CBD$0?0@gsl@@W4Category@DBHelpers@@AEBV?$function@$$A6AXV?$basic_string_span@$$CBD$0?0@gsl@@0@Z@std@@@Z",
+    //    int64_t, DbStorage*, string_span const, int, function<void(string_span, string_span)>)(dbs, { key.size(), key.c_str() }, 0, [&count](string_span s1, string_span s2) {
+    //        ++count;
+    //        });
+
+    return !loaded;
+}
+
 // 快速判断
 bool isPortalBlock(BlockSource* bs, BlockPos bpos) {
-    Block* bl = SymCall("?getBlock@BlockSource@@QEBAAEBVBlock@@AEBVBlockPos@@@Z",
+    Block* bl = SymCall("?getBlock@BlockSource@@UEBAAEBVBlock@@AEBVBlockPos@@@Z",
         Block*, BlockSource*, BlockPos&)(bs, bpos);
     //cout << offBlock::getFullName(bl) << ":" << bpos.toString() << endl;
     return offBlock::getFullName(bl) == "minecraft:portal";
@@ -175,27 +231,57 @@ void removePortal(PortalForcer* pf, BlockPos bpos, BlockSource* bs) {
         void, PortalForcer*, BlockSource*, BlockPos*)(pf, bs, &bpos);
 }
 
-int cleanPortals(PortalForcer* pf) {
-    int count = 0;
-    Tag* pTag = Tag::createTag(TagType::Compound);
-    SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
-        void, PortalForcer*, Tag*)(pf, pTag);
-    //cout << TagToSNBT(pTag) << endl;
-    Portals portals(pTag);
-    for (auto& pr : portals.records) {
-        auto dimid = pr.DimId;
-        auto bs = getBlockSourceByDim(dimid);
-        if (!bs)
-            continue;
-        if (((bool)pr.Xa && (bool)pr.Za)
-            || shouldRemove(bs, pr.getPos())
-            || shouldRemove(bs, pr.getTpPos())) {
-            cout << "Remove Portal In Dim " << dimid << " (" << pr.getPos().toString() << ")" << endl;
-            removePortal(pf, pr.getPos(), bs);
-            ++count;
+int cleanPortals() {
+    try {
+        PortalForcer* pf = SymCall("?getPortalForcer@Level@@UEAAAEAVPortalForcer@@XZ", PortalForcer*, Level*)(mc->getLevel());
+        int count = 0;
+        auto pTag = Tag::createTag(TagType::Compound);
+        SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
+            void, PortalForcer*, Tag*)(pf, pTag);
+        //cout << TagToSNBT(pTag) << endl;
+        Portals portals(pTag);
+        vector<int> indices;
+        int index=-1;
+        for (auto& pr : portals.records) {
+            ++index;
+            auto dimid = pr.DimId;
+            auto bs = getBlockSourceByDim(dimid);
+            bool vaild = !neverLoaded(pr.DimId, pr.getPos()) && !((bool)pr.Xa && (bool)pr.Za);
+            if (vaild && !bs)
+                continue;
+            vaild = vaild && !shouldRemove(bs, pr.getPos()) && !shouldRemove(bs, pr.getTpPos());
+            if (!vaild) {
+                cout << "Remove Portal In Dim " << dimid << " (" << pr.getPos().toString() << ")" << endl;
+                if(bs)
+                    removePortal(pf, pr.getPos(), bs);
+                indices.push_back(index);
+                ++count;
+            }
         }
+        reverse(indices.begin(), indices.end());
+        auto& plist = pTag->asCompound()["PortalRecords"].asList();
+        for (auto i : indices) {
+            plist.erase(plist.begin()+ i);
+        }
+        //auto snbt1 = TagToSNBT(pTag);
+        SymCall("?deserialize@PortalForcer@@UEAAXAEBVCompoundTag@@@Z", void, PortalForcer*, Tag*)(pf, pTag);
+        //SymCall("?serialize@PortalForcer@@UEBAXAEAVCompoundTag@@@Z",
+        //    void, PortalForcer*, Tag*)(pf, pTag);
+        //auto snbt2 = TagToSNBT(pTag);
+        //if (snbt1 == snbt2) {
+        //    *(void**)0 = 0;
+        //}
+        dAccess<bool, 8>(pf) = true; // dirty, IDA PortalForcer::addPortalRecord and PortalForcer::removePortalRecord
+        SymCall("??1CompoundTag@@UEAA@XZ", void, Tag*)(pTag);
+        return count;
     }
-    return count;
+    catch (const seh_exception&) {
+        cout << "SEH Exception Detected in Ghost Portal Cleaner" << endl;
+    }
+    catch (const exception&) {
+        cout << "Uncaught Exception Detected in Ghost Portal Cleaner" << endl;
+    }
+    return 0;
 }
 
 THook(void, "?travelPortal@PortalForcer@@QEBAXAEAVActor@@AEBVBlockPos@@V?$AutomaticID@VDimension@@H@@@Z",
@@ -204,19 +290,15 @@ THook(void, "?travelPortal@PortalForcer@@QEBAXAEAVActor@@AEBVBlockPos@@V?$Automa
 
     if (!actor || isPortalBlock(offPlayer::getBlockSource(actor), *bpos))
         return;
-
-    auto task = DelayedTask([pf]()->void {
+    auto task = DelayedTask([]()->void {
         _set_se_translator(seh_exception::TranslateSEHtoCE);
-        try {
-            int count = cleanPortals(pf);
-            if (count)
-                cout << "Found and clean " << count << " Ghost Portal" << (count > 1 ? "s." : ".") << endl;
-            else
-                cerr << "Ghost Portal not found." << endl;
-        }
-        catch (const seh_exception&) {}
-        catch (const exception&) {}
+        auto count = cleanPortals();
+        if (count)
+            cout << "Found and clean " << count << " Ghost Portal" << (count > 1 ? "s." : ".") << endl;
+        else
+            cerr << "Ghost Portal not found." << endl;
         }, 1);
     auto taskId = Handler::schedule(std::move(task));
     cout << "Found Ghost Portal! Try to clean all Ghost Portals" << endl;
 }
+

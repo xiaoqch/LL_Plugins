@@ -10,6 +10,7 @@
 #include "mc/OffsetHelper.h"
 #include "Util.h"
 
+#define VERSION "1.1.4"
 
 const std::string HELP_TEXT_FOR_PLAYER = "\
 [操作代理] 帮助\n\
@@ -102,15 +103,23 @@ bool oncmd_agentSet(CommandOrigin const& ori, CommandOutput& outp,
     Actor* master;
     Actor* agent;
     auto masterRes = masterSel.results(ori);
-    if (masterRes.count() != 1) {
-        outp.error("只能设置一个被代理实体");
+    if (masterRes.count() == 0) {
+        outp.error("%commands.generic.noTargetMatch");
+        return false;
+    }
+    else if (masterRes.count() > 1) {
+        outp.error("%commands.generic.tooManyTargets");
         return false;
     }
     master = *masterRes.begin();
     if (agentSel.set) {
         auto agentRes = agentSel.val().results(ori);
-        if (agentRes.count() != 1) {
-            outp.error("只能设置一个代理实体");
+        if (agentRes.count() == 0) {
+            outp.error("%commands.generic.noTargetMatch");
+            return false;
+        }
+        else if (agentRes.count() > 1) {
+            outp.error("%commands.generic.tooManyTargets");
             return false;
         }
         agent = *agentRes.begin();
@@ -118,7 +127,7 @@ bool oncmd_agentSet(CommandOrigin const& ori, CommandOutput& outp,
     else {
         agent = ori.getEntity();
         if (agent == nullptr) {
-            outp.error("控制台执行时必须设置代理实体");
+            outp.error("%commands.generic.noTargetMatch");
             return false;
         }
     }
@@ -143,7 +152,7 @@ bool oncmd_agentOperate1(CommandOrigin const& ori, CommandOutput& outp,
             }
             switch (count) {
             case 0:
-                outp.error("没有需要清除的代理设置");
+                outp.error("%commands.generic.noTargetMatch");
                 return false;
             case 1:
                 outp.success("清除了 " + (*res.begin())->getNameTag() + " 的代理");
@@ -160,11 +169,11 @@ bool oncmd_agentOperate1(CommandOrigin const& ori, CommandOutput& outp,
                 return true;
             }
             else if (ori.getEntity()) {
-                outp.error("控制台执行时必须选择需要清除的代理");
+                outp.error("%commands.generic.noTargetMatch");
                 return false;
             }
             else {
-                outp.error("没有需要清除的代理设置");
+                outp.error("%commands.generic.noTargetMatch");
                 return false;
             }
         }
@@ -181,7 +190,7 @@ bool oncmd_agentOperate1(CommandOrigin const& ori, CommandOutput& outp,
             actor = ori.getEntity();
         }
         if (!actor) {
-            outp.error("此指令需要且仅允许输入一个实体");
+            outp.error("%commands.generic.tooManyTargets");
             return false;
         }
         auto master = getMaster(actor);
@@ -245,7 +254,7 @@ bool oncmd_agentOthers(CommandOrigin const& ori, CommandOutput& outp, MyEnum<AGE
         break;
     }
     case AGENT_WITHOUT_ARG::version:
-        outp.success("OperationAgent v1.1.2");
+        outp.success("OperationAgent v" VERSION);
         return true;
     default:
         return false;
@@ -310,7 +319,7 @@ void entry() {
         forRide = getConf("forRide", forRide);;
     }
     regListener();
-    std::cout << "[Operation Agent] 操作代理已加载。版本：v1.1.3" << std::endl;
+    std::cout << "[Operation Agent] 操作代理已加载。版本：v"<<VERSION << std::endl;
 }
 
 // ===== onSpawnProjectile =====

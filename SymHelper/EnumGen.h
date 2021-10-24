@@ -14,3 +14,4 @@ void genEffectType();
 
 
 void genEnum();
+void genActorFlags(Actor* actor);

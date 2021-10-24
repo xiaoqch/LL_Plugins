@@ -16,3 +16,6 @@ class Recipes* getRecipes() {
     return SymCall("?getRecipes@Level@@UEBAAEAVRecipes@@XZ",
         Recipes*, Level*)(mc->getLevel());
 }
+Level* getLevel() {
+    return mc->getLevel();
+}

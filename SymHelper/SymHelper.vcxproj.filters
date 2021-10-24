@@ -29,6 +29,9 @@
     <Filter Include="Texture">
       <UniqueIdentifier>{b9fadccf-f46f-4d8c-9502-010d0eda1e21}</UniqueIdentifier>
     </Filter>
+    <Filter Include="structure">
+      <UniqueIdentifier>{739aceb9-fc02-44a2-b205-515bcb4c2c83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -61,6 +64,12 @@
     <ClInclude Include="CraftingLogger.h">
       <Filter>Recipe</Filter>
     </ClInclude>
+    <ClInclude Include="ActorFlags.h">
+      <Filter>Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="McStructure.h">
+      <Filter>structure</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -92,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="CraftingLogger.cpp">
       <Filter>Recipe</Filter>
+    </ClCompile>
+    <ClCompile Include="McStructure.cpp">
+      <Filter>structure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

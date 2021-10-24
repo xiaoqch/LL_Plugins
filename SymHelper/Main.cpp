@@ -6,11 +6,11 @@
 #include <seh_exception/seh_exception.hpp>
 #include "SymHelper.h"
 
+using namespace std;
 struct voids;
 
-
 bool oncmd_reg(CommandOrigin const& ori, CommandOutput& outp) {
-    genEnum();
+    genActorFlags(ori.getEntity());
     //dynReg();
     return true;
 }
@@ -39,3 +39,4 @@ void entry() {
     _set_se_translator(seh_exception::TranslateSEHtoCE);
     regListener();
 }
+
