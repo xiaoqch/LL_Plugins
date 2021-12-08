@@ -3,7 +3,7 @@
 
 ***
 
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL3-blue)](LICENSE)
 
 ## 简介
 适用于 Minecraft LiteLoader 加载器的插件
