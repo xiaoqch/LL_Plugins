@@ -1,44 +1,44 @@
 # LL_Plugins
-ÊÊÓÃÓÚ Minecraft LiteLoader ¼ÓÔØÆ÷µÄ²å¼ş
+é€‚ç”¨äº Minecraft LiteLoader åŠ è½½å™¨çš„æ’ä»¶
 
 ***
 
-[![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/xiaoqch/LL_Plugins/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-## ¼ò½é
-ÊÊÓÃÓÚ Minecraft LiteLoader ¼ÓÔØÆ÷µÄ²å¼ş
+## ç®€ä»‹
+é€‚ç”¨äº Minecraft LiteLoader åŠ è½½å™¨çš„æ’ä»¶
 
-## ²å¼şÄ¿Â¼
-* [AntiMinecartCopy](https://github.com/xiaoqch/LL_Plugins/tree/master/AntiMinecartCopy#readme)
-* [AntiCutter](https://github.com/xiaoqch/LL_Plugins/tree/master/AntiCutter#readme)
-* [GhostPortalCleaner](https://github.com/xiaoqch/LL_Plugins/tree/master/CleanGhostPortal#readme)
-* [AllVoidWorld](https://github.com/xiaoqch/LL_Plugins/tree/master/AllVoidWorld)
-* [OperationAgent](https://github.com/xiaoqch/LL_Plugins/tree/master/OperationAgent#readme)
+## æ’ä»¶ç›®å½•
+* [AntiMinecartCopy](AntiMinecartCopy#readme)
+* [AntiCutter](AntiCutter#readme)
+* [GhostPortalCleaner](CleanGhostPortal#readme)
+* [AllVoidWorld](AllVoidWorld)
+* [OperationAgent](OperationAgent#readme)
 
-## °²×°¼°Ê¹ÓÃ
-1. Ç°Íù [MineBBS](https://www.minebbs.com/resources/authors/xiaoqch.21476/) »ò [ReleaseÎÄ¼ş¼Ğ](https://github.com/xiaoqch/LL_Plugins/tree/master/Release) Ñ°ÕÒ²¢ÏÂÔØĞèÒªµÄ²å¼ş
-1. ½«²å¼şÎÄ¼ş¸´ÖÆµ½ Minecraft Dedicated Server Ä¿Â¼ÏÂ plugins ÎÄ¼ş¼ĞÖĞ
-2. ÅäÖÃºÃ¿ÉÄÜ´æÔÚµÄÅäÖÃÎÄ¼ş
-3. ¿ª·ş
+## å®‰è£…åŠä½¿ç”¨
+1. å‰å¾€ [MineBBS](https://www.minebbs.com/resources/authors/xiaoqch.21476/) æˆ– [Releaseæ–‡ä»¶å¤¹](Release) å¯»æ‰¾å¹¶ä¸‹è½½éœ€è¦çš„æ’ä»¶
+1. å°†æ’ä»¶æ–‡ä»¶å¤åˆ¶åˆ° Minecraft Dedicated Server ç›®å½•ä¸‹ plugins æ–‡ä»¶å¤¹ä¸­
+2. é…ç½®å¥½å¯èƒ½å­˜åœ¨çš„é…ç½®æ–‡ä»¶
+3. å¼€æœ
 
-## ±àÒë¼°µ÷ÊÔ
-1. Ê¹ÓÃ [Visual Studio](https://visualstudio.microsoft.com/) ´ò¿ª LL_Plugins.sln ½â¾ö·½°¸
-2. ¸ü¸ÄÏîÄ¿ÅäÖÃÎª Realese x64
-3. Éú³ÉÏîÄ¿
+## ç¼–è¯‘åŠè°ƒè¯•
+1. ä½¿ç”¨ [Visual Studio](https://visualstudio.microsoft.com/) æ‰“å¼€ LL_Plugins.sln è§£å†³æ–¹æ¡ˆ
+2. æ›´æ”¹é¡¹ç›®é…ç½®ä¸º Realese x64
+3. ç”Ÿæˆé¡¹ç›®
 
-### µ÷ÊÔ×¢ÒâÊÂÏî
-ÈôÏëÆôÓÃ±¾µØµ÷ÊÔ¹¦ÄÜ£¬ÇëÖ´ĞĞÒÔÏÂ²Ù×÷
-1. ĞŞ¸Ä ÅäÖÃÊôĞÔ > µ÷ÊÔ > ¹¤×÷Ä¿Â¼ Îªbds¸ùÄ¿Â¼
-2. Æô¶¯ ±¾µØ windows µ÷ÊÔÆ÷
+### è°ƒè¯•æ³¨æ„äº‹é¡¹
+è‹¥æƒ³å¯ç”¨æœ¬åœ°è°ƒè¯•åŠŸèƒ½ï¼Œè¯·æ‰§è¡Œä»¥ä¸‹æ“ä½œ
+1. ä¿®æ”¹ é…ç½®å±æ€§ > è°ƒè¯• > å·¥ä½œç›®å½• ä¸ºbdsæ ¹ç›®å½•
+2. å¯åŠ¨ æœ¬åœ° windows è°ƒè¯•å™¨
 
 
-## Ö§³ÖµÄ°æ±¾
+## æ”¯æŒçš„ç‰ˆæœ¬
 * Minecraft Dedicated Server 1.17.10.04 with [LiteLoaderBDS](https://www.minebbs.com/resources/liteloader.2059/) 1.1.1
 
 
-## Ğí¿ÉĞ­Òé
-ÔÚÊ¹ÓÃÎÒÃÇµÄ²úÆ·µÄÊ±ºò£¬ÎÒÃÇÄ¬ÈÏÄúÒÑ¾­³ĞÈÏ²¢×ñÊØÁË[Mojang Studios EULA](https://account.mojang.com/documents/minecraft_eula)Ğ­Òé¡£  
-ÕâÒâÎ¶×ÅÄã²»ÄÜ¶Ô±¾ÏîÄ¿½øĞĞÈÎºÎÎ¥·´EULAµÄÉÌÒµĞÔÊ¹ÓÃ¡£Î¥·´EULAĞ­ÒéÔì³ÉµÄÒ»ÇĞºó¹ûÓÉÎ¥·´Õß×ÔĞĞ³Ğµ£¡£  
+## è®¸å¯åè®®
+åœ¨ä½¿ç”¨æˆ‘ä»¬çš„äº§å“çš„æ—¶å€™ï¼Œæˆ‘ä»¬é»˜è®¤æ‚¨å·²ç»æ‰¿è®¤å¹¶éµå®ˆäº†[Mojang Studios EULA](https://account.mojang.com/documents/minecraft_eula)åè®®ã€‚  
+è¿™æ„å‘³ç€ä½ ä¸èƒ½å¯¹æœ¬é¡¹ç›®è¿›è¡Œä»»ä½•è¿åEULAçš„å•†ä¸šæ€§ä½¿ç”¨ã€‚è¿åEULAåè®®é€ æˆçš„ä¸€åˆ‡åæœç”±è¿åè€…è‡ªè¡Œæ‰¿æ‹…ã€‚  
 
 * [LL_Plugins](https://github.com/xiaoqch/LL_Plugins) MIT
 * [LiteLoader](https://github.com/LiteLDev/LiteLoader) GPLv3 with extra restrictions&exceptions
@@ -46,6 +46,6 @@
 ### Extra Restrictions & Exceptions
 If you provides a server hosting service,you can use this framework for free, but you SHOULD NOT make PRIVATE changes to this framework as a selling point. If you fixed or tweaked the code, please pull request, instead of making it private for commercial use. 
 
-## ÃùĞ»
-- LiteLDev ¿ª·¢×é [LiteLoader](https://github.com/LiteLDev/LiteLoaderBDS) ÏîÄ¿Ìá¹©µÄ¼ÓÔØ·şÎñÓë»ù´¡API  
-- [LiteXLoader](https://github.com/LiteLDev/LiteXLoader)ÏîÄ¿Ìá¹©µÄµ×²ã½Ó¿ÚÊµÏÖ
+## é¸£è°¢
+- LiteLDev å¼€å‘ç»„ [LiteLoader](https://github.com/LiteLDev/LiteLoaderBDS) é¡¹ç›®æä¾›çš„åŠ è½½æœåŠ¡ä¸åŸºç¡€API  
+- [LiteXLoader](https://github.com/LiteLDev/LiteXLoader)é¡¹ç›®æä¾›çš„åº•å±‚æ¥å£å®ç°
