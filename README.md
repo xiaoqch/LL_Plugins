@@ -40,7 +40,7 @@
 在使用我们的产品的时候，我们默认您已经承认并遵守了[Mojang Studios EULA](https://account.mojang.com/documents/minecraft_eula)协议。  
 这意味着你不能对本项目进行任何违反EULA的商业性使用。违反EULA协议造成的一切后果由违反者自行承担。  
 
-* [LL_Plugins](https://github.com/xiaoqch/LL_Plugins) MIT
+* [LL_Plugins](https://github.com/xiaoqch/LL_Plugins) GPLv3
 * [LiteLoader](https://github.com/LiteLDev/LiteLoader) GPLv3 with extra restrictions&exceptions
 
 ### Extra Restrictions & Exceptions
