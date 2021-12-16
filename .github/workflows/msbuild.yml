@@ -71,8 +71,8 @@ jobs:
         cp -f x64/Release/*.dll output/
         mkdir output/lib/
         cp -f x64/Release/*.pdb output/lib/
-        # rm output/Template.dll
-        # rm output/Lib/Template.pdb
+        rm output/Template.dll
+        rm output/Lib/Template.pdb
       shell: bash
     
     - name: upload files

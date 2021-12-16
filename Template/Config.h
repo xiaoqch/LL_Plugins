@@ -2,6 +2,8 @@
 #include <LoggerAPI.h>
 
 // Plugin Info
+#define TARGET_BDS_VERSION "1.18.2.03"
+#define TARGET_LITELOADER_VERSION "2.0.2-pre3"
 #define PLUGIN_NAME "Template"
 #define PLUGIN_AUTHOR "xiaoqch"
 #define PLUGIN_DISPLAY_NAME "Template"
@@ -39,22 +41,22 @@
 #define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA
 inline void logConfig() {
-	logger.debug("beta version, log config:");
-	LOG_VAR(PLUGIN_NAME);
-	LOG_VAR(PLUGIN_AUTHOR);
-	LOG_VAR(PLUGIN_DISPLAY_NAME);
-	LOG_VAR(PLUGIN_DESCRIPTION);
-	LOG_VAR(PLUGIN_WEBSIDE);
-	LOG_VAR(PLUGIN_LICENCE);
-	LOG_VAR(PLUGIN_USAGE);
+    logger.debug("beta version, log config:");
+    LOG_VAR(PLUGIN_NAME);
+    LOG_VAR(PLUGIN_AUTHOR);
+    LOG_VAR(PLUGIN_DISPLAY_NAME);
+    LOG_VAR(PLUGIN_DESCRIPTION);
+    LOG_VAR(PLUGIN_WEBSIDE);
+    LOG_VAR(PLUGIN_LICENCE);
+    LOG_VAR(PLUGIN_USAGE);
 
-	LOG_VAR(LOG_DIR);
-	LOG_VAR(PLUGINS_DIR);
-	LOG_VAR(PLUGIN_DIR);
-	LOG_VAR(LOG_PATH);
-	LOG_VAR(DATA_PATH);
+    LOG_VAR(LOG_DIR);
+    LOG_VAR(PLUGINS_DIR);
+    LOG_VAR(PLUGIN_DIR);
+    LOG_VAR(LOG_PATH);
+    LOG_VAR(DATA_PATH);
 
-	LOG_VAR(PLUGIN_VERSION_STRING);
+    LOG_VAR(PLUGIN_VERSION_STRING);
 }
 
 #endif // PLUGIN_VERSION_IS_BETA

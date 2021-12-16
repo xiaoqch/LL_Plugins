@@ -20,7 +20,13 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 PLUGIN_VERSION_MINOR,
                 PLUGIN_VERSION_REVISION,
                 PLUGIN_VERSION_IS_BETA ? LL::Version::Beta : LL::Version::Release
-            ), PLUGIN_WEBSIDE, PLUGIN_LICENCE, PLUGIN_WEBSIDE);
+            ), {
+                { "Git", PLUGIN_WEBSIDE },
+                { "License", PLUGIN_LICENCE },
+                { "Website", PLUGIN_LICENCE },
+                { "Target LL Version: ", TARGET_LITELOADER_VERSION },
+                { "Target BDS Version: ", TARGET_BDS_VERSION },
+            });
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
