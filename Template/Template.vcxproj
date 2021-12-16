@@ -83,6 +83,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TemplateCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -93,6 +94,7 @@ LibraryBuilder.exe -o ..\Lib\
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TemplateCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Template.rc" />

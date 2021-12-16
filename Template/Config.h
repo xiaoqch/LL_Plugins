@@ -37,6 +37,7 @@
 #define CONFIG_PATH PLUGIN_DIR PLUGIN_NAME ".config"
 #define DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
+#define ENABLE_LOG_FILE false
 
 #define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA

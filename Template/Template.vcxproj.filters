@@ -28,6 +28,7 @@
     <ClInclude Include="resource.h">
       <Filter>资源文件</Filter>
     </ClInclude>
+    <ClInclude Include="TemplateCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -39,6 +40,7 @@
     <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="TemplateCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Template.rc">

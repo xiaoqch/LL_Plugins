@@ -45,6 +45,8 @@ extern "C" {
         //Set global SEH-Exception handler
         _set_se_translator(seh_exception::TranslateSEHtoCE);
 #endif
+        if(ENABLE_LOG_FILE)
+            logger.setFile(LOG_PATH, std::ios::app);
         entry();
         logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
         if (PLUGIN_USAGE)
