@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\Header\;$(SolutionDir)\Header\third-party;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(SolutionDir)\LiteLoader\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -144,6 +144,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,6 +160,22 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>if not exist $(SolutionDir)LiteLoader\Lib\bedrock_server_api.lib goto process
+if not exist $(SolutionDir)LiteLoader\Lib\bedrock_server_var.lib goto process
+goto end
+
+:process
+cd /d $(SolutionDir)\LiteLoader\Tools\
+if exist $(LocalDebuggerWorkingDirectory)\bedrock_server.pdb (
+LibraryBuilder.exe -o ..\Lib\ $(LocalDebuggerWorkingDirectory)
+) else (
+LibraryBuilder.exe -o ..\Lib\
+)
+
+:end
+			</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
@@ -177,13 +194,14 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\Lib\bedrock_server_api.lib" />
-    <Library Include="..\Lib\bedrock_server_var.lib" />
-    <Library Include="..\Lib\LiteLoader.lib" />
-    <Library Include="..\Lib\SymDBHelper.lib" />
+    <ResourceCompile Include="Template.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc" />
+    <Library Include="..\LiteLoader\Lib\bedrock_server_api.lib" />
+    <Library Include="..\LiteLoader\Lib\bedrock_server_var.lib" />
+    <Library Include="..\LiteLoader\Lib\Chakra.lib" />
+    <Library Include="..\LiteLoader\Lib\LiteLoader.lib" />
+    <Library Include="..\LiteLoader\Lib\SymDBHelper.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

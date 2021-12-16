@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "Config.h"
 
+Logger logger(PLUGIN_NAME);
+
 void entry();
 
 BOOL APIENTRY DllMain(HMODULE hModule,
@@ -12,7 +14,13 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        LL::registerPlugin(PLUGIN_DISPLAY_NAME, PLUGIN_DESCRIPTION, PLUGIN_VERSION_STRING, PLUGIN_WEBSIDE, PLUGIN_LICENCE);
+        LL::registerPlugin(PLUGIN_DISPLAY_NAME, PLUGIN_DESCRIPTION,
+            LL::Version(
+                PLUGIN_VERSION_MAJOR,
+                PLUGIN_VERSION_MINOR,
+                PLUGIN_VERSION_REVISION,
+                PLUGIN_VERSION_IS_BETA ? LL::Version::Beta : LL::Version::Release
+            ), PLUGIN_WEBSIDE, PLUGIN_LICENCE, PLUGIN_WEBSIDE);
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
@@ -25,9 +33,15 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 extern "C" {
     _declspec(dllexport) void onPostInit() {
         std::ios::sync_with_stdio(false);
+#if PLUGIN_VERSION_IS_BETA
+        logConfig();
+#else
+        //Set global SEH-Exception handler
+        _set_se_translator(seh_exception::TranslateSEHtoCE);
+#endif
         entry();
-        Logger::Info("{} Loaded, Version: {}, Author: {}",PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
+        logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
         if (PLUGIN_USAGE)
-            Logger::Info("Usage: {}", PLUGIN_USAGE);
+            logger.info("Usage: {}", PLUGIN_USAGE);
     }
 }

@@ -367,3 +367,5 @@ FodyWeavers.xsd
 /Lib/bedrock_server_var.lib
 
 .vscode/
+/LiteLoader/Lib/bedrock_server_api.lib
+/LiteLoader/Lib/bedrock_server_var.lib

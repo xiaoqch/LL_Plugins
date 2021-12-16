@@ -14,9 +14,6 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{d6d8b7a2-010d-4126-82d0-ec77948a61cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lib\third-party">
-      <UniqueIdentifier>{c6625488-6537-46c1-8375-4c052f2aa67f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -44,22 +41,25 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\Lib\bedrock_server_var.lib">
-      <Filter>Lib</Filter>
-    </Library>
-    <Library Include="..\Lib\LiteLoader.lib">
-      <Filter>Lib</Filter>
-    </Library>
-    <Library Include="..\Lib\SymDBHelper.lib">
-      <Filter>Lib</Filter>
-    </Library>
-    <Library Include="..\Lib\bedrock_server_api.lib">
-      <Filter>Lib</Filter>
-    </Library>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="Template.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\LiteLoader\Lib\bedrock_server_api.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoader\Lib\bedrock_server_var.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoader\Lib\Chakra.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoader\Lib\LiteLoader.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoader\Lib\SymDBHelper.lib">
+      <Filter>Lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

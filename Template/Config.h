@@ -1,4 +1,5 @@
 #pragma once
+#include <LoggerAPI.h>
 
 // Plugin Info
 #define PLUGIN_NAME "Template"
@@ -35,9 +36,10 @@
 #define DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
 
-#define LOG_VAR(var) Logger::Debug("{} = {}", #var, var);
+#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA
 inline void logConfig() {
+	logger.debug("beta version, log config:");
 	LOG_VAR(PLUGIN_NAME);
 	LOG_VAR(PLUGIN_AUTHOR);
 	LOG_VAR(PLUGIN_DISPLAY_NAME);
@@ -54,11 +56,7 @@ inline void logConfig() {
 
 	LOG_VAR(PLUGIN_VERSION_STRING);
 }
-THook(void, "?startServerThread@ServerInstance@@QEAAXXZ", void* a)
-{
-	original(a);
-	logConfig();
-}
+
 #endif // PLUGIN_VERSION_IS_BETA
 
 // config
