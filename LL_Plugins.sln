@@ -5,6 +5,12 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Template", "Template\Template.vcxproj", "{77935FE9-2CCD-4FE6-918E-772A6C11C3F3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LLStructure", "LLStructure\LLStructure.vcxproj", "{34CDA60F-06E4-4FA3-9FF4-9532ECE3E54C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ContentLogCatcher", "ContentLogCatcher\ContentLogCatcher.vcxproj", "{E99675E2-92C7-4221-A0FD-BE5E9EBDB7F0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LLFakePlayer", "LLFakePlayer\LLFakePlayer.vcxproj", "{7B626EDB-3B53-4117-A5E2-19B4C02F1186}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -12,6 +18,12 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{77935FE9-2CCD-4FE6-918E-772A6C11C3F3}.Release|x64.ActiveCfg = Release|x64
 		{77935FE9-2CCD-4FE6-918E-772A6C11C3F3}.Release|x64.Build.0 = Release|x64
+		{34CDA60F-06E4-4FA3-9FF4-9532ECE3E54C}.Release|x64.ActiveCfg = Release|x64
+		{34CDA60F-06E4-4FA3-9FF4-9532ECE3E54C}.Release|x64.Build.0 = Release|x64
+		{E99675E2-92C7-4221-A0FD-BE5E9EBDB7F0}.Release|x64.ActiveCfg = Release|x64
+		{E99675E2-92C7-4221-A0FD-BE5E9EBDB7F0}.Release|x64.Build.0 = Release|x64
+		{7B626EDB-3B53-4117-A5E2-19B4C02F1186}.Release|x64.ActiveCfg = Release|x64
+		{7B626EDB-3B53-4117-A5E2-19B4C02F1186}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
