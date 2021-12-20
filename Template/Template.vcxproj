@@ -32,7 +32,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\LiteLoader\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -62,12 +62,12 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>if not exist $(SolutionDir)LiteLoader\Lib\bedrock_server_api.lib goto process
-if not exist $(SolutionDir)LiteLoader\Lib\bedrock_server_var.lib goto process
+      <Command>if not exist $(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib goto process
+if not exist $(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib goto process
 goto end
 
 :process
-cd /d $(SolutionDir)\LiteLoader\Tools\
+cd /d $(SolutionDir)\LiteLoaderSDK\Tools\
 if exist $(LocalDebuggerWorkingDirectory)\bedrock_server.pdb (
 LibraryBuilder.exe -o ..\Lib\ $(LocalDebuggerWorkingDirectory)
 ) else (
@@ -100,11 +100,11 @@ LibraryBuilder.exe -o ..\Lib\
     <ResourceCompile Include="Template.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\LiteLoader\Lib\bedrock_server_api.lib" />
-    <Library Include="..\LiteLoader\Lib\bedrock_server_var.lib" />
-    <Library Include="..\LiteLoader\Lib\Chakra.lib" />
-    <Library Include="..\LiteLoader\Lib\LiteLoader.lib" />
-    <Library Include="..\LiteLoader\Lib\SymDBHelper.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\Chakra.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
