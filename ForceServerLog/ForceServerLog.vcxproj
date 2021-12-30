@@ -10,8 +10,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{e99675e2-92c7-4221-a0fd-be5e9ebdb7f0}</ProjectGuid>
-    <RootNamespace>ContentLogCatcher</RootNamespace>
+    <RootNamespace>ForceServerLog</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ForceServerLog</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -96,7 +97,7 @@ LibraryBuilder.exe -o ..\Lib\
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ContentLogCatcher.dll.rc" />
+    <ResourceCompile Include="ForceServerLog.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />

@@ -1,13 +1,14 @@
 #pragma once
 #include <EventAPI.h>
 #include <RegCommandAPI.h>
+class StructureTemplate;
 
-// llstruct help
-// llstruct list [Location]
-// llstruct load name [pos] [Location]
-// llstruct save Location name pos1 [pos2]
-// llstruct copy fromLocation name toLocation [name]
-// llstruct delete name Location
+// struct help
+// struct list [Location]
+// struct load name [pos] [Location]
+// struct save Location name pos1 [pos2]
+// struct copy fromLocation name toLocation [name]
+// struct delete name Location
 
 class LLStructureCommand :
     public Command
@@ -29,6 +30,7 @@ class LLStructureCommand :
     CommandPosition commandPos1, commandPos2;
     string name, nameOpt;
     bool name_isSet, commandPos_isSet, location_isSet;
+    //optional<StructureTemplate> getStructure(class CommandOutput& outp) const;
     virtual void execute(class CommandOrigin const&, class CommandOutput&) const override;
 public:
     static void setup(CommandRegistry& registry);

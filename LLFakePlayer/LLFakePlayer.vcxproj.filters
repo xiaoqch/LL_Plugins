@@ -37,9 +37,6 @@
     <ClInclude Include="FakePlayerCommand.h">
       <Filter>Command</Filter>
     </ClInclude>
-    <ClInclude Include="FakePacketSender.h">
-      <Filter>Packet</Filter>
-    </ClInclude>
     <ClInclude Include="FakePlayerManager.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -58,9 +55,6 @@
       <Filter>Command</Filter>
     </ClCompile>
     <ClCompile Include="FakePacketHandler.cpp">
-      <Filter>Packet</Filter>
-    </ClCompile>
-    <ClCompile Include="FakePacketSender.cpp">
       <Filter>Packet</Filter>
     </ClCompile>
     <ClCompile Include="FakePlayerManager.cpp">

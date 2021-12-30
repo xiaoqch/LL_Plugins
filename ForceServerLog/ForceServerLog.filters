@@ -41,7 +41,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ContentLogCatcher.dll.rc">
+    <ResourceCompile Include="ForceServerLog.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

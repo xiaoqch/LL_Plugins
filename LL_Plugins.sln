@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Template", "Template\Templa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LLStructure", "LLStructure\LLStructure.vcxproj", "{34CDA60F-06E4-4FA3-9FF4-9532ECE3E54C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ContentLogCatcher", "ContentLogCatcher\ContentLogCatcher.vcxproj", "{E99675E2-92C7-4221-A0FD-BE5E9EBDB7F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ForceServerLog", "ForceServerLog\ForceServerLog.vcxproj", "{E99675E2-92C7-4221-A0FD-BE5E9EBDB7F0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LLFakePlayer", "LLFakePlayer\LLFakePlayer.vcxproj", "{7B626EDB-3B53-4117-A5E2-19B4C02F1186}"
 EndProject
