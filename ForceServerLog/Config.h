@@ -4,10 +4,10 @@
 // Plugin Info
 #define TARGET_BDS_VERSION "1.18.2.03"
 #define TARGET_LITELOADER_VERSION "2.0.2-pre3"
-#define PLUGIN_NAME "ContentLogCatcher"
+#define PLUGIN_NAME "ForceServerLog"
 #define PLUGIN_AUTHOR "xiaoqch"
-#define PLUGIN_DISPLAY_NAME "BDS ContentLog Catcher"
-#define PLUGIN_DESCRIPTION "BDS ContentLog Catcher"
+#define PLUGIN_DISPLAY_NAME "ForceServerLog"
+#define PLUGIN_DESCRIPTION "Force Server Log"
 #define PLUGIN_WEBSIDE "https://github.com/xiaoqch/LL_Plugins/" PLUGIN_NAME
 #define PLUGIN_LICENCE "GPLv3"
 #define PLUGIN_USAGE false

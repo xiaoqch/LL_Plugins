@@ -64,7 +64,7 @@ inline void logConfig() {
 
 // config
 namespace Config {
-
+    
 }
 
 #if !PLUGIN_VERSION_IS_BETA

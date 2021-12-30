@@ -54,6 +54,11 @@ THook(void, "?log@ContentLog@@QEAAX_NW4LogLevel@@W4LogArea@@ZZ",
     }
 }
 
+Logger itemLogger("Item");
+THook(void, "?log@ItemTransactionLogger@@YAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
+    std::string const str) {
+    itemLogger.info(str);
+}
 void entry() {
 
 }

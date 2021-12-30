@@ -82,7 +82,6 @@ LibraryBuilder.exe -o ..\Lib\
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
-    <ClInclude Include="FakePacketSender.h" />
     <ClInclude Include="FakePlayerCommand.h" />
     <ClInclude Include="FakePlayerManager.h" />
     <ClInclude Include="framework.h" />
@@ -92,7 +91,6 @@ LibraryBuilder.exe -o ..\Lib\
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FakePacketHandler.cpp" />
-    <ClCompile Include="FakePacketSender.cpp" />
     <ClCompile Include="FakePlayerCommand.cpp" />
     <ClCompile Include="FakePlayerManager.cpp" />
     <ClCompile Include="LLFakePlayer.cpp" />

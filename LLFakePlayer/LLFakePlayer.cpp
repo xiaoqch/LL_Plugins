@@ -28,6 +28,7 @@ void genBlockType() {
     }
     std::cout << "};" << std::endl;
 }
+
 #include <MC/CompoundTag.hpp>
 void testRW(std::string const& binary, bool isLittle) {
     logger.info("size: {}, isLittleEndian: {}", binary.size(), isLittle);
@@ -76,14 +77,47 @@ void testNbt() {
     logger.info("Testing file:  {}", filePath);
     testRW(binary.value(), true);
 }
+void* fakeSimulatedPlayerVftbl[445];
+void modifyVftbl() {
+    void** vftbl_simulated = (void**)dlsym_real("??_7SimulatedPlayer@@6B@");
+    void** vftbl_server = (void**)dlsym_real("??_7ServerPlayer@@6B@");
+    memcpy(fakeSimulatedPlayerVftbl, vftbl_server, sizeof(fakeSimulatedPlayerVftbl));
+#define restoreVFunc(index) fakeSimulatedPlayerVftbl[index] = vftbl_simulated[index]
+    restoreVFunc(14);
+    restoreVFunc(10);
+    restoreVFunc(292);
+    //restoreVFunc(339);
+    //restoreVFunc(438);
+    restoreVFunc(439);
+    restoreVFunc(440);
+    restoreVFunc(443);
+}
+#include <MC/MinecraftPackets.hpp>
+#include <MC/Packet.hpp>
+void genPktIDs() {
+    for (int i = 0; i < 200; i++) {
+        auto pkt = MinecraftPackets::createPacket((MinecraftPacketIds)i);
+        if (pkt.get())
+            fmt::print("{} = \\x{:X},\n", pkt->getName(), i);
+    }
+}
 void entry() {
-    Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev)->bool {
-        //genBlockType();
-        testNbt();
-        return true;
-        });
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev)->bool {
         FakePlayerCommand::setup(*ev.mCommandRegistry);
+#if PLUGIN_VERSION_IS_BETA
+        TickingCommand::setup(*ev.mCommandRegistry);
+#endif // PLUGIN_VERSION_IS_BETA
         return true;
         });
+
+    // ========== Test ==========
+#if PLUGIN_VERSION_IS_BETA
+    Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev)->bool {
+        //genBlockType();
+        //testNbt();
+        genPktIDs();
+        //modifyVftbl();
+        return true;
+        });
+#endif // PLUGIN_VERSION_IS_BETA
 }

@@ -19,37 +19,117 @@ using namespace RegisterCommandHelper;
 #include <MC/Level.hpp>
 #include <MC/ServerLevel.hpp>
 #include <MC/CompoundTag.hpp>
+#include <MC/ListTag.hpp>
 #include <MC/CommandArea.hpp>
 #include <MC/CommandAreaFactory.hpp>
+#include <MC/Dimension.hpp>
 #include <Utils/FileHelper.h>
 void testStructure() {
     //manager->tryPlaceStructureInWorld()
 }
-
+//optional<StructureTemplate> LLStructureCommand::getStructure(class CommandOutput& outp) const {
+//    auto filePath = fmt::format("struct/{}.mcstructure", name);
+//    auto nbt = ReadAllFile(filePath, true);
+//    if (!nbt.has_value()) {
+//        outp.error(fmt::format("Structure {} Not Found", name));
+//        return {};
+//    }
+//    auto tag = CompoundTag::fromBinaryNBT((void*)nbt.value().c_str(), nbt.value().size());
+//    return StructureTemplate::fromTag(name, *tag);
+//}
 void LLStructureCommand::execute(class CommandOrigin const& ori, class CommandOutput& outp) const {
-    string fullname = name.find(":") != name.npos ? name : fmt::format("mystructure:{}", name);
-    auto structure = manager->getStructure(fullname);
-    auto st = StructureTemplate::fromWorld(fullname, 0, { 1,2,3 }, { 500, 100, 500 },false, true);
-    //WriteAllFile("./test.msctructure", st.toTag()->toBinaryNBT(), true);
-    std::cout << st.toTag()->toBinaryNBT().size() << std::endl;
-    return;
-    testStructure();
-    //auto srpm = Global<ServerLevel>->getServerResourcePackManager();
-    if(!structure)
-        return outp.error(fmt::format("structure {} not found!", fullname));
-    auto newStruct = StructureTemplate::fromTag("mystructure:bbbbbb", structure->toTag().release());
-    auto area = ori.getAreaAt({ 0,66,0 });
-    if(area.get())
-        outp.success("ori.getAreaAt(0,66,0)");
-    auto res = manager->load(newStruct, nullptr, nullptr);
-    if (res)
-        outp.success("structure mystructure:bbb load success");
-    else
-        outp.error("structure mystructure:bbb load error");
+    try
+    {
+        switch (operation)
+        {
+        case LLStructureCommand::Operation::Help:
+            break;
+        case LLStructureCommand::Operation::List:
+            break;
+        case LLStructureCommand::Operation::Load:
+        {
+            auto filePath = fmt::format("struct/{}.mcstructure", name);
+            auto nbt = ReadAllFile(filePath, true);
+            if (!nbt.has_value()) {
+                outp.error(fmt::format("Structure {} Not Found", name));
+                return;
+            }
+            auto tag = CompoundTag::fromBinaryNBT((void*)nbt.value().c_str(), nbt.value().size());
+            BlockPos bpos;
+            if (commandPos_isSet) {
+                bpos = commandPos1.getBlockPos(ori, { 0,0,0 });
+            }
+            else {
+                auto posTag = tag->getList("structure_world_origin");
+                if (!posTag) {
+                    outp.error("load structure failed");
+                    return;
+                }
+                bpos = { posTag->getInt(0) ,posTag->getInt(1),posTag->getInt(2) };
+            }
+            auto structure = StructureTemplate::fromTag(name, *tag);
+            auto result = structure.toWorld(ori.getDimension()->getDimensionId(), bpos);
+            if (result)
+                outp.success("Success to load structure " + name);
+        }
+        break;
+        case LLStructureCommand::Operation::Save:
+        {
+            auto filePath = fmt::format("struct/{}.mcstructure", name);
+            auto pos1 = commandPos1.getBlockPos(ori, { 0,0,0 });
+            BlockPos pos2;
+            if (commandPos_isSet) {
+                pos2 = commandPos2.getBlockPos(ori, { 0,0,0 });
+            }
+            else {
+                pos2 = ori.getBlockPosition();
+            }
+            auto structure = StructureTemplate::fromWorld(name, ori.getDimension()->getDimensionId(), pos1, pos2, false, false);
+            WriteAllFile(filePath, structure.toTag()->toBinaryNBT(true));
+            outp.success("Structure Saved");
+        }
+        break;
+        case LLStructureCommand::Operation::Import:
+            break;
+        case LLStructureCommand::Operation::Export:
+            break;
+        case LLStructureCommand::Operation::Delete:
+            break;
+        default:
+            break;
+        }
+        return;
+    }
+    catch (const seh_exception& e) {
+        logger.error("Uncaught SEH Exception Detected!");
+        logger.error("In Command struct");
+    }
+    catch (const std::exception& e) {
+        logger.error("Uncaught Exception Detected!");
+        logger.error("In Command struct");
+    }
+    outp.error("Unknown Error");
 }
 
 void LLStructureCommand::setup(CommandRegistry& registry) {
     registry.registerCommand("llstructure", "Mcstructure Helper for LiteLoader", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
     registry.registerAlias("llstructure", "struct");
-    registry.registerOverload<LLStructureCommand>("llstructure", makeMandatory(&LLStructureCommand::name, "name"));
+    registry.addEnum< LLStructureCommand::Operation>("loadAction", {
+        {"load", Operation::Load},
+        });
+    registry.addEnum< LLStructureCommand::Operation>("saveAction", {
+        {"save", Operation::Save},
+        });
+    auto loadAction = makeMandatory<CommandParameterDataType::ENUM>(&LLStructureCommand::operation, "action", "loadAction");
+    auto saveAction = makeMandatory<CommandParameterDataType::ENUM>(&LLStructureCommand::operation, "action", "saveAction");
+    loadAction.addOptions((CommandParameterOption)1);
+    saveAction.addOptions((CommandParameterOption)1);
+
+    auto nameParam = makeMandatory(&LLStructureCommand::name, "name");
+    auto positionParam = makeMandatory(&LLStructureCommand::commandPos1, "pos1");
+    auto optionalPositionParam = makeOptional(&LLStructureCommand::commandPos1, "pos2", &LLStructureCommand::commandPos_isSet);
+    registry.registerOverload<LLStructureCommand>("llstructure",
+        loadAction, nameParam, optionalPositionParam);
+    registry.registerOverload<LLStructureCommand>("llstructure",
+        saveAction, nameParam, positionParam, optionalPositionParam);
 }
