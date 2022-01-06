@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ForceServerLog", "ForceServ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LLFakePlayer", "LLFakePlayer\LLFakePlayer.vcxproj", "{7B626EDB-3B53-4117-A5E2-19B4C02F1186}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPlugin", "TestPlugin\TestPlugin.vcxproj", "{0F67A152-53F2-48EB-A92F-35B90120F203}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -24,6 +26,8 @@ Global
 		{E99675E2-92C7-4221-A0FD-BE5E9EBDB7F0}.Release|x64.Build.0 = Release|x64
 		{7B626EDB-3B53-4117-A5E2-19B4C02F1186}.Release|x64.ActiveCfg = Release|x64
 		{7B626EDB-3B53-4117-A5E2-19B4C02F1186}.Release|x64.Build.0 = Release|x64
+		{0F67A152-53F2-48EB-A92F-35B90120F203}.Release|x64.ActiveCfg = Release|x64
+		{0F67A152-53F2-48EB-A92F-35B90120F203}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

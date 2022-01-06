@@ -9,8 +9,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{7b626edb-3b53-4117-a5e2-19b4c02f1186}</ProjectGuid>
-    <RootNamespace>LLFakePlayer</RootNamespace>
+    <ProjectGuid>{0f67a152-53f2-48eb-a92f-35b90120f203}</ProjectGuid>
+    <RootNamespace>TestPlugin</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -32,8 +32,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\LiteLoaderSDK\Header\third-party\;$(SolutionDir)\LiteLoaderSDK\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <IncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -63,46 +62,28 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>if not exist $(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib goto process
-if not exist $(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib goto process
-goto end
-
-:process
-cd /d $(SolutionDir)\LiteLoaderSDK\Tools\
-if exist $(LocalDebuggerWorkingDirectory)\bedrock_server.pdb (
-LibraryBuilder.exe -o ..\Lib\ $(LocalDebuggerWorkingDirectory)
-) else (
-LibraryBuilder.exe -o ..\Lib\
-)
-
-:end
-			</Command>
-    </PreBuildEvent>
+    <PreBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
-    <ClInclude Include="FakePlayerCommand.h" />
-    <ClInclude Include="FakePlayerManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TestRegRecipe.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FakePacketHandler.cpp" />
-    <ClCompile Include="FakePlayerCommand.cpp" />
-    <ClCompile Include="FakePlayerManager.cpp" />
-    <ClCompile Include="LLFakePlayer.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestRegRecipe.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="LLFakePlayer.rc" />
+    <ResourceCompile Include="TestPlugin.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />
