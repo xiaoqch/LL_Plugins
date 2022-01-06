@@ -2,8 +2,6 @@
 #include <LoggerAPI.h>
 
 // Plugin Info
-#define TARGET_BDS_VERSION "1.18.2.03"
-#define TARGET_LITELOADER_VERSION "2.0.2-pre3"
 #define PLUGIN_NAME "LLFakePlayer"
 #define PLUGIN_AUTHOR "xiaoqch"
 #define PLUGIN_DISPLAY_NAME "Fake Player For LiteLoader"
@@ -55,8 +53,8 @@ llfakeplayer gui - Show fake player manage gui)"
 #endif // PLUGIN_VERSION_IS_BETA
 
 
-#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA
+#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 inline void logConfig() {
     logger.debug("beta version, log config:");
     LOG_VAR(PLUGIN_NAME);

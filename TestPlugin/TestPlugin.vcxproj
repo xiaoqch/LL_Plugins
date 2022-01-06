@@ -47,6 +47,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

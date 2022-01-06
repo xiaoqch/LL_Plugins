@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Config.h"
 
-Logger logger(PLUGIN_NAME);
+Logger LL::logger(PLUGIN_NAME);
 
 void entry();
 
@@ -46,8 +46,8 @@ extern "C" {
         _set_se_translator(seh_exception::TranslateSEHtoCE);
 #endif
         entry();
-        logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
+        LL::logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
         if (PLUGIN_USAGE)
-            logger.info("Usage: {}", PLUGIN_USAGE);
+            LL::logger.info("Usage: {}", PLUGIN_USAGE);
     }
 }

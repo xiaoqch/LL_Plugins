@@ -90,8 +90,8 @@ namespace FakeHandler {
                 ASSERT(!dAccess<bool>(sp, 3748));
             }
             else {
-                static_assert(offsetof(PlayerActionPacket, position) == 48);
-                static_assert(offsetof(PlayerActionPacket, runtimeId) == 72);
+                //static_assert(offsetof(PlayerActionPacket, position) == 48);
+                //static_assert(offsetof(PlayerActionPacket, runtimeId) == 72);
                 PlayerActionPacket res(PlayerActionType::RESPAWN, { 0,0,0 }, -1, sp->getRuntimeID());
                 ASSERT(res.runtimeId.id == sp->getRuntimeID().id);
 
