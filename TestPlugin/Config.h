@@ -1,9 +1,6 @@
 #pragma once
-#include <LoggerAPI.h>
 
 // Plugin Info
-#define TARGET_BDS_VERSION "1.18.2.03"
-#define TARGET_LITELOADER_VERSION "2.0.3"
 #define PLUGIN_NAME "TestPlugin"
 #define PLUGIN_AUTHOR "xiaoqch"
 #define PLUGIN_DISPLAY_NAME "Test Plugin"

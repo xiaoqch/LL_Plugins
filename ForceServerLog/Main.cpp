@@ -11,7 +11,7 @@ THook(ContentLog*, "??0ContentLog@@QEAA@XZ", ContentLog* _this) {
     }
     return std::forward<ContentLog*>(rtn);
 }
-enum LogLevel {
+enum class FakeLogLevel {
     Inform,
     Warning,
     Error,
@@ -20,11 +20,11 @@ THook(void, "?updateEnabledStatus@ContentLog@@QEAAXXZ", ContentLog* _this) {
     if (!enable)
         return original(_this);
     dAccess<bool>(_this, 24) = true;
-    _this->log(true, LogLevel::Warning, (LogArea)2, "test %s %d %.2f %s", "arg1", 2, 3.4, "arg4");
+    //_this->log(true, LogLevel::Warning, (LogArea)2, "test %s %d %.2f %s", "arg1", 2, 3.4, "arg4");
 }
 
 THook(void, "?log@ContentLog@@QEAAX_NW4LogLevel@@W4LogArea@@ZZ",
-    ContentLog* _this, bool a1, enum LogLevel level, enum LogArea area, char const* format, ...) {
+    ContentLog* _this, bool a1, enum FakeLogLevel level, enum LogArea area, char const* format, ...) {
     if (enable) {
         char buf[1024];
         va_list ap;
@@ -35,13 +35,13 @@ THook(void, "?log@ContentLog@@QEAAX_NW4LogLevel@@W4LogArea@@ZZ",
         va_end(ap);
         switch (level)
         {
-        case Inform:
+        case FakeLogLevel::Inform:
             logger.info("{} : {}", ContentLog::getLogAreaName(area), buf);
             break;
-        case Warning:
+        case FakeLogLevel::Warning:
             logger.warn("{} : {}", ContentLog::getLogAreaName(area), buf);
             break;
-        case Error:
+        case FakeLogLevel::Error:
             logger.error("{} : {}", ContentLog::getLogAreaName(area), buf);
             break;
         default:
