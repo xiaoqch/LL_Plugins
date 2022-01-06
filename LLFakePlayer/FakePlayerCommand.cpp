@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "FakePlayerCommand.h"
+#include <MC/DBStorage.hpp>
 #include <MC/ServerNetworkHandler.hpp>
 #include <MC/SimulatedPlayer.hpp>
 #include <MC/Dimension.hpp>
@@ -95,6 +96,7 @@ void FakePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& outp
         break;
     }
 }
+class TestCommand;
 constexpr auto FULL_COMMAND_NAME = "llfakeplayer";
 void FakePlayerCommand::setup(CommandRegistry& registry)
 {
@@ -125,9 +127,13 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
     auto posParam = makeOptional(&FakePlayerCommand::commandPos, "position", &FakePlayerCommand::commandPos_isSet);
     auto dimidParam = makeOptional(&FakePlayerCommand::dimensionId, "dimension", &FakePlayerCommand::dimensionId_isSet);
 
+    //registry.addEnum<Operation>("HelpAction", { {"help", Operation::Help}, });
+    //auto actionHelp = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "HelpAction");
+    //actionHelp.addOptions((CommandParameterOption)1);
+    //registry.registerOverload<TestCommand>("Test", actionHelp);
+
     registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, opWithName, nameParam);
     registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, opWithNamePosition, nameParam, posParam, dimidParam);
-    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, op);
 }
 
 #if PLUGIN_VERSION_IS_BETA

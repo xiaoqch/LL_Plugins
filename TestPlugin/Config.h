@@ -3,28 +3,21 @@
 
 // Plugin Info
 #define TARGET_BDS_VERSION "1.18.2.03"
-#define TARGET_LITELOADER_VERSION "2.0.2-pre3"
-#define PLUGIN_NAME "LLFakePlayer"
+#define TARGET_LITELOADER_VERSION "2.0.3"
+#define PLUGIN_NAME "TestPlugin"
 #define PLUGIN_AUTHOR "xiaoqch"
-#define PLUGIN_DISPLAY_NAME "Fake Player For LiteLoader"
-#define PLUGIN_DESCRIPTION "Fake Player For LiteLoader"
+#define PLUGIN_DISPLAY_NAME "Test Plugin"
+#define PLUGIN_DESCRIPTION "Test LiteLoader Plugin"
 #define PLUGIN_WEBSIDE "https://github.com/xiaoqch/LL_Plugins/" PLUGIN_NAME
 #define PLUGIN_LICENCE "GPLv3"
-#define PLUGIN_USAGE R"(
-llfakeplayer help - Show this message
-llfakeplayer create - Create new fake player
-llfakeplayer remove - Remove a fake player forever
-llfakeplayer list - List all fake player
-llfakeplayer login - Login a existing fake player
-llfakeplayer logout - Logout a existing fake player
-llfakeplayer gui - Show fake player manage gui)"
+#define PLUGIN_USAGE false
 
 
 // Version
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 0
 #define PLUGIN_VERSION_REVISION 1
-#define PLUGIN_VERSION_IS_BETA false
+#define PLUGIN_VERSION_IS_BETA true
 
 #define STR1(R) #R
 #define STR2(R) STR1(R)
@@ -43,16 +36,6 @@ llfakeplayer gui - Show fake player manage gui)"
 #define LOG_PATH LOG_DIR PLUGIN_NAME ".log"
 #define CONFIG_PATH PLUGIN_DIR PLUGIN_NAME ".config"
 #define DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
-
-#if PLUGIN_VERSION_IS_BETA
-#define ASSERT(var) if (!(var)) { __debugbreak(); }
-#define DEBUG(...) logger.info(__VA_ARGS__)
-#define DEBUGW(...) logger.warn(__VA_ARGS__)
-#else
-#define ASSERT(var) ((void)0)
-#define DEBUG(...) ((void)0)
-#define DEBUGW(...) ((void)0)
-#endif // PLUGIN_VERSION_IS_BETA
 
 
 #define LOG_VAR(var) logger.debug("{} = {}", #var, var);
@@ -88,6 +71,3 @@ static_assert(PLUGIN_NAME != "Template");
 static_assert(PLUGIN_DISPLAY_NAME != "Template");
 static_assert(PLUGIN_DESCRIPTION != "Template");
 #endif // !PLUGIN_VERSION_IS_BETA
-
-
-//extern void* fakeSimulatedPlayerVftbl[445];
