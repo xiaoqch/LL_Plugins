@@ -9,7 +9,7 @@ static_assert(offsetof(RecipeIngredient, count) == 72);
 //static_assert(offsetof(RecipeIngredient, pad74) == 74);
 static_assert(sizeof(RecipeIngredient) == 80);
 static_assert(sizeof(ItemDescriptor) == 72);
-static_assert(offsetof(Recipes::Type, label) == 96);
+//static_assert(offsetof(Recipes::Type, label) == 96);
 static_assert(sizeof(Recipes::Type) == 104);
 
 void testRegRecipe()
@@ -33,7 +33,7 @@ void testRegRecipe()
 
     vector<Recipes::Type> types;
     types.emplace_back("minecraft:iron_ingot", 'A', 0x7fff, 1);
-    logger.info(types[0].toDebugString());
+    //logger.info(types[0].toDebugString());
     string identifier = "custom::custom_test";
 
     int priority = 2;
