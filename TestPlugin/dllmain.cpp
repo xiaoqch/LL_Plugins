@@ -23,7 +23,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
             ), {
                 { "Git", PLUGIN_WEBSIDE },
                 { "License", PLUGIN_LICENCE },
-                { "Website", PLUGIN_LICENCE },
+                { "Website", PLUGIN_WEBSIDE },
                 { "Target LL Version: ", TARGET_LITELOADER_VERSION },
                 { "Target BDS Version: ", TARGET_BDS_VERSION },
             });

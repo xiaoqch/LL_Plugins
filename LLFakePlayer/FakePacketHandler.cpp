@@ -39,6 +39,7 @@ static_assert(sizeof(ModalFormRequestPacket) == 88);
 static_assert(sizeof(ModalFormResponsePacket) == 88);
 static_assert(sizeof(MovePlayerPacket) == 112);
 static_assert(sizeof(PlayerActionPacket) == 80);
+static_assert(offsetof(PlayerActionPacket, actionType) == 64);
 static_assert(sizeof(PlayStatusPacket) == 56);
 static_assert(sizeof(RespawnPacket) == 72);
 
@@ -92,8 +93,11 @@ namespace FakeHandler {
             else {
                 //static_assert(offsetof(PlayerActionPacket, position) == 48);
                 //static_assert(offsetof(PlayerActionPacket, runtimeId) == 72);
-                PlayerActionPacket res(PlayerActionType::RESPAWN, { 0,0,0 }, -1, sp->getRuntimeID());
-                ASSERT(res.runtimeId.id == sp->getRuntimeID().id);
+                PlayerActionPacket res(PlayerActionType::Respawn, { 0,0,0 }, -1, sp->getRuntimeID());
+                ASSERT(res.runtimeID.id == sp->getRuntimeID().id);
+                ASSERT(res.position == BlockPos::ZERO);
+                ASSERT((int)res.blockFace == -1);
+                ASSERT(res.actionType == PlayerActionType::Respawn);
 
                 fakeSendPacket(sp, res);
 
@@ -114,10 +118,10 @@ namespace FakeHandler {
         auto& uniqueId = sp->getUniqueID();
         auto pos = packet->position;
 
-        PlayerActionPacket res(PlayerActionType::DIMENSION_CHANGE_SUCCESS, { 0,0,0 }, 0, sp->getRuntimeID());
-        ASSERT(res.actionType == PlayerActionType::DIMENSION_CHANGE_SUCCESS);
+        PlayerActionPacket res(PlayerActionType::DimensionChangeDone, { 0,0,0 }, 0, sp->getRuntimeID());
+        ASSERT(res.actionType == PlayerActionType::DimensionChangeDone);
         ASSERT(res.position == (BlockPos{ 0, 0, 0 }));
-        ASSERT(res.runtimeId == sp->getRuntimeID());
+        ASSERT(res.runtimeID == sp->getRuntimeID());
         fakeSendPacket(sp, res);
 
     }
@@ -286,12 +290,12 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     case MinecraftPacketIds::CraftingEvent:
         DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
         break;
-    case MinecraftPacketIds::ItemStackRequest:
-        DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
-        break;
-    case MinecraftPacketIds::PlayerAction:
-        DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
-        break;
+    //case MinecraftPacketIds::ItemStackRequest:
+    //    DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
+    //    break;
+    //case MinecraftPacketIds::PlayerAction:
+    //    DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
+    //    break;
     //case MinecraftPacketIds::MovePlayer:
     //    DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
     //    break;
@@ -896,12 +900,12 @@ TInstanceHook(void, "?sendPacketReceivedFrom@NetworkPacketEventCoordinator@@QEAA
     case MinecraftPacketIds::CraftingEvent:
         DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
         break;
-    case MinecraftPacketIds::ItemStackRequest:
-        DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
-        break;
-    case MinecraftPacketIds::PlayerAction:
-        DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
-        break;
+    //case MinecraftPacketIds::ItemStackRequest:
+    //    DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
+    //    break;
+    //case MinecraftPacketIds::PlayerAction:
+    //    DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
+    //    break;
     //case MinecraftPacketIds::MovePlayer:
     //    DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
     //    break;
