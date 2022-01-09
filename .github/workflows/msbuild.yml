@@ -1,4 +1,4 @@
-name: Build Plugin
+﻿name: Build Plugin
 
 on: [push]
 
@@ -18,19 +18,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
 
     - name: Download BDS
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        mkdir LiteLoader/Tools/bedrock_server
-        curl -L -o LiteLoader/Tools/bedrock_server/bedrock_server.zip https://minecraft.azureedge.net/bin-win/bedrock-server-1.18.2.03.zip
-        unzip -q LiteLoader/Tools/bedrock_server/bedrock_server.zip -d LiteLoader/Tools/bedrock_server/
+        mkdir LiteLoaderSDK/Tools/bedrock_server
+        curl -L -o LiteLoaderSDK/Tools/bedrock_server/bedrock_server.zip https://minecraft.azureedge.net/bin-win/bedrock-server-1.18.2.03.zip
+        unzip -q LiteLoaderSDK/Tools/bedrock_server/bedrock_server.zip -d LiteLoaderSDK/Tools/bedrock_server/
       shell: bash
       
     - name: Build Library
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        cd LiteLoader/Tools
+        cd LiteLoaderSDK/Tools
         LibraryBuilder.exe -o ../Lib ./bedrock_server
       shell: cmd
       
@@ -38,7 +40,7 @@ jobs:
 #       uses: actions/cache@v2.1.7
 #       with:
 #         # A list of files, directories, and wildcard patterns to cache and restore
-#         path: LiteLoader/Tools/bedrock_server/
+#         path: LiteLoaderSDK/Tools/bedrock_server/
 #         # An explicit key for restoring and saving the cache
 #         key: https://minecraft.azureedge.net/bin-win/bedrock-server-1.18.2.03.zip
 #         # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
