@@ -25,12 +25,13 @@
     <ClInclude Include="resource.h">
       <Filter>资源文件</Filter>
     </ClInclude>
-    <ClInclude Include="TemplateCommand.h">
+    <ClInclude Include="OperationAgentCommand.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Default</Filter>
     </ClInclude>
+    <ClInclude Include="AgentManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -42,9 +43,10 @@
     <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="TemplateCommand.cpp">
+    <ClCompile Include="OperationAgentCommand.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="AgentManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Template.rc">
