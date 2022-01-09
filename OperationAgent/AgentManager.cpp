@@ -80,8 +80,6 @@ void AgentManager::forEach(std::function<void(Actor* agent, Actor* master)> call
 bool AgentManager::setAgent(Actor* agent, Actor* master)
 {
     mAgentMap[agent->getUniqueID()] = master->getUniqueID();
-    logger.warn("{} -> {}", agent->getUniqueID().id, master->getUniqueID().id);
-    logger.warn("{} -> {}", agent->getNameTag(), master->getNameTag());
     return true;
 }
 
