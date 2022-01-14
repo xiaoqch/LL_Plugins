@@ -30,9 +30,9 @@
 #define LOG_DIR "./logs/"
 #define PLUGINS_DIR "./plugins/"
 #define PLUGIN_DIR PLUGINS_DIR PLUGIN_NAME "/"
-#define LOG_PATH LOG_DIR PLUGIN_NAME ".log"
-#define CONFIG_PATH PLUGIN_DIR PLUGIN_NAME ".config"
-#define DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
+#define PLUGIN_LOG_PATH LOG_DIR PLUGIN_NAME ".log"
+#define PLUGIN_CONFIG_PATH PLUGIN_DIR "config.json"
+#define PLUGIN_DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
 
 #define LOG_VAR(var) logger.debug("{} = {}", #var, var);
@@ -50,17 +50,56 @@ inline void logConfig() {
     LOG_VAR(LOG_DIR);
     LOG_VAR(PLUGINS_DIR);
     LOG_VAR(PLUGIN_DIR);
-    LOG_VAR(LOG_PATH);
-    LOG_VAR(DATA_PATH);
+    LOG_VAR(PLUGIN_LOG_PATH);
+    LOG_VAR(PLUGIN_DATA_PATH);
 
     LOG_VAR(PLUGIN_VERSION_STRING);
 }
 
 #endif // PLUGIN_VERSION_IS_BETA
 
-// config
-namespace Config {
+// Config
+#include <third-party/Nlohmann/json.hpp>
+#include <filesystem>
+#define SerializeVaule(var) json[#var] = Config::var
+#define DeserializeVaule(var)\
+if (json.find(#var) != json.end())\
+    Config::var = json.value(#var, Config::var);\
+else{\
+    logger.warn("Missing Config {}, use default value {}", #var, Config::var);\
+    needUpdate = true;\
+}
 
+namespace Config {
+    //static bool test = true;
+
+    inline std::string serialize() {
+        nlohmann::json json;
+        //SerializeVaule(test);
+        return json.dump(4);
+    }
+    inline bool deserialize(std::string jsonStr) {
+        auto json = nlohmann::json::parse(jsonStr, nullptr, true, true);
+        bool needUpdate = false;
+        //DeserializeVaule(test);
+
+        if (needUpdate) {
+            WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
+        }
+        return true;
+    }
+    inline bool initConfig() {
+        auto jsonStr = ReadAllFile(PLUGIN_CONFIG_PATH);
+        if (jsonStr.has_value()) {
+            return deserialize(jsonStr.value());
+        }
+        else {
+            logger.warn("Config File \"{}\" Not Found, Use Default Config", PLUGIN_CONFIG_PATH);
+            std::filesystem::create_directories(std::filesystem::path(PLUGIN_CONFIG_PATH).remove_filename());
+            return WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
+        }
+        return false;
+    };
 }
 
 #if !PLUGIN_VERSION_IS_BETA

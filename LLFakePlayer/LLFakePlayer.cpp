@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <MC/BlockLegacy.hpp>
 #include <MC/BlockTypeRegistry.hpp>
+#include "FakePlayerManager.h"
 #include <MC/Util.hpp>
 #include <EventAPI.h>
 #include "FakePlayerCommand.h"
@@ -16,7 +17,7 @@ void genBlockType() {
         if (!blockLegacy) {
             continue;
         }
-        auto blockName = blockLegacy->getRawNameId();
+        auto& blockName = blockLegacy->getRawNameId();
         auto blockItemId = blockLegacy->getBlockItemId();
         auto block = &blockLegacy->getRenderBlock();
         string tmp = "m_" + blockName.substr(blockName.find(':') + 1);
@@ -101,6 +102,8 @@ void genPktIDs() {
             fmt::print("{} = \\x{:X},\n", pkt->getName(), i);
     }
 }
+#include <MC/Block.hpp>
+#include <MC/NetworkIdentifier.hpp>
 void entry() {
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev)->bool {
         FakePlayerCommand::setup(*ev.mCommandRegistry);
@@ -109,14 +112,18 @@ void entry() {
 #endif // PLUGIN_VERSION_IS_BETA
         return true;
         });
-
     // ========== Test ==========
 #if PLUGIN_VERSION_IS_BETA
+    auto listener = Event::PlayerJoinEvent::subscribe([](Event::PlayerJoinEvent const& ev)->bool {
+        DEBUGW(ev.mPlayer->getNetworkIdentifier()->toString());
+        return true;
+        });
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev)->bool {
         //genBlockType();
         //testNbt();
-        genPktIDs();
+        //genPktIDs();
         //modifyVftbl();
+        //FakePlayerManager::getManager();
         return true;
         });
 #endif // PLUGIN_VERSION_IS_BETA

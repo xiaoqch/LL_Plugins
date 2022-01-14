@@ -41,6 +41,7 @@ extern "C" {
         std::ios::sync_with_stdio(false);
 #if PLUGIN_VERSION_IS_BETA
         logConfig();
+        logger.warn("This plugin is a beta version and may have bugs");
 #else
         //Set global SEH-Exception handler
         _set_se_translator(seh_exception::TranslateSEHtoCE);

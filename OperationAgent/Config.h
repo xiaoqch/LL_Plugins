@@ -85,7 +85,7 @@ inline void logConfig() {
 if (json.find(#var) != json.end())\
     Config::var = json.value(#var, Config::var);\
 else{\
-    logger.warn("Missing Config {}, set default value {}", #var, Config::var);\
+    logger.warn("Missing Config {}, use default value {}", #var, Config::var);\
     needUpdate = true;\
 }
 
@@ -95,7 +95,7 @@ namespace Config {
     static bool cancelAfterRide = true;
     static bool autoSleep = true;
     static bool autoRideWhenJoin = true;
-    static bool useNewProjectMode = true;
+    static bool useNewProjectMode = false;
     static bool forProjectile = true;
     static bool forAttack = true;
     static bool forSleep = true;

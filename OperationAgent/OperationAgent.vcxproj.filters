@@ -31,7 +31,9 @@
     <ClInclude Include="pch.h">
       <Filter>Default</Filter>
     </ClInclude>
-    <ClInclude Include="AgentManager.h" />
+    <ClInclude Include="AgentManager.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -46,7 +48,9 @@
     <ClCompile Include="OperationAgentCommand.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="AgentManager.cpp" />
+    <ClCompile Include="AgentManager.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Template.rc">

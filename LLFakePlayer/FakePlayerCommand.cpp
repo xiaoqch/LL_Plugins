@@ -5,48 +5,39 @@
 #include <MC/SimulatedPlayer.hpp>
 #include <MC/Dimension.hpp>
 #include <MC/CompoundTag.hpp>
+#include <PlayerInfoAPI.h>
+#include "FakePlayerManager.h"
+
+#define KEY_NO_TARGET "%commands.generic.noTargetMatch"
+#define KEY_TOO_MANY_TARGER "%commands.generic.tooManyTargets"
+
+#define AssertUniqueTarger(results) \
+if (results.empty())\
+    return output.error(KEY_NO_TARGET);\
+else if(results.count()>1)\
+    return output.error(KEY_TOO_MANY_TARGER);
+
 using namespace RegisterCommandHelper;
 std::vector<std::string> FakePlayerCommand::mList;
-inline BlockPos FakePlayerCommand::getExpectedPosition(CommandOrigin const& origin) const
-{
-    BlockPos bpos;
-    if (commandPos_isSet) {
-        bpos = commandPos.getBlockPos(origin, { 0,0,0 });
-    }
-    else if (origin.getBlockPosition().toVec3().length() < 0.1) {
-        bpos = Global<Level>->getDefaultSpawn();
-    }
-    else {
-        bpos = origin.getBlockPosition();
-    }
-    return bpos;
-}
-
-SimulatedPlayer* FakePlayerCommand::createSimulatedPlayer(CommandOrigin const& origin, CommandOutput& output) const
-{
-    static int SimulatedPlayerSubId = 0;
-    auto bpos = getExpectedPosition(origin);
-    auto oriDim = origin.getDimension();
-    int oriDimid = oriDim ? (int)oriDim->getDimensionId() : 0;
-    auto dimid = dimensionId_isSet ? dimensionId : oriDimid;
-    if (!Global<Level>->getDimension(dimid))
-        Global<Level>->createDimension(dimid);
-    auto sp = SimulatedPlayer::create(name, bpos, dimid, *Global<ServerNetworkHandler>);
-
-    if (sp) {
-        mList.push_back(sp->getNameTag());
-        output.success(fmt::format("Create fake player {} success.", sp->getNameTag()));
-        return sp;
-    }
-    else {
-        output.error(fmt::format("Create fake player {} failed.", name));
-        return nullptr;
-    }
-}
-
+//inline BlockPos FakePlayerCommand::getExpectedPosition(CommandOrigin const& origin) const
+//{
+//    BlockPos bpos;
+//    if (commandPos_isSet) {
+//        bpos = commandPos.getBlockPos(origin, { 0,0,0 });
+//    }
+//    else if (origin.getBlockPosition().toVec3().length() < 0.1) {
+//        bpos = Global<Level>->getDefaultSpawn();
+//    }
+//    else {
+//        bpos = origin.getBlockPosition();
+//    }
+//    return bpos;
+//}
 #include <MC/Scoreboard.hpp>
 void FakePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& output) const
 {
+    auto& manager = FakePlayerManager::getManager();
+    bool res = false;
     switch (operation)
     {
     case FakePlayerCommand::Operation::Help:
@@ -56,41 +47,69 @@ void FakePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& outp
     {
         std::string playerList = "";
         bool first = true;
-        for (auto& pl : Level::getAllPlayers()) {
-            if (!pl->isSimulatedPlayer())
-                continue;
+        for (auto& name : manager.getSortedNames()) {
             if (!first)
                 playerList += ", ";
             first = false;
-            playerList += pl->getNameTag();
+            playerList += name;
             output.success();
         }
         if (playerList.empty())
-            output.error("Not any simulated player.");
+            output.success("No fake player.");
         else {
             output.addMessage(fmt::format("List: {}", playerList));
         }
         break;
     }
     case FakePlayerCommand::Operation::Create:
-        createSimulatedPlayer(origin, output);
-        break;
+    {
+        if (auto fp = manager.create(name)) {
+            output.success(fmt::format("Create fake player {} successfully.", fp->getRealName()));
+        }
+        else {
+            output.error(fmt::format("Failed to create fake player {}.", name));
+        }
+        break; 
+    }
     case FakePlayerCommand::Operation::Remove:
     {
-        auto pl = Level::getPlayer(name);
-        if (!pl || !pl->isSimulatedPlayer()) {
-            output.error("Player Not Found");
-            break;
-        }
-        ((SimulatedPlayer*)pl)->simulateDisconnect();
-        output.success("Remove Success");
+        res = manager.remove(name);
+        if(res)
+            output.success("Remove Success");
+        else
+            output.error("Remove Failed");
         break;
     }
     case FakePlayerCommand::Operation::Login:
+        res = manager.login(name);
+        if (res)
+            output.success("Login Success");
+        else
+            output.error("Login Failed");
         break;
     case FakePlayerCommand::Operation::Logout:
+        res = manager.logout(name);
+        if (res)
+            output.success("Logout Success");
+        else
+            output.error("Logout Failed");
+        break;
+    case FakePlayerCommand::Operation::Import:
+        if (name_isSet) {
+            manager.importData_DDF(name);
+        }
+        else {
+            PlayerInfo::forEachInfo([&output](std::string_view name, std::string_view xuid, std::string_view uuid) ->bool {
+                auto nameUUID = JAVA_nameUUIDFromBytes(std::string(name));
+                if (uuid == nameUUID.asString()) {
+                    output.success(fmt::format("{} - {} - {}", name, xuid, uuid));
+                }
+                return true;
+                });
+        }
         break;
     case FakePlayerCommand::Operation::GUI:
+        output.error("NoImpl");
         break;
     default:
         break;
@@ -116,14 +135,21 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
         {"help", Operation::Help},
         {"gui", Operation::GUI},
         });
-    auto opWithNamePosition = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "FpCreateAction");
+    registry.addEnum<Operation>("ImportAction", {
+        {"import", Operation::Import},
+        });
+    auto actionCreate = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "FpCreateAction");
+    auto actionWithName = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "FpOtherAction");
+    auto action = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "ManageAction");
+    auto actionImport = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "ImportAction");
+    actionCreate.addOptions((CommandParameterOption)1);
+    actionWithName.addOptions((CommandParameterOption)1);
+    action.addOptions((CommandParameterOption)1);
 
-    auto opWithName = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "FpOtherAction");
-    auto op = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "ManageAction");
-    opWithNamePosition.addOptions((CommandParameterOption)1);
-    opWithName.addOptions((CommandParameterOption)1);
-    op.addOptions((CommandParameterOption)1);
+    auto nameSoftEnum = registry.addSoftEnum("playerList", FakePlayerManager::getManager().sortedNames);
+    auto nameSoftEnumParam = makeMandatory<CommandParameterDataType::SOFT_ENUM>(&FakePlayerCommand::name, "name", "playerList");
     auto nameParam = makeMandatory(&FakePlayerCommand::name, "name");
+    auto nameOptional = makeOptional(&FakePlayerCommand::name, "name", &FakePlayerCommand::name_isSet);
     auto posParam = makeOptional(&FakePlayerCommand::commandPos, "position", &FakePlayerCommand::commandPos_isSet);
     auto dimidParam = makeOptional(&FakePlayerCommand::dimensionId, "dimension", &FakePlayerCommand::dimensionId_isSet);
 
@@ -132,8 +158,10 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
     //actionHelp.addOptions((CommandParameterOption)1);
     //registry.registerOverload<TestCommand>("Test", actionHelp);
 
-    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, opWithName, nameParam);
-    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, opWithNamePosition, nameParam, posParam, dimidParam);
+    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, action);
+    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, actionWithName, nameSoftEnumParam);
+    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, actionCreate, nameParam);
+    registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, actionImport, nameOptional);
 }
 
 #if PLUGIN_VERSION_IS_BETA
@@ -141,11 +169,10 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
 // =============== Test ===============
 #include <MC/BlockSource.hpp>
 #include <MC/LevelChunk.hpp>
-bool processCommand(class CommandOrigin const& origin, class CommandOutput& output, Actor* actor) {
+bool processCommand(class CommandOrigin const& origin, class CommandOutput& output, Actor* actor, int range) {
     auto bpos = actor->getBlockPos();
     int chunk_x = bpos.x >> 4;
     int chunk_z = bpos.z >> 4;
-    int range = 10;
     auto max_cx = chunk_x + range;
     auto min_cx = chunk_x - range;
     auto max_cz = chunk_z + range;
@@ -191,11 +218,11 @@ void TickingCommand::execute(class CommandOrigin const& origin, class CommandOut
     if (selector_isSet) {
         auto result = selector.results(origin);
         if (result.empty()) {
-            output.error("%no.target");
+            output.error(KEY_NO_TARGET);
             return;
         }
         else if (result.count() > 1) {
-            output.error("%no.target");
+            output.error(KEY_NO_TARGET);
             return;
         }
         actor = *result.begin();
@@ -205,17 +232,22 @@ void TickingCommand::execute(class CommandOrigin const& origin, class CommandOut
             actor = entity;
         }
         else {
-            output.error("%no.target");
+            output.error(KEY_NO_TARGET);
             return;
         }
     }
-    if (!processCommand(origin, output, actor))
+    if (!processCommand(origin, output, actor, range_isSet?range:10))
         output.error("Error when executing command \"ticking\"");
 }
 
 void TickingCommand::setup(CommandRegistry& registry) {
-    registry.registerCommand("ticking", "Show Ticking chunk", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
+    registry.registerCommand("ticking", "Show Ticking chunks", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
     registry.registerOverload<TickingCommand>("ticking",
-        makeOptional(&TickingCommand::selector, "target", &TickingCommand::selector_isSet));
+        makeOptional(&TickingCommand::selector, "target", &TickingCommand::selector_isSet),
+        makeOptional(&TickingCommand::range, "range", &TickingCommand::range_isSet)
+        );
+    registry.registerOverload<TickingCommand>("ticking",
+            makeMandatory(&TickingCommand::range, "range", &TickingCommand::range_isSet)
+            );
 }
 #endif // PLUGIN_VERSION_IS_BETA

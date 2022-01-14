@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Config.h"
 
-Logger LL::logger(PLUGIN_NAME);
+Logger logger(PLUGIN_NAME);
 
 void entry();
 
@@ -41,13 +41,14 @@ extern "C" {
         std::ios::sync_with_stdio(false);
 #if PLUGIN_VERSION_IS_BETA
         logConfig();
+        logger.warn("This plugin is a beta version and may have bugs");
 #else
         //Set global SEH-Exception handler
         _set_se_translator(seh_exception::TranslateSEHtoCE);
 #endif
         entry();
-        LL::logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
+        logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
         if (PLUGIN_USAGE)
-            LL::logger.info("Usage: {}", PLUGIN_USAGE);
+            logger.info("Usage: {}", PLUGIN_USAGE);
     }
 }
