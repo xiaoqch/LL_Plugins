@@ -195,17 +195,17 @@ THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
 }
 
 // ===== Player::move =====
-THook(void, "?move@Player@@UEAAXAEBVVec3@@@Z", Player* player, Vec3* v3) {
-    if (!Config::forMove) {
-        return original(player, v3);
-    }
-    auto master = AgentManager::tryGetMaster(player);
-    if (master != nullptr) {
-        sendTextOrLog(player, "代理" + getActorDescription(master) + "移动");
-        std::cout << v3->toString() << std::endl;
-        Vec3 mpos = master->getPos();
-        Vec3 dst = mpos + *v3;
-        master->teleport(dst, master->getDimensionId());
-    }
-    return original(player, v3);
-}
+//THook(void, "?move@Player@@UEAAXAEBVVec3@@@Z", Player* player, Vec3* v3) {
+//    if (!Config::forMove) {
+//        return original(player, v3);
+//    }
+//    auto master = AgentManager::tryGetMaster(player);
+//    if (master != nullptr) {
+//        sendTextOrLog(player, "代理" + getActorDescription(master) + "移动");
+//        auto mpos = (Vec3&)master->getStateVectorComponent();
+//        logger.info(mpos.toString());
+//        Vec3 dst = mpos + *v3 + Vec3{0.0f,-1.619996f,0.0f};
+//        master->teleport(dst, master->getDimensionId());
+//    }
+//    return original(player, v3);
+//}
