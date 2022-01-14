@@ -30,7 +30,7 @@ opagent clearall - 清除所有\n\
 // Version
 #define PLUGIN_VERSION_MAJOR 1
 #define PLUGIN_VERSION_MINOR 2
-#define PLUGIN_VERSION_REVISION 0
+#define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA false
 
 #define STR1(R) #R
