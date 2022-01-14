@@ -188,8 +188,14 @@ THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
     }
     auto master = AgentManager::tryGetMaster(player);
     if (master) {
-        sendTextOrLog((Player*)player, "代理" + getActorDescription(master) + "攻击" + CommandUtils::getActorName(*actor));
-        return original(master, actor, damageCause);
+        if (Config::autoSwapAttack && master == actor) {
+            sendTextOrLog(player, "代理" + getActorDescription(master) + "攻击" + CommandUtils::getActorName(*player));
+            return original(master, player, damageCause);
+        }
+        else {
+            sendTextOrLog(player, "代理" + getActorDescription(master) + "攻击" + CommandUtils::getActorName(*actor));
+            return original(master, actor, damageCause);
+        }
     }
     return original(player, actor, damageCause);
 }
