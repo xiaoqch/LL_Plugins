@@ -1,4 +1,8 @@
 #include "pch.h"
+#include "FakePlayerManager.h"
+#include <MC/UpdateAttributesPacket.hpp>
+#include <MC/ReadOnlyBinaryStream.hpp>
+#include <MC/BinaryStream.hpp>
 #include <MC/ChunkLoadActionList.hpp>
 #include <MC/ChunkLoadedRequest.hpp>
 #include <MC/ChunkSource.hpp>
@@ -53,7 +57,13 @@ static_assert(sizeof(RespawnPacket) == 72);
 // 8488  NetworkChunkPublisher 
 
 #include <MC/VanillaDimensions.hpp>
-
+#include <MC/NetworkIdentifier.hpp>
+struct UserEntityIdentifierComponent {
+    NetworkIdentifier nid;
+    unsigned char clientSubId;
+    mce::UUID uuid;
+    std::unique_ptr<Certificate> cert;
+};
 namespace FakeHandler {
     template <typename T>
     void fakeSendPacket(Player* sp, T& packet) {
@@ -73,6 +83,8 @@ namespace FakeHandler {
     //Send: PlayerActionPacket(runtimeEntityId=1, action=RESPAWN, blockPosition=(0, 0, 0), face=-1)
     //Received: SetHealthPacket(health=20)
     //Received: UpdateAttributesPacket(runtimeEntityId=1, attributes=[AttributeData(name=minecraft:health, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.hunger, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.exhaustion, minimum=0.0, maximum=4.0, value=0.0, defaultValue=0.0), AttributeData(name=minecraft:player.saturation, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.level, minimum=0.0, maximum=24791.0, value=0.0, defaultValue=0.0), AttributeData(name=minecraft:player.experience, minimum=0.0, maximum=1.0, value=0.0, defaultValue=0.0)], tick=0)
+
+    // ================== Fix Respawn ==================
     void handle(SimulatedPlayer* sp, RespawnPacket* packet) {
         DEBUGW("FakeHandle:({}): {}", sp->getNameTag(), packet->toDebugString());
         auto state = packet->respawnState;
@@ -113,6 +125,8 @@ namespace FakeHandler {
     // Received: AddPlayerPacket(metadata={FLAGS=EntityFlags(flags=[CAN_SHOW_NAME, CAN_CLIMB, CAN_WALK, BREATHING, HAS_COLLISION, HAS_GRAVITY, HIDDEN_WHEN_INVISIBLE]), FLAGS_2=EntityFlags(flags=[CAN_SHOW_NAME, CAN_CLIMB, CAN_WALK, BREATHING, HAS_COLLISION, HAS_GRAVITY, HIDDEN_WHEN_INVISIBLE]), HEALTH=1, VARIANT=0, COLOR=0, NAMETAG=a, OWNER_EID=-1, TARGET_EID=0, AIR_SUPPLY=300, EFFECT_COLOR=0, EFFECT_AMBIENT=0, JUMP_DURATION=0, CHARGE_AMOUNT=0, PLAYER_FLAGS=0, PLAYER_INDEX=1, BED_POSITION=(0, 0, 0), LEASH_HOLDER_EID=0, SCALE=1.0, HAS_NPC_COMPONENT=0, MAX_AIR_SUPPLY=300, MARK_VARIANT=0, CONTAINER_TYPE=0, CONTAINER_BASE_SIZE=0, CONTAINER_STRENGTH_MODIFIER=0, BOUNDING_BOX_WIDTH=0.6, BOUNDING_BOX_HEIGHT=1.8, RIDER_SEAT_POSITION=(0.0, 0.0, 0.0), RIDER_ROTATION_LOCKED=0, RIDER_MAX_ROTATION=0.0, RIDER_MIN_ROTATION=0, RIDER_ROTATION_OFFSET=0.0, COMMAND_BLOCK_ENABLED=0, COMMAND_BLOCK_COMMAND=, COMMAND_BLOCK_LAST_OUTPUT=, COMMAND_BLOCK_TRACK_OUTPUT=1, CONTROLLING_RIDER_SEAT_INDEX=0, STRENGTH=0, MAX_STRENGTH=0, EVOKER_SPELL_COLOR=0, LIMITED_LIFE=-1, NAMETAG_ALWAYS_SHOW=1, COLOR_2=0, SCORE_TAG=, AGENT_ID=-1, EATING_COUNTER=0, INTERACTIVE_TAG=, TRADE_TIER=0, MAX_TRADE_TIER=0, TRADE_XP=0, SKIN_ID=0, COMMAND_BLOCK_TICK_DELAY=3, COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK=1, AMBIENT_SOUND_INTERVAL=8.0, AMBIENT_SOUND_INTERVAL_RANGE=16.0, AMBIENT_SOUND_EVENT_NAME=ambient, FALL_DAMAGE_MULTIPLIER=1.0, CAN_RIDE_TARGET=0, LOW_TIER_CURED_TRADE_DISCOUNT=0, HIGH_TIER_CURED_TRADE_DISCOUNT=0, NEARBY_CURED_TRADE_DISCOUNT=0, NEARBY_CURED_DISCOUNT_TIME_STAMP=0, HITBOX={}, IS_BUOYANT=0, BASE_RUNTIME_ID={}, FREEZING_EFFECT_STRENGTH=0.0}, entityLinks=[], uuid=33b61477-8e24-42ed-97e7-6f7706ac85ce, username=a, uniqueEntityId=-1967095021561, runtimeEntityId=12, platformChatId=, position=(9.5, 66.5, 2.5), motion=(0.0, -0.0784, 0.0), rotation=(0.0, 0.0, -23.241364), hand=ItemData(id=0, damage=0, count=0, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockRuntimeId=0, usingNetId=false, netId=0), adventureSettings=AdventureSettingsPacket(settings=[AUTO_JUMP, MINE, DOORS_AND_SWITCHES, OPEN_CONTAINERS, ATTACK_PLAYERS, ATTACK_MOBS, BUILD], commandPermission=NORMAL, playerPermission=MEMBER, uniqueEntityId=-1), deviceId=, buildPlatform=-1)
     // Received: MovePlayerPacket(runtimeEntityId=14, position=(9.5, 68.12001, 2.5), rotation=(-89.0, -92.0, 0.0), mode=RESPAWN, onGround=true, ridingRuntimeEntityId=0, teleportationCause=null, entityType=0, tick=0)
     // Received: UpdateAttributesPacket(runtimeEntityId=14, attributes=[AttributeData(name=minecraft:player.exhaustion, minimum=0.0, maximum=4.0, value=0.3544, defaultValue=0.0)], tick=0)
+
+    // ================== Fix Change Dimension ==================
     void handle(SimulatedPlayer* sp, ChangeDimensionPacket* packet) {
         DEBUGW("FakeHandle:({}): {}", sp->getNameTag(), packet->toDebugString());
         auto& uniqueId = sp->getUniqueID();
@@ -129,17 +143,19 @@ namespace FakeHandler {
     void handle(SimulatedPlayer* sp, PlayStatusPacket* packet) {
         DEBUGW("FakeHandle:({}): {}", sp->getNameTag(), packet->toDebugString());
         auto status = packet->status;
+        // ================== Fix Change Dimension ==================
         // ChunkRadius should be greater than or equal to 7 to ensure that there are enough chunks (5*5) to change dimension
         sp->setChunkRadius(9);
-        // fix region
-        if (!&sp->getDimension() || sp->getDimensionId() != sp->getDimension().getDimensionId()) {
-            sp->suspendRegion();
-            sp->_fireWillChangeDimension();
-            sp->destroyRegion();
-            auto dim = Global<Level>->createDimension(sp->getDimensionId()); // get or create dimension
-            sp->prepareRegion(dim->getChunkSource());
-            sp->_fireDimensionChanged();
-        }
+
+        // ================== Fix Region ==================
+        //if (!&sp->getDimension() || sp->getDimensionId() != sp->getDimension().getDimensionId()) {
+        //    sp->suspendRegion();
+        //    sp->_fireWillChangeDimension();
+        //    sp->destroyRegion();
+        //    auto dim = Global<Level>->createDimension(sp->getDimensionId()); // get or create dimension
+        //    sp->prepareRegion(dim->getChunkSource());
+        //    sp->_fireDimensionChanged();
+        //}
     }
 
     void handle(SimulatedPlayer* sp, ShowCreditsPacket* packet) {
@@ -178,24 +194,90 @@ namespace FakeHandler {
         //    auto sp = Level::getPlayer(uniqueId);
         //    }, 20).getTaskId();
     }
+    void handlePacket(SimulatedPlayer* sp, Packet* packet) {
+        switch (packet->getId())
+        {
+        case MinecraftPacketIds::ShowCredits:
+            FakeHandler::handle((SimulatedPlayer*)sp, (ShowCreditsPacket*)packet);
+            break;
+        case MinecraftPacketIds::ChangeDimension:
+            FakeHandler::handle((SimulatedPlayer*)sp, (ChangeDimensionPacket*)packet);
+            break;
+        case MinecraftPacketIds::Respawn:
+            FakeHandler::handle((SimulatedPlayer*)sp, (RespawnPacket*)packet);
+            break;
+        //case MinecraftPacketIds::StartGame:
+        //    // Not be sent to simulated player, so listen to PlayStatusPacket instead
+        //    FakeHandler::handle((SimulatedPlayer*)sp, (StartGamePacket*)&packet);
+        //    break;
+        case MinecraftPacketIds::PlayStatus:
+            FakeHandler::handle((SimulatedPlayer*)sp, (PlayStatusPacket*)packet);
+            break;
+        case MinecraftPacketIds::MovePlayer:
+            FakeHandler::handle((SimulatedPlayer*)sp, (MovePlayerPacket*)packet);
+            break;
+        case MinecraftPacketIds::ModalFormRequest:
+            FakeHandler::handle((SimulatedPlayer*)sp, (ModalFormRequestPacket*)packet);
+            break;
+        case MinecraftPacketIds::UpdateAttributes:
+        {
+            BinaryStream bs;
+            packet->write(bs);
+            DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
+            DEBUGW("getReadPointer: {}", bs.getReadPointer());
+
+            bs.setReadPointer(0);
+            DEBUGW("Actor Runtime Id: {} - {}", bs.getUnsignedVarInt64(), sp->getRuntimeID().id);
+            int count = bs.getUnsignedVarInt();
+            DEBUGW("count {}", count);
+            if (count > 100)
+                count = 100;
+            for (int i = 0; i < count; ++i) {
+                DEBUGW("[{}, {}, {}, {}, {}]", bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
+            }
+            DEBUGW("tick: {}", bs.getUnsignedVarInt64());
+            DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
+            DEBUGW("getReadPointer: {}", bs.getReadPointer());
+            break;
+        }
+        default:
+            break;
+        }
+    }
 }
 
+inline class Player* getPlayer(class mce::UUID const& a0) {
+    class Player* (Level:: * rv)(class mce::UUID const&);
+    *((void**)&rv) = dlsym("?getPlayer@Level@@UEBAPEAVPlayer@@AEBVUUID@mce@@@Z");
+    return (Global<Level>->*rv)(std::forward<class mce::UUID const&>(a0));
+}
 
-#include <MC/UpdateAttributesPacket.hpp>
-#include <MC/ReadOnlyBinaryStream.hpp>
-#include <MC/BinaryStream.hpp>
+// clientSubId is necessary to identify SimulatedPlayer because they have the same networkID
+TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacket@@E@Z",
+    NetworkHandler, NetworkIdentifier const& networkID, Packet const& packet, unsigned char clientSubID) {
+    if (networkID == FakePlayer::mNetworkID) {
+        auto sp = Global<ServerNetworkHandler>->getServerPlayer(networkID, clientSubID);
+        if (sp && sp->isSimulatedPlayer())
+            return FakeHandler::handlePacket((SimulatedPlayer*)sp, const_cast<Packet*>(&packet));
+    }
+    return original(this, networkID, packet, clientSubID);
+}
 TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@AEBVPacket@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
     NetworkHandler, NetworkIdentifier& nid, class Packet& pkt, std::string const& data) {
     auto pktId = (int)pkt.getId();
 
     // fix simulated player sub id
-    if (((int64_t*)&nid)[1] == -1 && ((short*)&nid)[8] == -1) {
+    if (nid == FakePlayer::mNetworkID) {
         try
         {
             auto subId = dAccess<unsigned char>(&nid, 160);
-            if (subId != pkt.clientSubId) {
-                DEBUG("fix packet {} sub id: {} -> {}", pkt.getName(), pkt.clientSubId, dAccess<unsigned char>(&nid, 160));
-                pkt.clientSubId = subId;
+            auto sp = Global<ServerNetworkHandler>->getServerPlayer(nid, subId);
+            if (!sp || !sp->isSimulatedPlayer()) {
+                DEBUGW("try fix sub id failed - {}", pkt.getName());
+                sp = pkt.getPlayerFromPacket(Global<ServerNetworkHandler>, &nid);
+            }
+            if (sp&&sp->isSimulatedPlayer()) {
+                return FakeHandler::handlePacket((SimulatedPlayer*)sp, &pkt);
             }
         }
         catch (const std::exception&)
@@ -208,53 +290,6 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
         return original(this, nid, pkt, data);
     }
     ASSERT(pl->getClientSubId() == pkt.clientSubId);
-    if (pl->isSimulatedPlayer()) {
-        ActorUniqueID uniqueId = pl->getUniqueID();
-        switch (pkt.getId())
-        {
-        case MinecraftPacketIds::ShowCredits:
-            FakeHandler::handle((SimulatedPlayer*)pl, (ShowCreditsPacket*)&pkt);
-            break;
-        case MinecraftPacketIds::ChangeDimension:
-            FakeHandler::handle((SimulatedPlayer*)pl, (ChangeDimensionPacket*)&pkt);
-            break;
-        case MinecraftPacketIds::Respawn:
-            FakeHandler::handle((SimulatedPlayer*)pl, (RespawnPacket*)&pkt);
-            break;
-        //case MinecraftPacketIds::StartGame:
-        //    // Not be sent to simulated player, so listen to PlayStatusPacket instead
-        //    FakeHandler::handle((SimulatedPlayer*)pl, (StartGamePacket*)&pkt);
-        //    break;
-        case MinecraftPacketIds::PlayStatus:
-            FakeHandler::handle((SimulatedPlayer*)pl, (PlayStatusPacket*)&pkt);
-            break;
-        case MinecraftPacketIds::MovePlayer:
-            FakeHandler::handle((SimulatedPlayer*)pl, (MovePlayerPacket*)&pkt);
-            break;
-        case MinecraftPacketIds::ModalFormRequest:
-            FakeHandler::handle((SimulatedPlayer*)pl, (ModalFormRequestPacket*)&pkt);
-            break;
-        case MinecraftPacketIds::UpdateAttributes:
-        {
-            auto packet = (UpdateAttributesPacket*)&pkt;
-            BinaryStream bs;
-            packet->write(bs);
-            DEBUGW("{}",bs.getUnsignedVarInt64());
-            int count = bs.getUnsignedVarInt();
-            DEBUGW("count {}", count);
-            if (count > 60)
-                count = 60;
-            for (int i = 0; i < count; ++i) {
-                DEBUGW("[{}, {}, {}, {}, {}]", bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getString());
-            }
-            DEBUGW("{}", bs.getUnsignedVarInt64());
-            break;
-        }
-        default:
-            break;
-        }
-        return;
-    }
 #if PLUGIN_VERSION_IS_BETA
 
     switch (pkt.getId())
@@ -268,21 +303,10 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     case MinecraftPacketIds::LevelSoundEvent:
     case MinecraftPacketIds::ActorEvent:
     case MinecraftPacketIds::MovePlayer:
-    //case (MinecraftPacketIds)10:
-    //case (MinecraftPacketIds)13:
-    //case (MinecraftPacketIds)15:
-    //case (MinecraftPacketIds)19:
-    //case (MinecraftPacketIds)21:
-    //case (MinecraftPacketIds)27:
-    //case (MinecraftPacketIds)39:
-    //case (MinecraftPacketIds)40:
-    //case (MinecraftPacketIds)58:
-    //case (MinecraftPacketIds)111:
-    //case (MinecraftPacketIds)121:
-    //case (MinecraftPacketIds)123:
-    //case (MinecraftPacketIds)136:
-    //case (MinecraftPacketIds)172:
-    //case (MinecraftPacketIds)174:
+    //case MinecraftPacketIds::Event:
+    case MinecraftPacketIds::LevelEventGeneric:
+    case MinecraftPacketIds::UpdateBlock:
+    case MinecraftPacketIds::UpdateSubChunkBlocks:
         break;
     case MinecraftPacketIds::Event:
         DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
@@ -789,41 +813,6 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
 // ================= Fix SimulatedPlayer =================
 
 #include <MC/Certificate.hpp>
-TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEBV?$OwnerPtrT@UEntityRefTraits@@@@@Z",
-    SimulatedPlayer,
-    class Level& level,
-    class PacketSender& sender,
-    class NetworkHandler& handler,
-    class ActiveTransfersManager& blobCache,
-    enum GameType gameType,
-    class NetworkIdentifier const& nid,
-    unsigned char subId,
-    class std::function<void(class ServerPlayer&)> onPlayerLoadedCallback,
-    class mce::UUID uuid,
-    std::string const& clientId,
-    class std::unique_ptr<Certificate> cert,
-    int unk_int,
-    bool unk_bool,
-    class OwnerPtrT<struct EntityRefTraits> const& refPtr
-) {
-    //auto fakeUUID = /*uuid;//*/ mce::UUID::fromString("db755d34-dde4-4e4a-bcff-7fae3013d68a");
-    DEBUGW("SimulatedPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, refPtr)",
-        (int)gameType, (int)subId, uuid.asString(), clientId, unk_int, unk_bool);
-
-    // fix client sub id for identify packet
-    static unsigned char globalSimulatedPlayerSubId = 0;
-    auto rtn = original(this, level, sender, handler, blobCache, gameType, nid, globalSimulatedPlayerSubId, onPlayerLoadedCallback, uuid, clientId, std::move(cert), unk_int, unk_bool, refPtr);
-    // fix runtime id
-    if (!rtn->hasRuntimeID())
-        rtn->setRuntimeID(Global<Level>->getNextRuntimeID());
-    auto ueif = rtn->getUserEntityIdentifierComponent();
-    ASSERT(dAccess<unsigned char>(ueif, 160) == globalSimulatedPlayerSubId);
-    globalSimulatedPlayerSubId++;
-
-    DEBUGW("Simulated Player: {}, client sub id: {}, runtime id: {}", rtn->getNameTag(), rtn->getClientSubId(), rtn->getRuntimeID().id);
-    return rtn;
-}
-
 //fix _updateChunkPublisherView
 // _updateChunkPublisherView will be called after Player::tick in ServerPlayer::tick
 TInstanceHook(void, "?tickWorld@Player@@UEAAXAEBUTick@@@Z",
@@ -834,7 +823,8 @@ TInstanceHook(void, "?tickWorld@Player@@UEAAXAEBUTick@@@Z",
     static auto Func_updateChunkPublisherView = SymCall("?_updateChunkPublisherView@ServerPlayer@@MEAAXAEBVVec3@@M@Z", void, ServerPlayer*, Vec3 const&, float);
     if (this && *(void**)this == Vftbl_SimulatedPlayer) {
         static auto Func_getPos = SymCall("?getPos@Actor@@UEBAAEBVVec3@@XZ", Vec3 const&, Actor*);
-        Func_updateChunkPublisherView((ServerPlayer*)this, Func_getPos(this), 16.0f);
+        auto& pos = Func_getPos(this);
+        Func_updateChunkPublisherView((ServerPlayer*)this, pos, 16.0f);
     }
 }
 

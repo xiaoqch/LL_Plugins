@@ -14,11 +14,11 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{d6d8b7a2-010d-4126-82d0-ec77948a61cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Packet">
-      <UniqueIdentifier>{9832f3e3-896f-4b6f-b81d-6dc9fa486438}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Command">
       <UniqueIdentifier>{b65273ec-80ee-45ce-bb55-b766393a5656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{9832f3e3-896f-4b6f-b81d-6dc9fa486438}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

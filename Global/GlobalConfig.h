@@ -2,6 +2,6 @@
 
 // Global Info
 #define TARGET_BDS_VERSION "1.18.2.03"
-#define TARGET_LITELOADER_VERSION "2.0.4"
+#define TARGET_LITELOADER_VERSION "2.0.5"
 
-using LL::logger;
+extern Logger logger;

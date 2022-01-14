@@ -29,6 +29,7 @@
       <Filter>资源文件</Filter>
     </ClInclude>
     <ClInclude Include="TestRegRecipe.h" />
+    <ClInclude Include="TestDBStorage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -41,6 +42,7 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="TestRegRecipe.cpp" />
+    <ClCompile Include="TestDBStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestPlugin.rc">
