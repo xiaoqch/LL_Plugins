@@ -73,8 +73,8 @@ THook(Actor*, "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUAct
         auto master = AgentManager::tryGetMaster(spawner);
         if (master != nullptr) {
             sendTextOrLog(spawner, "代理" + getActorDescription(master) + "投掷");
-            Vec3 mpos = master->getPos();
-            return original(_this, bs, adi, master, &mpos, direct);
+            auto mpos = (Vec3*)&master->getStateVectorComponent();
+            return original(_this, bs, adi, master, mpos, direct);
         }
         return original(_this, bs, adi, spawner, pos, direct);
     }
