@@ -99,8 +99,9 @@ namespace Config {
     static bool forProjectile = true;
     static bool forAttack = true;
     static bool forSleep = true;
-    static bool forMove = false;
+    //static bool forMove = false;
     static bool forRide = true;
+    static bool autoSwapAttack = true;
 
     inline std::string serialize() {
         nlohmann::json json;
@@ -113,8 +114,9 @@ namespace Config {
         SerializeVaule(forProjectile);
         SerializeVaule(forAttack);
         SerializeVaule(forSleep);
-        SerializeVaule(forMove);
+        //SerializeVaule(forMove);
         SerializeVaule(forRide);
+        SerializeVaule(autoSwapAttack);
         return json.dump(4);
     }
     inline bool deserialize(std::string jsonStr) {
@@ -129,8 +131,9 @@ namespace Config {
         DeserializeVaule(forProjectile);
         DeserializeVaule(forAttack);
         DeserializeVaule(forSleep);
-        DeserializeVaule(forMove);
+        //DeserializeVaule(forMove);
         DeserializeVaule(forRide);
+        DeserializeVaule(autoSwapAttack);
 
         if (needUpdate) {
             auto jsonStr = serialize();
