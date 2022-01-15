@@ -86,7 +86,7 @@ void entry() {
         });
 }
 constexpr auto ERROR_BAK = ERROR;
-#undef ERROR;
+#undef ERROR
 enum class Fake__LogAreaID {
     ALL = 0,
     ANIMATION = 9,
