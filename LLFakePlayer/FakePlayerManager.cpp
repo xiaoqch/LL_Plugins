@@ -5,7 +5,9 @@
 #include <MC/ListTag.hpp>
 #include <MC/LevelStorage.hpp>
 #include <MC/NetworkIdentifier.hpp>
+#include <MC/ServerNetworkHandler.hpp>
 #include <MC/RakNet.hpp>
+#include <MC/DBStorage.hpp>
 #include <Utils/CryptHelper.h>
 
 // 
@@ -50,11 +52,11 @@ FakePlayer::FakePlayer(std::string const& realName, mce::UUID uuid, time_t lastO
         mManager = &FakePlayerManager::getManager();
     mMaxClientSubID++;
     mClientSubID = mMaxClientSubID;
-    DEBUG("FakePlayer::FakePlayer({}, {}, {}, {}", realName, uuid.asString(), lastOnlineTime, autoLogin);
+    DEBUGL("FakePlayer::FakePlayer({}, {}, {}, {}", realName, uuid.asString(), lastOnlineTime, autoLogin);
 }
 
 FakePlayer::~FakePlayer() {
-    DEBUG("FakePlayer::~FakePlayer() - {}", mRealName);
+    DEBUGL("FakePlayer::~FakePlayer() - {}", mRealName);
 }
 
 std::shared_ptr<FakePlayer> FakePlayer::deserialize(CompoundTag const& tag, FakePlayerManager* manager)
@@ -90,6 +92,40 @@ std::unique_ptr<CompoundTag> FakePlayer::serialize()
     return std::move(tag);
 }
 
+#include <MC/StackResultStorageEntity.hpp>
+#include <MC/OwnerStorageEntity.hpp>
+template <>
+class OwnerPtrT<struct EntityRefTraits> {
+    char filler[24];
+public:
+    inline ~OwnerPtrT(){
+        void (OwnerPtrT::*rv)() const;
+        *((void**)&rv) = dlsym("??1?$OwnerPtrT@UEntityRefTraits@@@@QEAA@XZ");
+        (this->*rv)();
+    }
+    inline OwnerPtrT(OwnerPtrT&& right) {
+        void (OwnerPtrT:: * rv)(OwnerPtrT && right);
+        *((void**)&rv) = dlsym("??0OwnerStorageEntity@@IEAA@$$QEAV0@@Z");
+        (this->*rv)(std::move(right));
+    }
+    inline OwnerPtrT& operator=(OwnerPtrT&& right) {
+        void (OwnerPtrT:: * rv)(OwnerPtrT && right);
+        *((void**)&rv) = dlsym("??4OwnerStorageEntity@@IEAAAEAV0@$$QEAV0@@Z");
+        (this->*rv)(std::move(right));
+    }
+    inline SimulatedPlayer* tryGetSimulatedPlayer(bool b = false) {
+        auto player = Player::tryGetFromEntity(*this, b);
+        if (player && player->isSimulatedPlayer()) {
+            return (SimulatedPlayer*)player;
+        }
+    }
+};
+
+inline void addUser(Level* level, class OwnerPtrT<struct EntityRefTraits> a0) {
+    void (Level:: * rv)(class OwnerPtrT<struct EntityRefTraits>);
+    *((void**)&rv) = dlsym("?addUser@Level@@UEAAXV?$OwnerPtrT@UEntityRefTraits@@@@@Z");
+    return (level->*rv)(std::forward<class OwnerPtrT<struct EntityRefTraits>>(a0));
+}
 bool FakePlayer::login()
 {
     if (mLogining)
@@ -97,34 +133,87 @@ bool FakePlayer::login()
     mLogining = true;
     mRecordData = getStoragePlayerTag();
     mRecordPlayer = this;
-    BlockPos bpos;
-    AutomaticID<Dimension, int> dimId;
-    bool spawnIsSet = false;
-    if (mRecordData) {
-        std::cout << mRecordData->toSNBT() << std::endl;
-        dimId = mRecordData->getInt("SpawnDimension");
-        if (dimId >= 0 && dimId <= 2) {
-            auto spawnX = mRecordData->getInt("SpawnBlockPositionX");
-            auto spawnY = mRecordData->getInt("SpawnBlockPositionY");
-            auto spawnZ = mRecordData->getInt("SpawnBlockPositionZ");
-            bpos = { spawnX,spawnY,spawnZ };
-            spawnIsSet = true;
-        }
-    }
-    if (!spawnIsSet) {
-        bpos= Global<Level>->getDefaultSpawn();
-        dimId = 0;
-    }
+    //BlockPos bpos = BlockPos::MIN;
+    //AutomaticID<Dimension, int> dimId;
+    //bool spawnIsSet = false;
+    //if (mRecordData) {
+    //    std::cout << mRecordData->toSNBT() << std::endl;
+    //    dimId = mRecordData->getInt("SpawnDimension");
+    //    if (dimId >= 0 && dimId <= 2) {
+    //        auto spawnList = mRecordData->getList("Pos");
+    //        if (spawnList && spawnList->size() == 3)
+    //            bpos = { spawnList->getInt(0),spawnList->getInt(1) ,spawnList->getInt(2) };
+    //        else
+    //            logger.error("Error to get Pos from player data");
+    //        if(bpos!=BlockPos::MIN)
+    //            spawnIsSet = true;
+    //    }
+    //}
+    //if (!spawnIsSet) {
+    //    bpos = BlockPos::MIN;
+    //    dimId = 0;
+    //}
 
-    if (!Global<Level>->getDimension(dimId))
-        Global<Level>->createDimension(dimId);
-    mPlayer = SimulatedPlayer::create(mRealName, bpos, dimId, *Global<ServerNetworkHandler>);
+    //if (!Global<Level>->getDimension(dimId))
+    //    Global<Level>->createDimension(dimId);
+
+    OwnerPtrT<EntityRefTraits> ownerPtr = Global<ServerNetworkHandler>->createSimulatedPlayer(mRealName);
+    mPlayer = ownerPtr.tryGetSimulatedPlayer();
+    if (mPlayer) {
+        //dAccess<int>(player, 57) = dimId;
+        mPlayer->postLoad(/* isNewPlayer */ false);
+        Level& level = mPlayer->getLevel();
+        addUser(&level, std::move(ownerPtr));
+        //auto pos = bpos.bottomCenter();
+        //pos.y = pos.y + 1.62001;
+        //player->setPos(pos);
+        //player->setRespawnReady(pos);
+        mPlayer->setLocalPlayerAsInitialized();
+    }
+    //mPlayer = SimulatedPlayer::create(mRealName, bpos, dimId, *Global<ServerNetworkHandler>);
     mOnline = true;
     mUniqueID = mPlayer->getUniqueID();
     mClientSubID = mPlayer->getClientSubId();
     time(&mLastOnlineTime);
     mLogining = false;
     FakePlayerManager::getManager().saveData(*this);
+    DEBUGW("FakePlayer: {}", mPlayer->getNameTag());
+    DEBUGW("Dimension: {}, Position: ({})", (int)mPlayer->getDimensionId(), ((Vec3&)mPlayer->getStateVectorComponent()).toString());
+    auto tag = mPlayer->getNbt();
+    for (auto& [k, v] : *tag) {
+        auto tag = const_cast<CompoundTagVariant&>(v).asTag();
+        std::string value;
+        switch (tag->getTagType())
+        {
+        case Tag::Byte:
+            value = std::to_string((int)tag->asByteTag()->value());
+            break;
+        case Tag::End:
+        case Tag::Short:
+        case Tag::Int:
+        case Tag::Int64:
+        case Tag::Float:
+        case Tag::Double:
+        case Tag::ByteArray:
+        case Tag::String:
+        case Tag::Compound:
+        case Tag::IntArray:
+            value = tag->toString();
+            break;
+        case Tag::List: {
+            value = "[";
+            auto listTag = tag->asListTag();
+            for (auto& tagi : *listTag) {
+                value += tagi->toString() + ", ";
+            }
+            value += "]";
+            break;
+        }
+        default:
+            break;
+        }
+        DEBUGL("{}: {}", k, value);
+    }
 };
 
 bool FakePlayer::logout(bool save)
@@ -188,7 +277,7 @@ std::unique_ptr<CompoundTag> FakePlayer::getOnlinePlayerTag()
 }
 
 FakePlayerManager::FakePlayerManager(std::string const& dbPath) {
-    DEBUG("FakePlayerManager::FakePlayerManager({})", dbPath);
+    DEBUGL("FakePlayerManager::FakePlayerManager({})", dbPath);
     dAccess<short>(&FakePlayer::mNetworkID, 152) = 4;
 
     mDatabase = KVDB::create(dbPath);
@@ -205,7 +294,7 @@ FakePlayerManager::FakePlayerManager(std::string const& dbPath) {
     initSortedNames();
 }
 FakePlayerManager::~FakePlayerManager() {
-    DEBUG("FakePlayerManager::FakePlayerManager()");
+    DEBUGL("FakePlayerManager::FakePlayerManager()");
 }
 void FakePlayerManager::saveData() {
     for (auto& [uuid, player] : mFakePlayerMap) {
@@ -255,11 +344,22 @@ bool FakePlayerManager::importData_DDF(std::string const& name)
 {
     auto uuid = JAVA_nameUUIDFromBytes(name);
     auto uuidStr = uuid.asString();
-    auto playerData = Global<LevelStorage>->loadPlayerDataFromTag(uuidStr);
-    //auto serverID = "player_server_" + uuidStr;
+    auto dbStorage = (DBStorage*)&Global<Level>->getLevelStorage();
+    auto tag = dbStorage->getCompoundTag("player_" + uuid.asString(), (DBHelpers::Category)7);
+    if (!tag) {
+        logger.error("Error in getting PlayerStorageIds");
+        return false;
+    }
+    auto& serverId = tag->getString("ServerId");
+    if (serverId.empty()) {
+        logger.error("Error in getting player's ServerId");
+        return false;
+    }
+    auto playerData = dbStorage->getCompoundTag(serverId, (DBHelpers::Category)7);
     auto fp = create(name, std::move(playerData));
     if (fp)
         return true;
+    logger.error("Error in reading player's data");
     return false;
 }
 
@@ -301,7 +401,8 @@ FakePlayer* FakePlayerManager::create(std::string const& name)
     mFakePlayerMap.try_emplace(uuidStr, player);
     sortedNames.push_back(name);
     player->login();
-    return player.get();
+    auto ptr = player.get();
+    return ptr;
 }
 
 FakePlayer* FakePlayerManager::create(std::string const& name, std::unique_ptr<CompoundTag> playerData)
@@ -312,9 +413,11 @@ FakePlayer* FakePlayerManager::create(std::string const& name, std::unique_ptr<C
     auto player = std::make_shared<FakePlayer>(name, uuid, time(0), false);
     mFakePlayerMapByName.try_emplace(name, player);
     mFakePlayerMap.try_emplace(uuid.asString(), player);
+    sortedNames.push_back(name);
     saveData(*player);
     mDatabase->set(player->getServerId(), playerData->toBinaryNBT());
-    return player.get();
+    auto ptr = player.get();
+    return ptr;
 }
 
 bool FakePlayerManager::remove(std::string const& name)
@@ -362,12 +465,10 @@ bool FakePlayerManager::logout(SimulatedPlayer& simulatedPlayer)
     return false;
 }
 
-
-
-TInstanceHook(bool, "?load@ServerPlayer@@UEAA_NAEBVCompoundTag@@AEAVDataLoadHelper@@@Z",
-    ServerPlayer, class CompoundTag const& tag, class DataLoadHelper& helper) {
-    return original(this, tag, helper);
-}
+//TInstanceHook(BlockPos&, "?getDefaultSpawn@Level@@UEBAAEBVBlockPos@@XZ",
+//    Level, BlockPos& rtn) {
+//
+//}
 
 #include <MC/Certificate.hpp>
 TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEBV?$OwnerPtrT@UEntityRefTraits@@@@@Z",
@@ -387,11 +488,7 @@ TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketS
     bool unk_bool,
     class OwnerPtrT<struct EntityRefTraits> const& refPtr
 ) {
-    //auto fakeUUID = /*uuid;//*/ mce::UUID::fromString("db755d34-dde4-4e4a-bcff-7fae3013d68a");
-    DEBUGW("SimulatedPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, refPtr)",
-        (int)gameType, (int)subId, uuid.asString(), clientId, unk_int, unk_bool);
-    // fix client sub id for identify packet
-
+    // fix Player subClinetId, for identify packet
     if (FakePlayer::mLogining) {
         auto fp = FakePlayer::mRecordPlayer;
         uuid = fp->getUUID();
@@ -400,6 +497,11 @@ TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketS
     else {
         logger.warn("Unknown SimulatedPlayer creation detected, it is recommended to create an SimulatedPlayer through FakePlayerManager");
     }
+
+    DEBUGW("SimulatedPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, refPtr)",
+        (int)gameType, (int)subId, uuid.asString(), clientId, unk_int, unk_bool);
+    // fix client sub id for identify packet
+
     auto rtn = original(this, level, sender, handler, blobCache, gameType, nid, subId, onPlayerLoadedCallback, uuid, clientId, std::move(cert), unk_int, unk_bool, refPtr);
     // fix runtime id
     auto ueif = rtn->getUserEntityIdentifierComponent();
@@ -408,6 +510,8 @@ TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketS
     DEBUGW("Simulated Player: {}, client sub id: {}, runtime id: {}", rtn->getNameTag(), rtn->getClientSubId(), rtn->getRuntimeID().id);
     return rtn;
 }
+
+// 
 THook(std::unique_ptr<CompoundTag>&, "?loadServerPlayerData@LevelStorage@@QEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBVPlayer@@_N@Z",
     class LevelStorage* _this, std::unique_ptr<CompoundTag>& res, Player& player, bool unkBool) {
     DEBUGW("LevelStorage::loadServerPlayerData({}, {})", player.getNameTag(), unkBool);
@@ -418,8 +522,6 @@ THook(std::unique_ptr<CompoundTag>&, "?loadServerPlayerData@LevelStorage@@QEAA?A
             DEBUGW("Replace SimulatedPlayer data");
             auto& fp = FakePlayer::mRecordPlayer;
             ASSERT(player.getUuid() == fp->getUUID().asString());
-            if (!player.hasRuntimeID())
-                player.setRuntimeID(Global<Level>->getNextRuntimeID());
             rtn.swap(FakePlayer::mRecordData);
         }
         //auto fakePlayer = FakePlayerManager::getManager().tryGetFakePlayer(&player);

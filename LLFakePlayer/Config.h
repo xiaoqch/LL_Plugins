@@ -44,11 +44,11 @@ llfakeplayer gui - Show fake player manage gui)"
 
 #if PLUGIN_VERSION_IS_BETA
 #define ASSERT(var) if (!(var)) { __debugbreak(); }
-#define DEBUG(...) logger.info(__VA_ARGS__)
+#define DEBUGL(...) logger.info(__VA_ARGS__)
 #define DEBUGW(...) logger.warn(__VA_ARGS__)
 #else
 #define ASSERT(var) ((void)0)
-#define DEBUG(...) ((void)0)
+#define DEBUGL(...) ((void)0)
 #define DEBUGW(...) ((void)0)
 #endif // PLUGIN_VERSION_IS_BETA
 

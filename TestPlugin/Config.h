@@ -58,6 +58,16 @@ inline void logConfig() {
 
 #endif // PLUGIN_VERSION_IS_BETA
 
+#if PLUGIN_VERSION_IS_BETA
+#define ASSERT(var) if (!(var)) { __debugbreak(); }
+#define DEBUGL(...) logger.info(__VA_ARGS__)
+#define DEBUGW(...) logger.warn(__VA_ARGS__)
+#else
+#define ASSERT(var) ((void)0)
+#define DEBUGL(...) ((void)0)
+#define DEBUGW(...) ((void)0)
+#endif // PLUGIN_VERSION_IS_BETA
+
 // Config
 #include <third-party/Nlohmann/json.hpp>
 #include <filesystem>

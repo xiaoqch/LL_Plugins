@@ -58,7 +58,8 @@ static_assert(sizeof(RespawnPacket) == 72);
 
 #include <MC/VanillaDimensions.hpp>
 #include <MC/NetworkIdentifier.hpp>
-struct UserEntityIdentifierComponent {
+class UserEntityIdentifierComponent {
+public:
     NetworkIdentifier nid;
     unsigned char clientSubId;
     mce::UUID uuid;
@@ -177,14 +178,14 @@ namespace FakeHandler {
         //DEBUGW("FakeHandle:({}): {}", sp->getNameTag(),  packet->toDebugString());
         auto& uniqueId = sp->getUniqueID();
         auto formId = packet->formId;
-        auto taskid = Schedule::delay([uniqueId, formId]() {
+        Schedule::delay([uniqueId, formId]() {
             auto sp = Level::getPlayer(uniqueId);
             auto res = MinecraftPackets::createPacket(MinecraftPacketIds::ModalFormResponse);
             ((ModalFormResponsePacket*)res.get())->formId = formId;
             ((ModalFormResponsePacket*)res.get())->data = "null";
             res->clientSubId = sp->getClientSubId();
             Global<ServerNetworkHandler>->handle(*sp->getNetworkIdentifier(), *(ModalFormResponsePacket*)res.get());
-            }, 20).getTaskId();
+            }, 20);
     }
 
     void handle(SimulatedPlayer* sp, MovePlayerPacket* packet) {
@@ -309,28 +310,28 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     case MinecraftPacketIds::UpdateSubChunkBlocks:
         break;
     case MinecraftPacketIds::Event:
-        DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CraftingEvent:
-        DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
         break;
     //case MinecraftPacketIds::ItemStackRequest:
-    //    DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
+    //    DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
     //    break;
     //case MinecraftPacketIds::PlayerAction:
-    //    DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
+    //    DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
     //    break;
     //case MinecraftPacketIds::MovePlayer:
-    //    DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
+    //    DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
     //    break;
     case MinecraftPacketIds::PlayStatus:
-        DEBUG("[Send] -> {}: {}", pl->getNameTag(), ((PlayStatusPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((PlayStatusPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Respawn:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
         break;
     default:
-        DEBUG("[Send] -> {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
+        DEBUGL("[Send] -> {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
         break;
     }
     /*
@@ -338,469 +339,469 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     switch (id)
     {
     case MinecraftPacketIds::Login:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((LoginPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((LoginPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ServerToClientHandshake:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ServerToClientHandshakePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ServerToClientHandshakePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ClientToServerHandshake:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ClientToServerHandshakePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ClientToServerHandshakePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Disconnect:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((DisconnectPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((DisconnectPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ResourcePacksInfo:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePacksInfoPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePacksInfoPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ResourcePackStack:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackStackPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackStackPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ResourcePackClientResponse:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackClientResponsePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackClientResponsePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Text:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((TextPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((TextPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetTime:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetTimePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetTimePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::StartGame:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((StartGamePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((StartGamePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddPlayer:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddPlayerPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddPlayerPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddActor:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddActorPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddActorPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::RemoveActor:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((RemoveActorPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((RemoveActorPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddItemActor:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddItemActorPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddItemActorPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::TakeItemActor:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((TakeItemActorPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((TakeItemActorPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MoveActorAbsolute:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MoveActorAbsolutePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MoveActorAbsolutePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateBlock:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateBlockPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateBlockPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddPainting:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddPaintingPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddPaintingPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::TickSync:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((TickSyncPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((TickSyncPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::BlockEvent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((BlockEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((BlockEventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ActorEvent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ActorEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ActorEventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MobEffect:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MobEffectPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MobEffectPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateAttributes:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateAttributesPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateAttributesPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::InventoryTransaction:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((InventoryTransactionPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((InventoryTransactionPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MobEquipment:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MobEquipmentPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MobEquipmentPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MobArmorEquipment:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MobArmorEquipmentPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MobArmorEquipmentPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Interact:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((InteractPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((InteractPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::BlockPickRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((BlockPickRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((BlockPickRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ActorPickRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ActorPickRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ActorPickRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::HurtArmor:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((HurtArmorPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((HurtArmorPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetActorData:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetActorDataPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetActorDataPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetActorLink:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetActorLinkPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetActorLinkPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetHealth:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetHealthPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetHealthPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetSpawnPosition:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetSpawnPositionPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetSpawnPositionPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Animate:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AnimatePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AnimatePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Respawn:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ContainerOpen:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ContainerOpenPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ContainerOpenPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ContainerClose:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ContainerClosePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ContainerClosePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerHotbar:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerHotbarPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerHotbarPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::InventoryContent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((InventoryContentPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((InventoryContentPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::InventorySlot:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((InventorySlotPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((InventorySlotPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ContainerSetData:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ContainerSetDataPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ContainerSetDataPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CraftingData:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CraftingDataPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CraftingDataPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::GuiDataPickItem:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((GuiDataPickItemPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((GuiDataPickItemPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AdventureSettings:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AdventureSettingsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AdventureSettingsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::BlockActorData:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((BlockActorDataPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((BlockActorDataPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerInput:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerInputPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerInputPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::LevelChunk:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((LevelChunkPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((LevelChunkPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetCommandsEnabled:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetCommandsEnabledPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetCommandsEnabledPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetDifficulty:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetDifficultyPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetDifficultyPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ChangeDimension:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ChangeDimensionPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ChangeDimensionPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetPlayerGameType:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetPlayerGameTypePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetPlayerGameTypePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerList:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerListPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerListPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SpawnExperienceOrb:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SpawnExperienceOrbPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SpawnExperienceOrbPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ClientboundMapItemData:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ClientboundMapItemDataPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ClientboundMapItemDataPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MapInfoRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MapInfoRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MapInfoRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ItemFrameDropItem:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ItemFrameDropItemPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ItemFrameDropItemPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::GameRulesChanged:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((GameRulesChangedPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((GameRulesChangedPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Camera:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CameraPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CameraPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::BossEvent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((BossEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((BossEventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ShowCredits:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ShowCreditsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ShowCreditsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AvailableCommands:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AvailableCommandsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AvailableCommandsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CommandRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CommandRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CommandRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CommandBlockUpdate:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CommandBlockUpdatePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CommandBlockUpdatePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CommandOutput:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CommandOutputPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CommandOutputPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateTrade:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateTradePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateTradePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateEquip:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateEquipPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateEquipPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ResourcePackDataInfo:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackDataInfoPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackDataInfoPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ResourcePackChunkData:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackChunkDataPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackChunkDataPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ResourcePackChunkRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackChunkRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ResourcePackChunkRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Transfer:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((TransferPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((TransferPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlaySoundW:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlaySoundWPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlaySoundWPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::StopSound:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((StopSoundPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((StopSoundPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetTitle:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetTitlePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetTitlePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddBehaviorTree:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddBehaviorTreePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddBehaviorTreePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::StructureBlockUpdate:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((StructureBlockUpdatePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((StructureBlockUpdatePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ShowStoreOffer:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ShowStoreOfferPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ShowStoreOfferPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PurchaseReceipt:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PurchaseReceiptPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PurchaseReceiptPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerSkin:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerSkinPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerSkinPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SubClientLogin:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SubClientLoginPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SubClientLoginPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AutomationClientConnect:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AutomationClientConnectPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AutomationClientConnectPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetLastHurtBy:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetLastHurtByPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetLastHurtByPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::BookEdit:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((BookEditPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((BookEditPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::NpcRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((NpcRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((NpcRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PhotoTransfer:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PhotoTransferPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PhotoTransferPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ModalFormRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ModalFormRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ModalFormRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ModalFormResponse:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ModalFormResponsePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ModalFormResponsePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ServerSettingsRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ServerSettingsRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ServerSettingsRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ServerSettingsResponse:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ServerSettingsResponsePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ServerSettingsResponsePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ShowProfile:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ShowProfilePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ShowProfilePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetDefaultGameType:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetDefaultGameTypePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetDefaultGameTypePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::RemoveObjective:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((RemoveObjectivePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((RemoveObjectivePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetDisplayObjective:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetDisplayObjectivePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetDisplayObjectivePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetScore:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetScorePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetScorePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::LabTable:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((LabTablePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((LabTablePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateBlockSynced:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateBlockSyncedPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateBlockSyncedPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MoveActorDelta:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MoveActorDeltaPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MoveActorDeltaPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetScoreboardIdentity:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetScoreboardIdentityPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetScoreboardIdentityPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SetLocalPlayerAsInitialized:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SetLocalPlayerAsInitializedPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SetLocalPlayerAsInitializedPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateSoftEnum:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateSoftEnumPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateSoftEnumPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::NetworkStackLatency:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((NetworkStackLatencyPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((NetworkStackLatencyPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ScriptCustomEvent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ScriptCustomEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ScriptCustomEventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SpawnParticleEffect:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SpawnParticleEffectPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SpawnParticleEffectPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AvailableActorIdentifiers:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AvailableActorIdentifiersPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AvailableActorIdentifiersPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::NetworkChunkPublisherUpdate:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((NetworkChunkPublisherUpdatePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((NetworkChunkPublisherUpdatePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::BiomeDefinitionList:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((BiomeDefinitionListPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((BiomeDefinitionListPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::LevelSoundEvent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((LevelSoundEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((LevelSoundEventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::LevelEventGeneric:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((LevelEventGenericPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((LevelEventGenericPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::LecternUpdate:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((LecternUpdatePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((LecternUpdatePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddEntity:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddEntityPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddEntityPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ClientCacheStatus:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ClientCacheStatusPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ClientCacheStatusPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::OnScreenTextureAnimation:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((OnScreenTextureAnimationPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((OnScreenTextureAnimationPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MapCreateLockedCopy:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MapCreateLockedCopyPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MapCreateLockedCopyPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::StructureTemplateDataRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((StructureTemplateDataRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((StructureTemplateDataRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::StructureTemplateDataResponse:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((StructureTemplateDataResponsePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((StructureTemplateDataResponsePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ClientCacheBlobStatus:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ClientCacheBlobStatusPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ClientCacheBlobStatusPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ClientCacheMissResponse:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ClientCacheMissResponsePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ClientCacheMissResponsePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::EducationSettings:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((EducationSettingsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((EducationSettingsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Emote:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((EmotePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((EmotePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MultiplayerSettings:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MultiplayerSettingsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MultiplayerSettingsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SettingsCommand:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SettingsCommandPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SettingsCommandPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AnvilDamage:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AnvilDamagePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AnvilDamagePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CompletedUsingItem:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CompletedUsingItemPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CompletedUsingItemPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::NetworkSettings:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((NetworkSettingsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((NetworkSettingsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerAuthInput:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerAuthInputPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerAuthInputPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CreativeContent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CreativeContentPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CreativeContentPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerEnchantOptions:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerEnchantOptionsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerEnchantOptionsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ItemStackResponse:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ItemStackResponsePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ItemStackResponsePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerArmorDamage:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerArmorDamagePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerArmorDamagePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CodeBuilder:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CodeBuilderPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CodeBuilderPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdatePlayerGameType:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdatePlayerGameTypePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdatePlayerGameTypePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::EmoteList:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((EmoteListPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((EmoteListPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PositionTrackingDBServerBroadcast:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PositionTrackingDBServerBroadcastPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PositionTrackingDBServerBroadcastPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PositionTrackingDBClientRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PositionTrackingDBClientRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PositionTrackingDBClientRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::DebugInfo:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((DebugInfoPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((DebugInfoPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PacketViolationWarning:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PacketViolationWarningPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PacketViolationWarningPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::MotionPredictionHints:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((MotionPredictionHintsPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((MotionPredictionHintsPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AnimateEntity:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AnimateEntityPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AnimateEntityPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CameraShake:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CameraShakePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CameraShakePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PlayerFog:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PlayerFogPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PlayerFogPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CorrectPlayerMovePrediction:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CorrectPlayerMovePredictionPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CorrectPlayerMovePredictionPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ItemComponent:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ItemComponentPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ItemComponentPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::FilterText:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((FilterTextPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((FilterTextPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::ClientboundDebugRenderer:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((ClientboundDebugRendererPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((ClientboundDebugRendererPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SyncActorProperty:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SyncActorPropertyPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SyncActorPropertyPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::AddVolumeEntity:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((AddVolumeEntityPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((AddVolumeEntityPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::RemoveVolumeEntity:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((RemoveVolumeEntityPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((RemoveVolumeEntityPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SimulationType:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SimulationTypePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SimulationTypePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::NPCDialogue:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((NPCDialoguePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((NPCDialoguePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::EduUriResource:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((EduUriResourcePacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((EduUriResourcePacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CreatePhoto:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((CreatePhotoPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((CreatePhotoPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::UpdateSubChunkBlocks:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((UpdateSubChunkBlocksPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((UpdateSubChunkBlocksPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::PhotoInfoRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((PhotoInfoRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((PhotoInfoRequestPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SubChunk:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SubChunkPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SubChunkPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::SubChunkRequest:
-        DEBUG("[Send] -> {}: {}",pl->getNameTag(), ((SubChunkRequestPacket*)&pkt)->toDebugString());
+        DEBUGL("[Send] -> {}: {}",pl->getNameTag(), ((SubChunkRequestPacket*)&pkt)->toDebugString());
         break;
     default:
         break;
@@ -819,12 +820,11 @@ TInstanceHook(void, "?tickWorld@Player@@UEAAXAEBUTick@@@Z",
     Player, struct Tick const& tick) {
     original(this, tick);
 
-    static auto Vftbl_SimulatedPlayer = dlsym_real("??_7SimulatedPlayer@@6B@");
-    static auto Func_updateChunkPublisherView = SymCall("?_updateChunkPublisherView@ServerPlayer@@MEAAXAEBVVec3@@M@Z", void, ServerPlayer*, Vec3 const&, float);
-    if (this && *(void**)this == Vftbl_SimulatedPlayer) {
-        static auto Func_getPos = SymCall("?getPos@Actor@@UEBAAEBVVec3@@XZ", Vec3 const&, Actor*);
-        auto& pos = Func_getPos(this);
-        Func_updateChunkPublisherView((ServerPlayer*)this, pos, 16.0f);
+    if (this && *(void**)this == dlsym_static("??_7SimulatedPlayer@@6B@")) {
+        auto& pos = (Vec3&)getStateVectorComponent();
+        // Force to call the implementation of ServerPlayer 
+        SymCallStatic("?_updateChunkPublisherView@ServerPlayer@@MEAAXAEBVVec3@@M@Z", 
+            void, ServerPlayer*, Vec3 const&, float); ((ServerPlayer*)this, pos, 16.0f);
     }
 }
 
@@ -878,32 +878,32 @@ TInstanceHook(void, "?sendPacketReceivedFrom@NetworkPacketEventCoordinator@@QEAA
     auto pl = lastPlayer;
     static int count = 0;
     if (!pl) {
-        DEBUG("[Received] <- : {}({})", pkt.getName(), pkt.getId());
+        DEBUGL("[Received] <- : {}({})", pkt.getName(), pkt.getId());
         return original(this, header, pkt);
     }
     auto pktId = pkt.getId();
     switch (pkt.getId())
     {
     case MinecraftPacketIds::Event:
-        DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::CraftingEvent:
-        DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
+        DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
         break;
     //case MinecraftPacketIds::ItemStackRequest:
-    //    DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
+    //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
     //    break;
     //case MinecraftPacketIds::PlayerAction:
-    //    DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
+    //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
     //    break;
     //case MinecraftPacketIds::MovePlayer:
-    //    DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
+    //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
     //    break;
     case MinecraftPacketIds::PlayStatus:
-        DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((PlayStatusPacket*)&pkt)->toDebugString());
+        DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((PlayStatusPacket*)&pkt)->toDebugString());
         break;
     case MinecraftPacketIds::Respawn:
-        DEBUG("[Received] <- {}: {}", pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
+        DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
         break;
     case (MinecraftPacketIds)123:
     case (MinecraftPacketIds)135:
@@ -911,10 +911,10 @@ TInstanceHook(void, "?sendPacketReceivedFrom@NetworkPacketEventCoordinator@@QEAA
     case (MinecraftPacketIds)175:
     case MinecraftPacketIds::MovePlayer:
         if(!((++count) % 100))
-            DEBUG("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
+            DEBUGL("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
         break;
     default:
-        DEBUG("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
+        DEBUGL("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
         break;
     }
 
@@ -927,7 +927,7 @@ TInstanceHook(ServerPlayer*, "??0ServerPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@
     class NetworkIdentifier const& nid, unsigned char subId,
     class std::function<void(class ServerPlayer&)> onPlayerLoadedCallback, class mce::UUID uuid, std::string const& clientId,
     class std::unique_ptr<Certificate> cert, int unk_int, bool unk_bool, class OwnerPtrT<struct EntityRefTraits> const& refPtr) {
-    DEBUG("ServerPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, refPtr)",
+    DEBUGL("ServerPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, refPtr)",
         (int)gameType, (int)subId, uuid.asString(), clientId, unk_int, unk_bool);
     auto rtn = original(this, level, sender, handler, blobCache, gameType, nid, subId, onPlayerLoadedCallback, uuid, clientId, std::move(cert), unk_int, unk_bool, refPtr);
     return rtn;
@@ -983,16 +983,16 @@ TInstanceHook(bool, "?_playerChangeDimension@Level@@AEAA_NPEAVPlayer@@AEAVChange
             }
         }
     }
-    DEBUG("cx range:[{}:{}], cz range:[{}:{}], Info: {}", min_cx, max_cx, min_cz, max_cz, loadInfo);
-    DEBUG("Loaded Chunk: needs: {}, loaded:{} ", needChunksCount, chunksCount);
+    DEBUGL("cx range:[{}:{}], cz range:[{}:{}], Info: {}", min_cx, max_cx, min_cz, max_cz, loadInfo);
+    DEBUGL("Loaded Chunk: needs: {}, loaded:{} ", needChunksCount, chunksCount);
     return rtn;
 }
 
 TInstanceHook(void, "?requestPlayerChangeDimension@Level@@UEAAXAEAVPlayer@@V?$unique_ptr@VChangeDimensionRequest@@U?$default_delete@VChangeDimensionRequest@@@std@@@std@@@Z",
     Level, Player& player, std::unique_ptr<ChangeDimensionRequest> requestPtr) {
-    DEBUG("Level::requestPlayerChangeDimension({}, requestPtr)", player.getNameTag());
-    DEBUG("Request: {}", requestPtr->toDebugString());
-    DEBUG(getPlayerStateString(&player));
+    DEBUGL("Level::requestPlayerChangeDimension({}, requestPtr)", player.getNameTag());
+    DEBUGL("Request: {}", requestPtr->toDebugString());
+    DEBUGL(getPlayerStateString(&player));
     return original(this, player, std::move(requestPtr));
 }
 
@@ -1005,7 +1005,7 @@ TInstanceHook(void, "?prepareRegion@ServerPlayer@@UEAAXAEAVChunkSource@@@Z",
     //    if (dim)
     //        return original(this, dim->getChunkSource());
     //}
-    DEBUG("ServerPlayer({})::prepareRegion(ChunkSource(dimid: {}))", this->getNameTag(), (int)cs.getDimension().getDimensionId());
+    DEBUGL("ServerPlayer({})::prepareRegion(ChunkSource(dimid: {}))", this->getNameTag(), (int)cs.getDimension().getDimensionId());
 
     original(this, cs);
 }
@@ -1013,31 +1013,31 @@ TInstanceHook(void, "?prepareRegion@ServerPlayer@@UEAAXAEAVChunkSource@@@Z",
 
 TInstanceHook(void, "?destroyRegion@ServerPlayer@@UEAAXXZ",
     ServerPlayer) {
-    DEBUG("ServerPlayer({})::destroyRegion()", this->getNameTag());
+    DEBUGL("ServerPlayer({})::destroyRegion()", this->getNameTag());
     return original(this);
 }
 
 TInstanceHook(void, "?resendAllChunks@ServerPlayer@@UEAAXXZ",
     ServerPlayer) {
-    DEBUG("ServerPlayer({})::resendAllChunks()", this->getNameTag());
+    DEBUGL("ServerPlayer({})::resendAllChunks()", this->getNameTag());
     return original(this);
 }
 
 TInstanceHook(void, "?_fireDimensionChanged@Player@@UEAAXXZ",
     ServerPlayer) {
-    DEBUG("ServerPlayer({})::_fireDimensionChanged()", this->getNameTag());
+    DEBUGL("ServerPlayer({})::_fireDimensionChanged()", this->getNameTag());
     return original(this);
 }
 
 TInstanceHook(void, "?suspendRegion@ServerPlayer@@UEAAXXZ",
     ServerPlayer) {
-    DEBUG("ServerPlayer({})::suspendRegion()", this->getNameTag());
+    DEBUGL("ServerPlayer({})::suspendRegion()", this->getNameTag());
     return original(this);
 }
 
 TInstanceHook(void, "?_fireWillChangeDimension@Player@@UEAAXXZ",
     ServerPlayer) {
-    DEBUG("Player({})::_fireWillChangeDimension()", this->getNameTag());
+    DEBUGL("Player({})::_fireWillChangeDimension()", this->getNameTag());
     return original(this);
 }
 
@@ -1045,7 +1045,7 @@ TInstanceHook(void, "?_updateChunkPublisherView@ServerPlayer@@MEAAXAEBVVec3@@M@Z
     ServerPlayer, Vec3 const& pos, float unkf) {
     static __int64 logTick = 0;
     //if (++logTick % 20 == 0)
-    //    DEBUG("Player({})::_updateChunkPublisherView(({}), {})", this->getNameTag(), pos.toString(), unkf);
+    //    DEBUGL("Player({})::_updateChunkPublisherView(({}), {})", this->getNameTag(), pos.toString(), unkf);
     return original(this, pos, unkf);
 }
 
@@ -1054,13 +1054,13 @@ TInstanceHook(__int64, "?_getSpawnChunkLimit@ServerPlayer@@MEBAHXZ",
     static __int64 logTick = 0;
     auto rtn = original(this);
     if (++logTick % 20 == 0)
-        DEBUG("ServerPlayer({})::_getSpawnChunkLimit() -> {}", this->getNameTag(), rtn);
+        DEBUGL("ServerPlayer({})::_getSpawnChunkLimit() -> {}", this->getNameTag(), rtn);
     return rtn;
 }
 
 TInstanceHook(__int64, "?respawn@Player@@UEAAXXZ",
     ServerPlayer) {
-    DEBUG("Player({})::respawn()", this->getNameTag());
+    DEBUGL("Player({})::respawn()", this->getNameTag());
     auto rtn = original(this);
     return rtn;
 }
