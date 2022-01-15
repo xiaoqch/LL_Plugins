@@ -62,22 +62,22 @@ bool TestDBStorage::deletePlayerData(mce::UUID uuid)
         auto& id = idTag->value();
         id = key == "ServerId" ? id : "player_" + id;
         auto res = dbStorage->deleteData(id, (DBHelpers::Category)7);
-        res->addOnComplete([id](Bedrock::Threading::IAsyncResult<void> const& result) {
-            if (result.getStatus() == 1)
-                dbLogger.warn("Remove {} Success", id);
-            else
-            {
-                auto code = result.getError();
-                dbLogger.error("Remove {} Failed, cause: {}", id, code.message());
-            }
-            });
+        //res->addOnComplete([id](Bedrock::Threading::IAsyncResult<void> const& result) {
+        //    if (result.getStatus() == 1)
+        //        dbLogger.warn("Remove {} Success", id);
+        //    else
+        //    {
+        //        auto code = result.getError();
+        //        dbLogger.error("Remove {} Failed, cause: {}", id, code.message());
+        //    }
+        //    });
     }
     return true;
     auto& serverId = tag->getString("ServerId");
     if (!serverId._Starts_with("player_server"))
         return false;
     auto res2 = dbStorage->deleteData(serverId, (DBHelpers::Category)0);
-    return res2->getStatus() == 1;
+    return true;
 }
 std::vector<std::string> RemovePlayerCommand::playerList = {};
 void RemovePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& output) const
