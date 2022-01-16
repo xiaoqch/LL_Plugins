@@ -214,6 +214,7 @@ bool FakePlayer::login()
         }
         DEBUGL("{}: {}", k, value);
     }
+    return true;
 };
 
 bool FakePlayer::logout(bool save)

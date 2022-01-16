@@ -222,23 +222,23 @@ namespace FakeHandler {
             break;
         case MinecraftPacketIds::UpdateAttributes:
         {
-            BinaryStream bs;
-            packet->write(bs);
-            DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
-            DEBUGW("getReadPointer: {}", bs.getReadPointer());
+            //BinaryStream bs;
+            //packet->write(bs);
+            //DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
+            //DEBUGW("getReadPointer: {}", bs.getReadPointer());
 
-            bs.setReadPointer(0);
-            DEBUGW("Actor Runtime Id: {} - {}", bs.getUnsignedVarInt64(), sp->getRuntimeID().id);
-            int count = bs.getUnsignedVarInt();
-            DEBUGW("count {}", count);
-            if (count > 100)
-                count = 100;
-            for (int i = 0; i < count; ++i) {
-                DEBUGW("[{}, {}, {}, {}, {}]", bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
-            }
-            DEBUGW("tick: {}", bs.getUnsignedVarInt64());
-            DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
-            DEBUGW("getReadPointer: {}", bs.getReadPointer());
+            //bs.setReadPointer(0);
+            //DEBUGW("Actor Runtime Id: {} - {}", bs.getUnsignedVarInt64(), sp->getRuntimeID().id);
+            //int count = bs.getUnsignedVarInt();
+            //DEBUGW("count {}", count);
+            //if (count > 100)
+            //    count = 100;
+            //for (int i = 0; i < count; ++i) {
+            //    DEBUGW("[{}, {}, {}, {}, {}]", bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
+            //}
+            //DEBUGW("tick: {}", bs.getUnsignedVarInt64());
+            //DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
+            //DEBUGW("getReadPointer: {}", bs.getReadPointer());
             break;
         }
         default:
@@ -308,6 +308,7 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     case MinecraftPacketIds::LevelEventGeneric:
     case MinecraftPacketIds::UpdateBlock:
     case MinecraftPacketIds::UpdateSubChunkBlocks:
+    case MinecraftPacketIds::UpdateAttributes:
         break;
     case MinecraftPacketIds::Event:
         DEBUGL("[Send] -> {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());

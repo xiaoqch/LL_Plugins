@@ -66,6 +66,7 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
     <PreBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AiTest.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -74,6 +75,7 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
     <ClInclude Include="TestRegRecipe.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AiTest.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
