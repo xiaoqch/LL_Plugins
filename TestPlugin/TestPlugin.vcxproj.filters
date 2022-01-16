@@ -31,6 +31,8 @@
     <ClInclude Include="TestRegRecipe.h" />
     <ClInclude Include="TestDBStorage.h" />
     <ClInclude Include="AiTest.h" />
+    <ClInclude Include="EnumGenerator.h" />
+    <ClInclude Include="TestNbt.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -45,6 +47,8 @@
     <ClCompile Include="TestRegRecipe.cpp" />
     <ClCompile Include="TestDBStorage.cpp" />
     <ClCompile Include="AiTest.cpp" />
+    <ClCompile Include="EnumGenerator.cpp" />
+    <ClCompile Include="TestNbt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestPlugin.rc">

@@ -79,6 +79,7 @@ bool TestDBStorage::deletePlayerData(mce::UUID uuid)
     auto res2 = dbStorage->deleteData(serverId, (DBHelpers::Category)0);
     return true;
 }
+
 std::vector<std::string> RemovePlayerCommand::playerList = {};
 void RemovePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& output) const
 {

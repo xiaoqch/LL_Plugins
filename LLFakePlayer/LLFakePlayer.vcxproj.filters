@@ -20,6 +20,9 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{9832f3e3-896f-4b6f-b81d-6dc9fa486438}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{603170c0-d378-4b5e-9268-7e3058079c46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -40,6 +43,9 @@
     <ClInclude Include="FakePlayerManager.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="SimulatedPlayerHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -59,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="FakePlayerManager.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulatedPlayerHelper.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,10 +2,10 @@
 #include <LoggerAPI.h>
 
 // Plugin Info
-#define PLUGIN_NAME "LLFakePlayer"
+#define PLUGIN_NAME "LLFakePlayer-Test"
 #define PLUGIN_AUTHOR "xiaoqch"
-#define PLUGIN_DISPLAY_NAME "Fake Player For LiteLoader"
-#define PLUGIN_DESCRIPTION "Fake Player For LiteLoader"
+#define PLUGIN_DISPLAY_NAME "Fake Player For LiteLoader-Test"
+#define PLUGIN_DESCRIPTION "Fake Player For LiteLoader-Test"
 #define PLUGIN_WEBSIDE "https://github.com/xiaoqch/LL_Plugins/" PLUGIN_NAME
 #define PLUGIN_LICENCE "GPLv3"
 #define PLUGIN_USAGE R"(
@@ -15,7 +15,9 @@ llfakeplayer remove - Remove a fake player forever
 llfakeplayer list - List all fake player
 llfakeplayer login - Login a existing fake player
 llfakeplayer logout - Logout a existing fake player
-llfakeplayer gui - Show fake player manage gui)"
+llfakeplayer import - Import data from ddf8196's FakePlayer Client
+llfakeplayer gui - Show fake player manage gui
+)"
 
 
 // Version
