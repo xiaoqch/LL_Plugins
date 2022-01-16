@@ -30,9 +30,8 @@ class FakePlayer {
     friend class FakePlayerManager;
     friend class FakePlayerStorage;
 public:
-    static FakePlayer* mRecordPlayer;
-    static std::unique_ptr<CompoundTag> mRecordData;
-    static bool mLogining;
+    static bool mLoggingIn;
+    static FakePlayer* mLoggingInPlayer;
 
     static NetworkIdentifier mNetworkID;
     static unsigned char mMaxClientSubID;
