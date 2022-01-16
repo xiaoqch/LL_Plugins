@@ -510,6 +510,7 @@ void testMCAPI() {
 
 #include <filesystem>
 #include <fstream>
+#include "AiTest.h"
 void verifyHashUnique() {
     std::vector<__int64> hashs;
     std::ifstream file("bedrock_server_SymList.txt");
@@ -533,18 +534,18 @@ void verifyHashUnique() {
         logger.error("file \"{}\" not found, hash verify will not be executed", "bedrock_server_SymList.txt");
     }
 };
-
 void entry() {
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev)->bool {
         dlsym_static("?EVENT_BEGIN@ActorDefinitionIdentifier@@2V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@B");
         testRegRecipe();
         testStaticDlsym();
         testMCAPI();
-        verifyHashUnique();
+        //verifyHashUnique();
         return true;
         });
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent const& ev)->bool {
         RemovePlayerCommand::setup(*ev.mCommandRegistry);
+        AiTest::setupCommand(*ev.mCommandRegistry);
         return true;
         });
 }
