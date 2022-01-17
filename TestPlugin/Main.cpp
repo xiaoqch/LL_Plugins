@@ -4,7 +4,7 @@
 #include "TestDBStorage.h"
 
 LARGE_INTEGER freq_;
-auto a = QueryPerformanceFrequency(&freq_);
+auto INITPERFORMANCE = QueryPerformanceFrequency(&freq_);
 
 LARGE_INTEGER begin_time;
 LARGE_INTEGER end_time;
@@ -12,9 +12,9 @@ inline double ns_time() {
     return (end_time.QuadPart - begin_time.QuadPart) * 1000000.0 / freq_.QuadPart;
 }
 
-#define TestTimeLog(func)\
+#define TestTimeLog(func, ...)\
 QueryPerformanceCounter(&begin_time);\
-func();\
+func(__VA_ARGS__);\
 QueryPerformanceCounter(&end_time);\
 logger.warn("  {}\t time: {}", #func, ns_time());
 
