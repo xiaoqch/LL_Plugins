@@ -8,15 +8,16 @@ void modifyVftbl() {
     void** vftbl_simulated = (void**)dlsym_real("??_7SimulatedPlayer@@6B@");
     void** vftbl_server = (void**)dlsym_real("??_7ServerPlayer@@6B@");
     memcpy(fakeSimulatedPlayerVftbl, vftbl_server, sizeof(fakeSimulatedPlayerVftbl));
-#define restoreVFunc(index) fakeSimulatedPlayerVftbl[index] = vftbl_simulated[index]
-    restoreVFunc(14);
-    restoreVFunc(10);
-    restoreVFunc(292);
-    //restoreVFunc(339);
-    //restoreVFunc(438);
-    restoreVFunc(439);
-    restoreVFunc(440);
-    restoreVFunc(443);
+#define RestoreVFunc(index) fakeSimulatedPlayerVftbl[index] = vftbl_simulated[index]
+    RestoreVFunc(14);
+    RestoreVFunc(292);
+    RestoreVFunc(10);
+    //RestoreVFunc(339);
+    //RestoreVFunc(438);
+    RestoreVFunc(439);
+    RestoreVFunc(440);
+    RestoreVFunc(443);
+#undef RestoreVFunc
 }
 
 #include <MC/Block.hpp>
