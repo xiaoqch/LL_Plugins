@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "TestNbt.h"
 
 #include <MC/CompoundTag.hpp>
@@ -7,27 +7,27 @@ void testRW(std::string const& binary, bool isLittle) {
     auto tag = CompoundTag::fromBinaryNBT((void*)binary.c_str(), binary.size(), isLittle);
     auto newBinary = tag->toBinaryNBT(isLittle);
     if (binary == newBinary) {
-        logger.info("bin->tag->bin ²âÊÔÍ¨¹ý");
+        logger.info("bin->tag->bin æµ‹è¯•é€šè¿‡");
     }
     else {
-        logger.error("bin->tag->bin ²âÊÔÎ´Í¨¹ý");
+        logger.error("bin->tag->bin æµ‹è¯•æœªé€šè¿‡");
     }
     auto snbt = tag->toSNBT();
     auto newTag = CompoundTag::fromSNBT(snbt);
     if (tag->equals(*newTag)) {
-        logger.info("tag->snbt->tag ²âÊÔÍ¨¹ý");
+        logger.info("tag->snbt->tag æµ‹è¯•é€šè¿‡");
     }
     else {
-        logger.error("tag->snbt->tag ²âÊÔÎ´Í¨¹ý");
+        logger.error("tag->snbt->tag æµ‹è¯•æœªé€šè¿‡");
         WriteAllFile(fmt::format("./test/error{}.nbt", isLittle ? "" : "_big"), newTag->toBinaryNBT(isLittle), true);
         return;
     }
     auto newSnbt = newTag->toSNBT();
     if (newSnbt == snbt) {
-        //logger.info("snbt->tag->snbt ²âÊÔÍ¨¹ý");
+        //logger.info("snbt->tag->snbt æµ‹è¯•é€šè¿‡");
     }
     else {
-        logger.error("snbt->tag->snbt ²âÊÔÎ´Í¨¹ý");
+        logger.error("snbt->tag->snbt æµ‹è¯•æœªé€šè¿‡");
         WriteAllFile(fmt::format("./test/error{}.nbt", isLittle ? "" : "_big"), newTag->toBinaryNBT(isLittle), true);
         return;
     }

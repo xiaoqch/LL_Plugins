@@ -1,9 +1,8 @@
 ﻿//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 TestPlugin.rc 使用
-//
+// Microsoft Visual C++ generated include file.
+// Used by Template.rc
 
-// Next default values for new objects
+// 新对象的下一组默认值
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

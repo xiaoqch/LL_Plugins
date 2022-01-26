@@ -11,11 +11,11 @@
 #define KEY_NO_TARGET "%commands.generic.noTargetMatch"
 #define KEY_TOO_MANY_TARGER "%commands.generic.tooManyTargets"
 
-#define AssertUniqueTarger(results) \
-if (results.empty())\
-    return output.error(KEY_NO_TARGET);\
-else if(results.count()>1)\
-    return output.error(KEY_TOO_MANY_TARGER);
+#define AssertUniqueTarger(results)         \
+    if (results.empty())                    \
+        return output.error(KEY_NO_TARGET); \
+    else if (results.count() > 1)           \
+        return output.error(KEY_TOO_MANY_TARGER);
 
 using namespace RegisterCommandHelper;
 std::vector<std::string> FakePlayerCommand::mList;
@@ -40,79 +40,86 @@ void FakePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& outp
     bool res = false;
     switch (operation)
     {
-    case FakePlayerCommand::Operation::Help:
-        output.success(PLUGIN_USAGE);
-        break;
-    case FakePlayerCommand::Operation::List:
-    {
-        std::string playerList = "";
-        bool first = true;
-        for (auto& name : manager.getSortedNames()) {
-            if (!first)
-                playerList += ", ";
-            first = false;
-            playerList += name;
-            output.success();
+        case FakePlayerCommand::Operation::Help:
+            output.success(PLUGIN_USAGE);
+            break;
+        case FakePlayerCommand::Operation::List:
+        {
+            std::string playerList = "";
+            bool first = true;
+            for (auto& name : manager.getSortedNames())
+            {
+                if (!first)
+                    playerList += ", ";
+                first = false;
+                playerList += name;
+                output.success();
+            }
+            if (playerList.empty())
+                output.success("No fake player.");
+            else
+            {
+                output.addMessage(fmt::format("List: {}", playerList));
+            }
+            break;
         }
-        if (playerList.empty())
-            output.success("No fake player.");
-        else {
-            output.addMessage(fmt::format("List: {}", playerList));
+        case FakePlayerCommand::Operation::Create:
+        {
+            if (auto fp = manager.create(name))
+            {
+                output.success(fmt::format("Create fake player {} successfully.", fp->getRealName()));
+            }
+            else
+            {
+                output.error(fmt::format("Failed to create fake player {}.", name));
+            }
+            break;
         }
-        break;
-    }
-    case FakePlayerCommand::Operation::Create:
-    {
-        if (auto fp = manager.create(name)) {
-            output.success(fmt::format("Create fake player {} successfully.", fp->getRealName()));
+        case FakePlayerCommand::Operation::Remove:
+        {
+            res = manager.remove(name);
+            if (res)
+                output.success("Remove Success");
+            else
+                output.error("Remove Failed");
+            break;
         }
-        else {
-            output.error(fmt::format("Failed to create fake player {}.", name));
-        }
-        break; 
-    }
-    case FakePlayerCommand::Operation::Remove:
-    {
-        res = manager.remove(name);
-        if(res)
-            output.success("Remove Success");
-        else
-            output.error("Remove Failed");
-        break;
-    }
-    case FakePlayerCommand::Operation::Login:
-        res = manager.login(name);
-        if (res)
-            output.success("Login Success");
-        else
-            output.error("Login Failed");
-        break;
-    case FakePlayerCommand::Operation::Logout:
-        res = manager.logout(name);
-        if (res)
-            output.success("Logout Success");
-        else
-            output.error("Logout Failed");
-        break;
-    case FakePlayerCommand::Operation::Import:
-        if (name_isSet) {
-            manager.importData_DDF(name);
-        }
-        else {
-            PlayerInfo::forEachInfo([&output](std::string_view name, std::string_view xuid, std::string_view uuid) ->bool {
-                auto nameUUID = JAVA_nameUUIDFromBytes(std::string(name));
-                if (uuid == nameUUID.asString()) {
-                    output.success(fmt::format("{} - {} - {}", name, xuid, uuid));
-                }
-                return true;
+        case FakePlayerCommand::Operation::Login:
+            res = manager.login(name);
+            if (res)
+                output.success("Login Success");
+            else
+                output.error("Login Failed");
+            break;
+        case FakePlayerCommand::Operation::Logout:
+            res = manager.logout(name);
+            if (res)
+                output.success("Logout Success");
+            else
+                output.error("Logout Failed");
+            break;
+        case FakePlayerCommand::Operation::Import:
+            if (name_isSet)
+            {
+                manager.importData_DDF(name);
+            }
+            else
+            {
+                PlayerInfo::forEachInfo([&output](std::string_view name, std::string_view xuid, std::string_view uuid) -> bool {
+                    auto nameUUID = JAVA_nameUUIDFromBytes(std::string(name));
+                    if (uuid == nameUUID.asString())
+                    {
+                        output.success(fmt::format("{} - {} - {}", name, xuid, uuid));
+                    }
+                    return true;
                 });
-        }
-        break;
-    case FakePlayerCommand::Operation::GUI:
-        output.error("NoImpl");
-        break;
-    default:
-        break;
+            }
+            break;
+        case FakePlayerCommand::Operation::GUI:
+            output.error("NoImpl");
+            break;
+        default:
+            break;
     }
 }
 class TestCommand;
@@ -120,24 +127,24 @@ constexpr auto FULL_COMMAND_NAME = "llfakeplayer";
 void FakePlayerCommand::setup(CommandRegistry& registry)
 {
 
-    registry.registerCommand(FULL_COMMAND_NAME, "FakePlayer For LiteLoader", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
+    registry.registerCommand(FULL_COMMAND_NAME, "FakePlayer For LiteLoader", CommandPermissionLevel::Any, {(CommandFlagValue)0}, {(CommandFlagValue)0x80});
     registry.registerAlias(FULL_COMMAND_NAME, "fp");
     registry.addEnum<Operation>("FpCreateAction", {
-        {"create", Operation::Create},
-        });
+                                                      {"create", Operation::Create},
+                                                  });
     registry.addEnum<Operation>("FpOtherAction", {
-        {"remove", Operation::Remove},
-        {"login", Operation::Login},
-        {"logout", Operation::Logout},
-        });
+                                                     {"remove", Operation::Remove},
+                                                     {"login", Operation::Login},
+                                                     {"logout", Operation::Logout},
+                                                 });
     registry.addEnum<Operation>("ManageAction", {
-        {"list", Operation::List},
-        {"help", Operation::Help},
-        {"gui", Operation::GUI},
-        });
+                                                    {"list", Operation::List},
+                                                    {"help", Operation::Help},
+                                                    {"gui", Operation::GUI},
+                                                });
     registry.addEnum<Operation>("ImportAction", {
-        {"import", Operation::Import},
-        });
+                                                    {"import", Operation::Import},
+                                                });
     auto actionCreate = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "FpCreateAction");
     auto actionWithName = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "FpOtherAction");
     auto action = makeMandatory<CommandParameterDataType::ENUM>(&FakePlayerCommand::operation, "action", "ManageAction");
@@ -169,7 +176,8 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
 // =============== Test ===============
 #include <MC/BlockSource.hpp>
 #include <MC/LevelChunk.hpp>
-bool processCommand(class CommandOrigin const& origin, class CommandOutput& output, Actor* actor, int range) {
+bool processCommand(class CommandOrigin const& origin, class CommandOutput& output, Actor* actor, int range)
+{
     auto bpos = actor->getBlockPos();
     int chunk_x = bpos.x >> 4;
     int chunk_z = bpos.z >> 4;
@@ -185,23 +193,31 @@ bool processCommand(class CommandOrigin const& origin, class CommandOutput& outp
     if (!&region)
         return false;
 
-    for (auto cx = min_cx; cx <= max_cx; ++cx) {
+    for (auto cx = min_cx; cx <= max_cx; ++cx)
+    {
         loadInfo += " \n";
-        for (auto cz = min_cz; cz <= max_cz; ++cz) {
-            auto chunk = region.getChunk({ cx, cz });
-            if (cx == chunk_x && cz == chunk_z) {
+        for (auto cz = min_cz; cz <= max_cz; ++cz)
+        {
+            auto chunk = region.getChunk({cx, cz});
+            if (cx == chunk_x && cz == chunk_z)
+            {
                 loadInfo += "X";
             }
-            else {
-                if (chunk) {
-                    if (chunk->getLastTick().t == Global<Level>->getCurrentServerTick().t) {
+            else
+            {
+                if (chunk)
+                {
+                    if (chunk->getLastTick().t == Global<Level>->getCurrentServerTick().t)
+                    {
                         loadInfo += "#";
                     }
-                    else {
+                    else
+                    {
                         loadInfo += "O";
                     }
                 }
-                else {
+                else
+                {
                     loadInfo += "-";
                 }
             }
@@ -213,41 +229,47 @@ bool processCommand(class CommandOrigin const& origin, class CommandOutput& outp
     return true;
 }
 
-void TickingCommand::execute(class CommandOrigin const& origin, class CommandOutput& output) const {
+void TickingCommand::execute(class CommandOrigin const& origin, class CommandOutput& output) const
+{
     Actor* actor;
-    if (selector_isSet) {
+    if (selector_isSet)
+    {
         auto result = selector.results(origin);
-        if (result.empty()) {
+        if (result.empty())
+        {
             output.error(KEY_NO_TARGET);
             return;
         }
-        else if (result.count() > 1) {
+        else if (result.count() > 1)
+        {
             output.error(KEY_NO_TARGET);
             return;
         }
         actor = *result.begin();
     }
-    else {
-        if (auto entity = origin.getEntity()) {
+    else
+    {
+        if (auto entity = origin.getEntity())
+        {
             actor = entity;
         }
-        else {
+        else
+        {
             output.error(KEY_NO_TARGET);
             return;
         }
     }
-    if (!processCommand(origin, output, actor, range_isSet?range:10))
+    if (!processCommand(origin, output, actor, range_isSet ? range : 10))
         output.error("Error when executing command \"ticking\"");
 }
 
-void TickingCommand::setup(CommandRegistry& registry) {
-    registry.registerCommand("ticking", "Show Ticking chunks", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
+void TickingCommand::setup(CommandRegistry& registry)
+{
+    registry.registerCommand("ticking", "Show Ticking chunks", CommandPermissionLevel::Any, {(CommandFlagValue)0}, {(CommandFlagValue)0x80});
     registry.registerOverload<TickingCommand>("ticking",
-        makeOptional(&TickingCommand::selector, "target", &TickingCommand::selector_isSet),
-        makeOptional(&TickingCommand::range, "range", &TickingCommand::range_isSet)
-        );
+                                              makeOptional(&TickingCommand::selector, "target", &TickingCommand::selector_isSet),
+                                              makeOptional(&TickingCommand::range, "range", &TickingCommand::range_isSet));
     registry.registerOverload<TickingCommand>("ticking",
-            makeMandatory(&TickingCommand::range, "range", &TickingCommand::range_isSet)
-            );
+                                              makeMandatory(&TickingCommand::range, "range", &TickingCommand::range_isSet));
 }
 #endif // PLUGIN_VERSION_IS_BETA

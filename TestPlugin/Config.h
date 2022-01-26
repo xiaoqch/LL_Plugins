@@ -35,7 +35,7 @@
 #define PLUGIN_DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
 
-#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
+#define LOG_VAR(var) logger.warn("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA
 inline void logConfig() {
     logger.debug("beta version, log config:");

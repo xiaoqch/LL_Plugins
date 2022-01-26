@@ -82,22 +82,27 @@ jobs:
       with:
         name: LL_Plugins
         path: ${{ github.workspace }}/output/
-        
+
+    - name: Archive
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: Compress-Archive -Path output/* output/LL_Plugins.zip
+
     - name: Prepare for creating Release
       working-directory: ${{env.GITHUB_WORKSPACE}}
       id: rel
-      if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/v')
       run: |
         echo ::set-output name=tag::${GITHUB_REF#refs/tags/*}
-        Compress-Archive -Path output/* output/LL_Plugins.zip 
-      
+        mv output/LL_Plugins.zip output/LL_Plugins-${GITHUB_REF#refs/tags/*}.zip
+      shell: bash
+
     - name: Create New Release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/v')
       with:
         token: ${{ secrets.ACTIONS_TOKEN }}
-        # body_path: ${{ github.workspace }}/CHANGELOG.txt
-        files: |
-          ${{ github.workspace }}/output/LL_Plugins.zip
+        body_path: ${{ github.workspace }}/CHANGELOG.txt
+        files: ${{ github.workspace }}\output\LL_Plugins-${{ steps.rel.outputs.tag }}.zip
       env:
           GITHUB_REPOSITORY: xiaoqch/LL_Plugins 

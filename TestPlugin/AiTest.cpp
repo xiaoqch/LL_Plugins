@@ -18,6 +18,59 @@ public:
     MCAPI bool parse(struct ConstDeserializeDataParams const&, int);
     MCAPI ~GoalDefinition();
 };
+#include <MC/LeashableComponent.hpp>
+TInstanceHook(bool, "?getInteraction@LeashableComponent@@QEAA_NAEAVActor@@AEAVPlayer@@AEAVActorInteraction@@@Z",
+    LeashableComponent, class Actor& target, class Player& player, class ActorInteraction& interaction) {
+    logger.warn("LeashableComponent::getInteraction");
+    if (target.isSimulatedPlayer())
+        return true;
+    return original(this, target, player, interaction);
+}
+
+
+//#include <MC/LeashableComponent.hpp>
+//#include <MC/ItemStack.hpp>
+//TInstanceHook(void, "?interact@Player@@QEAA_NAEAVActor@@AEBVVec3@@@Z",
+//    Player, class Actor& target, class Vec3 const& pos) {
+//    if (target.isSimulatedPlayer()) {
+//        logger.warn("Player({})::interact({}, ({}))", getNameTag(), target.getNameTag(), pos.toString());
+//        if (getSelectedItem().getTypeName() == "minecraft:lead") {
+//            static auto leashableComponent = (LeashableComponent*)dlsym_real("?instance@?1???$_singleEmptyTypeInstance@VLeashableComponent@@X@EntityContextBase@@KAAEAVLeashableComponent@@XZ@4V2@A");
+//            leashableComponent->leash(target, *this);
+//        }
+//    }
+//    return original(this, target, pos);
+//}
+
+//TInstanceHook(void, "?setLeashHolder@Actor@@QEAAXUActorUniqueID@@@Z",
+//    Actor, struct ActorUniqueID uniqueID) {
+//    logger.warn("Actor::setLeashHolder");
+//    return original(this, uniqueID);
+//}
+
+//#include <MC/LeadItem.hpp>
+//THook(bool, "?canBindPlayerMobs@LeadItem@@SA_NAEBVActor@@AEBVBlockPos@@@Z",
+//    class Actor const& target, class BlockPos const& position) {
+//    logger.warn("LeadItem::canBindPlayerMobs");
+//    if (target.isSimulatedPlayer())
+//        return true;
+//    return original(target, position);
+//}
+//THook(bool, "?bindPlayerMobs@LeadItem@@SA_NAEAVActor@@HHHPEAVItemInstance@@@Z",
+//    class Actor& target, int x, int y, int z, class ItemInstance* item) {
+//    logger.warn("LeadItem::bindPlayerMobs");
+//    if (target.isSimulatedPlayer())
+//        return true;
+//    return original(target, x, y, z, item);
+//}
+//
+//TInstanceHook(bool, "?_useOn@LeadItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
+//    LeadItem, class ItemStack& item, class Actor& target, class BlockPos bpos, unsigned char face, float offsetX, float offsetY, float offsetZ) {
+//    logger.warn("LeadItem::_useOn");
+//    if (target.isSimulatedPlayer())
+//        return true;
+//    return original(this, item, target, bpos, face, offsetX, offsetY, offsetZ);
+//}
 
 //TInstanceHook(void, "?aiStep@SimulatedPlayer@@UEAAXXZ",
 //    SimulatedPlayer ) {
@@ -64,10 +117,9 @@ TInstanceHook(void, "?updateAi@Mob@@MEAAXXZ",
 //}
 
 struct ScriptNavigationResult {
-    char unk0;
-    __int64 unk8;
-    __int64 unk16;
-    __int64 unk24;
+public:
+    bool mIsFullPath;
+    std::vector<BlockPos> mPath;
 public:
     MCAPI ~ScriptNavigationResult();
 };
@@ -78,7 +130,11 @@ THook(void, "?onStartDestroyBlock@ServerPlayerBlockUseHandler@@YAXAEAVServerPlay
     for (auto& pl : Level::getAllPlayers()) {
         if (pl->isSimulatedPlayer()) {
             auto fp = (SimulatedPlayer*)pl;
-            fp->simulateNavigateToLocation(bpos.relative(face, -1).center(), 1.0f);
+            auto res = fp->simulateNavigateToLocation(bpos.relative(face, 1).center(), 1.0f);
+            LOG_VAR(res.mIsFullPath);
+            for (auto& node : res.mPath) {
+                LOG_VAR(node.toString());
+            }
         }
     }
 }
@@ -104,6 +160,8 @@ TInstanceHook(bool, "?_hurt@Player@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
             }
         }
         auto& sourceActor = *Global<Level>->fetchEntity(ads.getDamagingEntityUniqueID(), true);
+        if (!&sourceActor)
+            return rtn;
         fp->simulateLookAt(sourceActor);
         Schedule::delay([fp]() {
             if (Player::isValid(fp)) {
@@ -115,9 +173,13 @@ TInstanceHook(bool, "?_hurt@Player@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
                 }
                 else {
                     auto res = fp->simulateNavigateToEntity(*target, 1.0f);
+                    LOG_VAR(res.mIsFullPath);
+                    for (auto& node : res.mPath) {
+                        LOG_VAR(node.toString());
+                    }
                 }
             }
-            },10);
+            }, 10);
     }
     else {
         auto& sourceActor = *Global<Level>->fetchEntity(ads.getDamagingEntityUniqueID(), true);
@@ -180,7 +242,7 @@ public:
     /*6*/ virtual void tick();
     /*7*/ virtual void appendDebugInfo(std::string&) const;
     /*8*/ virtual bool isTargetGoal() const;
-    MCAPI LookAtActorGoal(class Mob&, float lookDistance,float probability,int minLookTime,int maxLookTime,int angleOfViewX,int angleOfViewY);
+    MCAPI LookAtActorGoal(class Mob&, float lookDistance, float probability, int minLookTime, int maxLookTime, int angleOfViewX, int angleOfViewY);
 };
 static_assert(sizeof(LookAtActorGoal) == 200);
 // ========== Test Add Goal ==========
@@ -208,7 +270,7 @@ bool testAddGoal(Actor* actor, Mob* mob) {
 //bedrock_server_mod.exe!GoalDefinition::CreateGoal(class Mob &,struct GoalDefinition const &)
 //bedrock_server_mod.exe!Mob::createAIGoals(void)
 TInstanceHook(LookAtActorGoal*, "??0LookAtActorGoal@@QEAA@AEAVMob@@MMHHHH@Z",
-    LookAtActorGoal, class Mob& mob,  float lookDistance, float probability,
+    LookAtActorGoal, class Mob& mob, float lookDistance, float probability,
     int minLookTime, int maxLookTime, int angleOfViewX, int angleOfViewY) {
     aiLogger.warn("LookAtActorGoal::LookAtActorGoal({}, {}, {}, {}, {}, {}, {})",
         CommandUtils::getActorName(mob), lookDistance, probability, minLookTime, maxLookTime, angleOfViewX, angleOfViewY);
@@ -347,7 +409,7 @@ HookGoalStart(HurtByTargetGoal);
 HookGoalStart(OfferFlowerGoal);
 HookGoalStart(RandomHoverGoal);
 HookGoalStart(RandomStrollGoal);
-HookGoalStart(RiverFollowingGoal);
+//HookGoalStart(RiverFollowingGoal);
 HookGoalStart(SendEventGoal);
 HookGoalStart(SummonActorGoal);
 HookGoalStart(SilverfishMergeWithStoneGoal);

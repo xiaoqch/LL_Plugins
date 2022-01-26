@@ -54,10 +54,10 @@ void LLStructureCommand::execute(class CommandOrigin const& ori, class CommandOu
                 outp.error(fmt::format("Structure {} Not Found", name));
                 return;
             }
-            auto tag = CompoundTag::fromBinaryNBT((void*)nbt.value().c_str(), nbt.value().size());
+            auto tag = CompoundTag::fromBinaryNBT((void*)nbt.value().c_str(), nbt.value().size(), true);
             BlockPos bpos;
             if (commandPos_isSet) {
-                bpos = commandPos1.getBlockPos(ori, { 0,0,0 });
+                bpos = commandPos2.getBlockPos(ori, { 0,0,0 });
             }
             else {
                 auto posTag = tag->getList("structure_world_origin");
@@ -67,10 +67,11 @@ void LLStructureCommand::execute(class CommandOrigin const& ori, class CommandOu
                 }
                 bpos = { posTag->getInt(0) ,posTag->getInt(1),posTag->getInt(2) };
             }
+            bpos.y += 1;
             auto structure = StructureTemplate::fromTag(name, *tag);
             auto result = structure.toWorld(ori.getDimension()->getDimensionId(), bpos);
             if (result)
-                outp.success("Success to load structure " + name);
+                outp.success(fmt::format("Success to load structure {} to {} ", name, bpos.toString()));
         }
         break;
         case LLStructureCommand::Operation::Save:
@@ -84,9 +85,10 @@ void LLStructureCommand::execute(class CommandOrigin const& ori, class CommandOu
             else {
                 pos2 = ori.getBlockPosition();
             }
-            auto structure = StructureTemplate::fromWorld(name, ori.getDimension()->getDimensionId(), pos1, pos2, false, false);
-            WriteAllFile(filePath, structure.toTag()->toBinaryNBT(true));
-            outp.success("Structure Saved");
+            auto structure = StructureTemplate::fromWorld(name, ori.getDimension()->getDimensionId(), pos1, pos2, false , true);
+            auto tag = structure.toTag();
+            WriteAllFile(filePath, tag->toBinaryNBT(true), true);
+            outp.success(fmt::format("Structure Saved, from ({}) to ({})", pos1.toString(), pos2.toString()));
         }
         break;
         case LLStructureCommand::Operation::Import:
@@ -100,11 +102,11 @@ void LLStructureCommand::execute(class CommandOrigin const& ori, class CommandOu
         }
         return;
     }
-    catch (const seh_exception& e) {
+    catch (const seh_exception&) {
         logger.error("Uncaught SEH Exception Detected!");
         logger.error("In Command struct");
     }
-    catch (const std::exception& e) {
+    catch (const std::exception&) {
         logger.error("Uncaught Exception Detected!");
         logger.error("In Command struct");
     }
@@ -127,7 +129,7 @@ void LLStructureCommand::setup(CommandRegistry& registry) {
 
     auto nameParam = makeMandatory(&LLStructureCommand::name, "name");
     auto positionParam = makeMandatory(&LLStructureCommand::commandPos1, "pos1");
-    auto optionalPositionParam = makeOptional(&LLStructureCommand::commandPos1, "pos2", &LLStructureCommand::commandPos_isSet);
+    auto optionalPositionParam = makeOptional(&LLStructureCommand::commandPos2, "pos2", &LLStructureCommand::commandPos_isSet);
     registry.registerOverload<LLStructureCommand>("llstructure",
         loadAction, nameParam, optionalPositionParam);
     registry.registerOverload<LLStructureCommand>("llstructure",
