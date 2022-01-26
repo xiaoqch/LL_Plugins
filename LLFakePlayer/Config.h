@@ -45,7 +45,8 @@ llfakeplayer gui - Show fake player manage gui
 #define PLUGIN_DATA_PATH PLUGIN_DIR "leveldb/"
 
 #if PLUGIN_VERSION_IS_BETA
-#define ASSERT(var) if (!(var)) { __debugbreak(); }
+#define ASSERT(var) \
+    if (!(var)) { __debugbreak(); }
 #define DEBUGL(...) logger.info(__VA_ARGS__)
 #define DEBUGW(...) logger.warn(__VA_ARGS__)
 #else
@@ -57,7 +58,8 @@ llfakeplayer gui - Show fake player manage gui
 
 #if PLUGIN_VERSION_IS_BETA
 #define LOG_VAR(var) logger.debug("{} = {}", #var, var);
-inline void logConfig() {
+inline void logConfig()
+{
     logger.debug("beta version, log config:");
     LOG_VAR(PLUGIN_NAME);
     LOG_VAR(PLUGIN_AUTHOR);
@@ -82,45 +84,53 @@ inline void logConfig() {
 #include <third-party/Nlohmann/json.hpp>
 #include <filesystem>
 #define SerializeVaule(var) json[#var] = Config::var
-#define DeserializeVaule(var)\
-if (json.find(#var) != json.end())\
-    Config::var = json.value(#var, Config::var);\
-else{\
-    logger.warn("Missing Config {}, use default value {}", #var, Config::var);\
-    needUpdate = true;\
-}
-
-namespace Config {
-    
-
-    inline std::string serialize() {
-        nlohmann::json json;
-        //SerializeVaule(test);
-        return json.dump(4);
+#define DeserializeVaule(var)                                                      \
+    if (json.find(#var) != json.end())                                             \
+        Config::var = json.value(#var, Config::var);                               \
+    else                                                                           \
+    {                                                                              \
+        logger.warn("Missing Config {}, use default value {}", #var, Config::var); \
+        needUpdate = true;                                                         \
     }
-    inline bool deserialize(std::string jsonStr) {
-        auto json = nlohmann::json::parse(jsonStr, nullptr, true, true);
-        bool needUpdate = false;
-        //DeserializeVaule(test);
 
-        if (needUpdate) {
-            WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
-        }
-        return true;
-    }
-    inline bool initConfig() {
-        auto jsonStr = ReadAllFile(PLUGIN_CONFIG_PATH);
-        if (jsonStr.has_value()) {
-            return deserialize(jsonStr.value());
-        }
-        else {
-            logger.warn("Config File \"{}\" Not Found, Use Default Config", PLUGIN_CONFIG_PATH);
-            std::filesystem::create_directories(std::filesystem::path(PLUGIN_CONFIG_PATH).remove_filename());
-            return WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
-        }
-        return false;
-    };
+namespace Config
+{
+
+
+inline std::string serialize()
+{
+    nlohmann::json json;
+    //SerializeVaule(test);
+    return json.dump(4);
 }
+inline bool deserialize(std::string jsonStr)
+{
+    auto json = nlohmann::json::parse(jsonStr, nullptr, true, true);
+    bool needUpdate = false;
+    //DeserializeVaule(test);
+
+    if (needUpdate)
+    {
+        WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
+    }
+    return true;
+}
+inline bool initConfig()
+{
+    auto jsonStr = ReadAllFile(PLUGIN_CONFIG_PATH);
+    if (jsonStr.has_value())
+    {
+        return deserialize(jsonStr.value());
+    }
+    else
+    {
+        logger.warn("Config File \"{}\" Not Found, Use Default Config", PLUGIN_CONFIG_PATH);
+        std::filesystem::create_directories(std::filesystem::path(PLUGIN_CONFIG_PATH).remove_filename());
+        return WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
+    }
+    return false;
+};
+} // namespace Config
 
 #if !PLUGIN_VERSION_IS_BETA
 static_assert(PLUGIN_NAME != "Template");

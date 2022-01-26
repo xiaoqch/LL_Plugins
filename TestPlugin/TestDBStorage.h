@@ -36,3 +36,19 @@ public:
         Global<CommandRegistry>->setSoftEnumValues("PlayerList", playerList);
     }
 };
+
+class DBTestCommand : public Command {
+    enum class Operation {
+        Read,
+        ReadPrefix,
+        ReadChunk,
+        Remove,
+        RemovePrefix,
+        RemoveChunk,
+    } mOperation;
+    std::string mKey;
+    virtual void execute(class CommandOrigin const& origin, class CommandOutput& output) const override;
+
+public:
+    static void setup(CommandRegistry& registry);
+};

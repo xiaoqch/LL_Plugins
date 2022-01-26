@@ -19,21 +19,18 @@
     <ClInclude Include="framework.h">
       <Filter>Default</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>资源文件</Filter>
     </ClInclude>
-    <ClInclude Include="TestRegRecipe.h" />
-    <ClInclude Include="TestDBStorage.h" />
-    <ClInclude Include="AiTest.h" />
-    <ClInclude Include="EnumGenerator.h" />
-    <ClInclude Include="TestNbt.h" />
-    <ClInclude Include="TestPacket.h" />
+    <ClInclude Include="TrapdoorCommand.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Default</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -45,15 +42,12 @@
     <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="TestRegRecipe.cpp" />
-    <ClCompile Include="TestDBStorage.cpp" />
-    <ClCompile Include="AiTest.cpp" />
-    <ClCompile Include="EnumGenerator.cpp" />
-    <ClCompile Include="TestNbt.cpp" />
-    <ClCompile Include="TestPacket.cpp" />
+    <ClCompile Include="TrapdoorCommand.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TestPlugin.rc">
+    <ResourceCompile Include="Template.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

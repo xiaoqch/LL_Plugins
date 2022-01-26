@@ -12,6 +12,16 @@ static_assert(sizeof(ItemDescriptor) == 72);
 //static_assert(offsetof(Recipes::Type, label) == 96);
 static_assert(sizeof(Recipes::Type) == 104);
 
+#include <MC/Player.hpp>
+#include <MC/ServerNetworkHandler.hpp>
+#include <MC/CraftingDataPacket.hpp>
+void updateRecipes() {
+    auto packet = CraftingDataPacket::prepareFromRecipes(Global<Level>->getRecipes());
+    for (Player* player : Level::getAllPlayers()) {
+        player->sendNetworkPacket(*packet);
+    }
+}
+
 void testRegRecipe()
 {
     auto& recipes = Global<Level>->getRecipes();
@@ -39,6 +49,8 @@ void testRegRecipe()
     int priority = 2;
     //registerCreativeItem(itemIns);
     recipes.addShapedRecipe(identifier, outputItems, shapeMatrix, types, craftingTags, priority, nullptr);
+
+    updateRecipes();
 }
 //struct voids {
 //    void**** filler[100];

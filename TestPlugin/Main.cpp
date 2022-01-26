@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "TestRegRecipe.h"
 #include <EventAPI.h>
 #include "TestDBStorage.h"
@@ -545,6 +545,7 @@ void entry() {
         });
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent const& ev)->bool {
         RemovePlayerCommand::setup(*ev.mCommandRegistry);
+        DBTestCommand::setup(*ev.mCommandRegistry);
         AiTest::setupCommand(*ev.mCommandRegistry);
         return true;
         });

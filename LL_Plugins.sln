@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPlugin", "TestPlugin\Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OperationAgent", "OperationAgent\OperationAgent.vcxproj", "{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrapdoorCmdHint", "TrapdoorCmdHint\TrapdoorCmdHint.vcxproj", "{D0607E1F-1C2E-46E2-9A18-911199995423}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|x64 = Release|x64
@@ -32,6 +34,8 @@ Global
 		{0F67A152-53F2-48EB-A92F-35B90120F203}.Release|x64.Build.0 = Release|x64
 		{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}.Release|x64.ActiveCfg = Release|x64
 		{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}.Release|x64.Build.0 = Release|x64
+		{D0607E1F-1C2E-46E2-9A18-911199995423}.Release|x64.ActiveCfg = Release|x64
+		{D0607E1F-1C2E-46E2-9A18-911199995423}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

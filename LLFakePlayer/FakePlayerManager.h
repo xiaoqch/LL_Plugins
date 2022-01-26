@@ -14,14 +14,15 @@ class FakePlayerManager;
 class FakePlayer;
 class FakePlayerStorage;
 
-class FakePlayer {
+class FakePlayer
+{
     std::string mRealName;
     mce::UUID mUUID;
     time_t mLastOnlineTime;
     bool mAutoLogin = false;
     FakePlayerManager* mManager;
 
-    // 
+    //
     ActorUniqueID mUniqueID;
     bool mOnline = false;
     SimulatedPlayer* mPlayer = nullptr;
@@ -29,13 +30,14 @@ class FakePlayer {
 
     friend class FakePlayerManager;
     friend class FakePlayerStorage;
+
 public:
     static bool mLoggingIn;
     static FakePlayer* mLoggingInPlayer;
 
     static NetworkIdentifier mNetworkID;
     static unsigned char mMaxClientSubID;
-    
+
     FakePlayer(std::string const& realName, mce::UUID uuid, time_t lastOnlineTime = 0, bool autoLogin = false, FakePlayerManager* manager = nullptr);
     ~FakePlayer();
     static std::shared_ptr<FakePlayer> deserialize(CompoundTag const& tag, FakePlayerManager* manager);
@@ -47,19 +49,18 @@ public:
     std::string getUUIDString();
     std::string getServerId();
     std::string getStorageId();
-    inline unsigned char getClientSubId() {
+    inline unsigned char getClientSubId()
+    {
         return mClientSubID;
     }
 
-    inline std::string const& getRealName() {
+    inline std::string const& getRealName()
+    {
         return mRealName;
     }
     std::unique_ptr<CompoundTag> getPlayerTag();
     std::unique_ptr<CompoundTag> getStoragePlayerTag();
     std::unique_ptr<CompoundTag> getOnlinePlayerTag();
-
-
-
 };
 
 //class FakePlayerStorage {
@@ -79,7 +80,7 @@ public:
 //        return "player_server_" + uuid.asString();
 //    }
 //
-//    FakePlayerStorage(std::string const& storagePath, FakePlayerManager* manager) :mManager(manager), mLogger("FakePlayerStorage") {
+//    FakePlayerStorage(std::string const& storagePath, FakePlayerManager* manager) :mManager(manager), mLogger("FPStorage") {
 //        if (!mManager)
 //            mManager = &FakePlayerManager::getManager();
 //        mDBStorage = KVDB::create(storagePath);
@@ -100,7 +101,7 @@ public:
 //        mDBStorage->iter([this](std::string_view key, std::string_view val)->bool {
 //            if (key._Starts_with("player_") && !key._Starts_with("player_server_")) {
 //                auto tag = CompoundTag::fromBinaryNBT((void*)val.data(), val.size());
-//                auto player = FakePlayer::deserialize(*tag.get());
+//                auto player = FakePlayer::deserialize(*tag);
 //                ASSERT("player_" + player->getUUIDString() == key);
 //                if (!player.get())
 //                {
@@ -224,24 +225,29 @@ public:
     bool importData_DDF(std::string const& name);
     friend class FakePlayer;
     friend class SimulatedPlayer;
+
 public:
-    inline std::vector<std::string> const& getSortedNames() {
+    inline std::vector<std::string> const& getSortedNames()
+    {
         return sortedNames;
     }
     static FakePlayerManager& getManager();
-    inline void forEachFakePlayer(std::function<void(std::string_view name, FakePlayer const& fakePlayer)> callback) const {
-        for (auto& [name, fakePlayer] : mFakePlayerMap) {
+    inline void forEachFakePlayer(std::function<void(std::string_view name, FakePlayer const& fakePlayer)> callback) const
+    {
+        for (auto& [name, fakePlayer] : mFakePlayerMap)
+        {
             //callback(name, *fakePlayer);
         }
     }
-    inline std::vector<FakePlayer const*> getFakePlayerList() const {
+    inline std::vector<FakePlayer const*> getFakePlayerList() const
+    {
         std::vector<FakePlayer const*> list(mFakePlayerMap.size());
         forEachFakePlayer([&list](std::string_view name, FakePlayer const& fakePlayer) {
             list.push_back(&fakePlayer);
-            });
+        });
         std::sort(list.begin(), list.end(), [](FakePlayer const* left, FakePlayer const* right) {
             return left->mLastOnlineTime > right->mLastOnlineTime;
-            });
+        });
         return list;
     }
     FakePlayer* create(std::string const& name);
@@ -252,21 +258,23 @@ public:
     bool logout(std::string const& name);
     bool logout(SimulatedPlayer& simulatedPlayer);
 
-    inline std::shared_ptr<FakePlayer> tryGetFakePlayer(Player* player) {
+    inline std::shared_ptr<FakePlayer> tryGetFakePlayer(Player* player)
+    {
         auto uuid = mce::UUID::fromString(player->getUuid());
         return tryGetFakePlayer(uuid);
     };
-    inline std::shared_ptr<FakePlayer> tryGetFakePlayer(std::string const& name) {
+    inline std::shared_ptr<FakePlayer> tryGetFakePlayer(std::string const& name)
+    {
         auto fpIter = mFakePlayerMapByName.find(name);
         if (fpIter == mFakePlayerMapByName.end())
             return {};
         return fpIter->second;
     };
-    inline std::shared_ptr<FakePlayer> tryGetFakePlayer(mce::UUID uuid) {
+    inline std::shared_ptr<FakePlayer> tryGetFakePlayer(mce::UUID uuid)
+    {
         auto fpIter = mFakePlayerMap.find(uuid.asString());
         if (fpIter == mFakePlayerMap.end())
             return {};
         return fpIter->second;
     };
-    
 };

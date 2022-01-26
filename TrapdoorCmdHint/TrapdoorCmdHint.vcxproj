@@ -9,8 +9,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0f67a152-53f2-48eb-a92f-35b90120f203}</ProjectGuid>
-    <RootNamespace>TestPlugin</RootNamespace>
+    <ProjectGuid>{d0607e1f-1c2e-46e2-9a18-911199995423}</ProjectGuid>
+    <RootNamespace>TrapdoorCmdHint</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -46,8 +46,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -55,7 +55,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <DelayLoadDLLs>bedrock_server.dll1</DelayLoadDLLs>
+      <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
@@ -63,24 +63,32 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
-    <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>if not exist $(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib goto process
+if not exist $(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib goto process
+goto end
+
+:process
+cd /d $(SolutionDir)\LiteLoaderSDK\Tools\
+if exist $(LocalDebuggerWorkingDirectory)\bedrock_server.pdb (
+LibraryBuilder.exe -o ..\Lib\ $(LocalDebuggerWorkingDirectory)
+) else (
+LibraryBuilder.exe -o ..\Lib\
+)
+
+:end
+			</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AiTest.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="EnumGenerator.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="TestDBStorage.h" />
-    <ClInclude Include="TestNbt.h" />
-    <ClInclude Include="TestPacket.h" />
-    <ClInclude Include="TestRegRecipe.h" />
+    <ClInclude Include="TrapdoorCommand.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AiTest.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="EnumGenerator.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -88,13 +96,10 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TestDBStorage.cpp" />
-    <ClCompile Include="TestNbt.cpp" />
-    <ClCompile Include="TestPacket.cpp" />
-    <ClCompile Include="TestRegRecipe.cpp" />
+    <ClCompile Include="TrapdoorCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TestPlugin.rc" />
+    <ResourceCompile Include="Template.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />

@@ -4,7 +4,8 @@
 #include "FakePlayerCommand.h"
 
 void* fakeSimulatedPlayerVftbl[445];
-void modifyVftbl() {
+void modifyVftbl()
+{
     void** vftbl_simulated = (void**)dlsym_real("??_7SimulatedPlayer@@6B@");
     void** vftbl_server = (void**)dlsym_real("??_7ServerPlayer@@6B@");
     memcpy(fakeSimulatedPlayerVftbl, vftbl_server, sizeof(fakeSimulatedPlayerVftbl));
@@ -22,24 +23,25 @@ void modifyVftbl() {
 
 #include <MC/Block.hpp>
 #include <MC/NetworkIdentifier.hpp>
-void entry() {
-    Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev)->bool {
+void entry()
+{
+    Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) -> bool {
         FakePlayerCommand::setup(*ev.mCommandRegistry);
 #if PLUGIN_VERSION_IS_BETA
         TickingCommand::setup(*ev.mCommandRegistry);
 #endif // PLUGIN_VERSION_IS_BETA
         return true;
-        });
+    });
     // ========== Test ==========
 #if PLUGIN_VERSION_IS_BETA
-    auto listener = Event::PlayerJoinEvent::subscribe([](Event::PlayerJoinEvent const& ev)->bool {
+    auto listener = Event::PlayerJoinEvent::subscribe([](Event::PlayerJoinEvent const& ev) -> bool {
         DEBUGW(ev.mPlayer->getNetworkIdentifier()->toString());
         return true;
-        });
-    Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev)->bool {
+    });
+    Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev) -> bool {
         //modifyVftbl();
         //FakePlayerManager::getManager();
         return true;
-        });
+    });
 #endif // PLUGIN_VERSION_IS_BETA
 }
