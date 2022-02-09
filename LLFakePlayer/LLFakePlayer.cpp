@@ -27,13 +27,13 @@ void entry()
 {
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) -> bool {
         FakePlayerCommand::setup(*ev.mCommandRegistry);
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
         TickingCommand::setup(*ev.mCommandRegistry);
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE
         return true;
     });
     // ========== Test ==========
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
     auto listener = Event::PlayerJoinEvent::subscribe([](Event::PlayerJoinEvent const& ev) -> bool {
         DEBUGW(ev.mPlayer->getNetworkIdentifier()->toString());
         return true;
@@ -43,5 +43,5 @@ void entry()
         //FakePlayerManager::getManager();
         return true;
     });
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE
 }

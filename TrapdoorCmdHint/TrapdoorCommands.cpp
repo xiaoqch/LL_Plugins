@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "TrapdoorCommand.h"
+#include "TrapdoorCommands.h"
 
 using namespace RegisterCommandHelper;
 class VillageCommand :
@@ -404,7 +404,7 @@ public:
     };
 };
 
-void registryCommand(CommandRegistry& registry)
+void registryCommands(CommandRegistry& registry)
 {
     VillageCommand::setup(registry);
     ApiCfgCommand::setup(registry);

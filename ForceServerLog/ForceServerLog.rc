@@ -68,12 +68,12 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "CompanyName", "Xiaoqch"
-            VALUE "FileDescription", "BDS ContentLog Catcher"
+            VALUE "FileDescription", "ForceServerLog"
             VALUE "FileVersion", "1.0.0.0"
-            VALUE "InternalName", "ContentLogCatcher.dll"
+            VALUE "InternalName", "ForceServerLog.dll"
             VALUE "LegalCopyright", "Copyright (C) 2021"
-            VALUE "OriginalFilename", "ContentLogCatcher.dll"
-            VALUE "ProductName", "BDS ContentLog Catcher"
+            VALUE "OriginalFilename", "ForceServerLog.dll"
+            VALUE "ProductName", "ForceServerLog"
             VALUE "ProductVersion", "1.0.0.0"
         END
     END

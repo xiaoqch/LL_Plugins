@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "EnumGenerator.h"
+#ifdef ENABLE_TEST_ENUM
 #include <MC/BlockLegacy.hpp>
 #include <MC/BlockTypeRegistry.hpp>
 #include <MC/Util.hpp>
@@ -34,10 +35,13 @@ void genBlockType() {
     }
     std::cout << "};" << std::endl;
 }
+#endif // ENABLE_TEST_ENUM
 
 void EnumGenerator::gen()
 {
-    //genBlockType();
-    //testNbt();
-    //genPktIDs();
+#ifdef ENABLE_TEST_ENUM
+    genBlockType();
+    testNbt();
+    genPktIDs();
+#endif // ENABLE_TEST_ENUM
 }

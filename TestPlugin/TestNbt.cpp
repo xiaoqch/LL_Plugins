@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "TestNbt.h"
+#ifdef ENABLE_TEST_NBT
 
 #include <MC/CompoundTag.hpp>
 void testRW(std::string const& binary, bool isLittle) {
@@ -52,3 +53,9 @@ void testNbt() {
 void TestNbt::test() {
     testNbt();
 }
+#else
+void TestNbt::test()
+{
+}
+
+#endif // ENABLE_TEST_NBT

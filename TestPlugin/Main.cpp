@@ -18,6 +18,8 @@ func(__VA_ARGS__);\
 QueryPerformanceCounter(&end_time);\
 logger.warn("  {}\t time: {}", #func, ns_time());
 
+#ifdef ENABLE_TEST_DLSYM
+
 inline void static_query() {
     dlsym_static("?EVENT_BEGIN@ActorDefinitionIdentifier@@2V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@B");
     dlsym_static("?$TSS0@?1??value@?$type_index@V?$sigh_storage_mixin@V?$basic_storage@W4ObjectHandleValue@Scripting@@VScriptFoodComponent@@V?$allocator@VScriptFoodComponent@@@std@@X@entt@@@entt@@X@entt@@SAIXZ@4HA");
@@ -510,7 +512,6 @@ void testMCAPI() {
 
 #include <filesystem>
 #include <fstream>
-#include "AiTest.h"
 void verifyHashUnique() {
     std::vector<__int64> hashs;
     std::ifstream file("bedrock_server_SymList.txt");
@@ -534,9 +535,12 @@ void verifyHashUnique() {
         logger.error("file \"{}\" not found, hash verify will not be executed", "bedrock_server_SymList.txt");
     }
 };
+#else
+inline void testStaticDlsym(){};
+inline void testMCAPI(){};
+#endif // ENABLE_TEST_DLSYM
 void entry() {
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev)->bool {
-        dlsym_static("?EVENT_BEGIN@ActorDefinitionIdentifier@@2V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@B");
         testRegRecipe();
         testStaticDlsym();
         testMCAPI();
@@ -544,9 +548,13 @@ void entry() {
         return true;
         });
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent const& ev)->bool {
+#ifdef ENABLE_TEST_DBSTORAGE
         RemovePlayerCommand::setup(*ev.mCommandRegistry);
         DBTestCommand::setup(*ev.mCommandRegistry);
+#endif // ENABLE_TEST_DBSTORAGE
+#ifdef ENABLE_TEST_AI
         AiTest::setupCommand(*ev.mCommandRegistry);
+#endif // ENABLE_TEST_AI
         return true;
         });
 }

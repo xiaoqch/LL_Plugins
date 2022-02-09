@@ -1,5 +1,15 @@
 #pragma once
 
+//#define ENABLE_TEST_AI
+//#define ENABLE_TEST_DBSTORAGE
+//#define ENABLE_TEST_FAKENAME
+//#define ENABLE_TEST_NBT
+//#define ENABLE_TEST_PACKET
+//#define ENABLE_TEST_RECIPES
+//#define ENABLE_TEST_ENUM
+//#define ENABLE_TEST_DLSYM
+
+
 // Plugin Info
 #define PLUGIN_NAME "TestPlugin"
 #define PLUGIN_AUTHOR "xiaoqch"
@@ -15,6 +25,11 @@
 #define PLUGIN_VERSION_MINOR 0
 #define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA true
+
+#ifdef PLUGIN_DEV_MODE
+#undef PLUGIN_VERSION_IS_BETA
+#define PLUGIN_VERSION_IS_BETA true
+#endif // PLUGIN_DEV_MODE
 
 #define STR1(R) #R
 #define STR2(R) STR1(R)
@@ -37,7 +52,8 @@
 
 #define LOG_VAR(var) logger.warn("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA
-inline void logConfig() {
+inline void logConfig()
+{
     logger.debug("beta version, log config:");
     LOG_VAR(PLUGIN_NAME);
     LOG_VAR(PLUGIN_AUTHOR);
@@ -59,7 +75,8 @@ inline void logConfig() {
 #endif // PLUGIN_VERSION_IS_BETA
 
 #if PLUGIN_VERSION_IS_BETA
-#define ASSERT(var) if (!(var)) { __debugbreak(); }
+#define ASSERT(var) \
+    if (!(var)) { __debugbreak(); }
 #define DEBUGL(...) logger.info(__VA_ARGS__)
 #define DEBUGW(...) logger.warn(__VA_ARGS__)
 #else
@@ -72,45 +89,92 @@ inline void logConfig() {
 #include <third-party/Nlohmann/json.hpp>
 #include <filesystem>
 #define SerializeVaule(var) json[#var] = Config::var
-#define DeserializeVaule(var)\
-if (json.find(#var) != json.end())\
-    Config::var = json.value(#var, Config::var);\
-else{\
-    logger.warn("Missing Config {}, use default value {}", #var, Config::var);\
-    needUpdate = true;\
-}
+#define SerializeEnumVaule(var) json[#var] = magic_enum::enum_name(Config::var)
 
-namespace Config {
-    //static bool test = true;
-
-    inline std::string serialize() {
-        nlohmann::json json;
-        //SerializeVaule(test);
-        return json.dump(4);
+#define DeserializeVaule(var)                                                         \
+    if (json.find(#var) != json.end())                                                \
+    {                                                                                 \
+        Config::var = json.value(#var, Config::var);                                  \
+    }                                                                                 \
+    else                                                                              \
+    {                                                                                 \
+        logger.info("Missing config {}, use default value ", #var /*, Config::var*/); \
+        needUpdate = true;                                                            \
     }
-    inline bool deserialize(std::string jsonStr) {
-        auto json = nlohmann::json::parse(jsonStr, nullptr, true, true);
-        bool needUpdate = false;
-        //DeserializeVaule(test);
 
-        if (needUpdate) {
-            WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
-        }
-        return true;
+#define DeserializeEnumVaule(var)                                            \
+    if (json.find(#var) != json.end())                                       \
+    {                                                                        \
+        auto svar = magic_enum::enum_name(Config::var);                      \
+        svar = json.value(#var, svar);                                       \
+        auto enumValue = magic_enum::enum_cast<decltype(Config::var)>(svar); \
+        if (enumValue.has_value())                                           \
+            Config::var = enumValue.value();                                 \
+        else                                                                 \
+        {                                                                    \
+            logger.warn("Unsupported config value {}, use default value {}", \
+                        svar, magic_enum::enum_name(Config::var));           \
+            needUpdate = true;                                               \
+        }                                                                    \
+    }                                                                        \
+    else                                                                     \
+    {                                                                        \
+        logger.warn("Missing config {}, use default value {}",               \
+                    #var, magic_enum::enum_name(Config::var));               \
+        needUpdate = true;                                                   \
     }
-    inline bool initConfig() {
-        auto jsonStr = ReadAllFile(PLUGIN_CONFIG_PATH);
-        if (jsonStr.has_value()) {
-            return deserialize(jsonStr.value());
-        }
-        else {
-            logger.warn("Config File \"{}\" Not Found, Use Default Config", PLUGIN_CONFIG_PATH);
-            std::filesystem::create_directories(std::filesystem::path(PLUGIN_CONFIG_PATH).remove_filename());
-            return WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
-        }
-        return false;
-    };
+
+namespace Config
+{
+//static bool test = true;
+
+inline std::string serialize()
+{
+    nlohmann::json json;
+
+    //SerializeVaule(test);
+
+    return json.dump(4);
 }
+inline bool deserialize(std::string jsonStr)
+{
+    auto json = nlohmann::json::parse(jsonStr, nullptr, false, true);
+    bool needUpdate = false;
+
+    //DeserializeVaule(test);
+
+    return !needUpdate;
+}
+inline bool saveConfig()
+{
+    return WriteAllFile(PLUGIN_CONFIG_PATH, serialize(), false);
+}
+inline bool initConfig()
+{
+    bool res = false;
+    auto jsonStr = ReadAllFile(PLUGIN_CONFIG_PATH);
+    if (jsonStr.has_value())
+    {
+        try
+        {
+            res = deserialize(jsonStr.value());
+        }
+        catch (const std::exception&)
+        {
+            logger.error("Error in loading config file \"{}\", Use default config", PLUGIN_CONFIG_PATH);
+            res = false;
+        }
+    }
+    else
+    {
+        logger.info("Config File \"{}\" Not Found, Use Default Config", PLUGIN_CONFIG_PATH);
+        std::filesystem::create_directories(std::filesystem::path(PLUGIN_CONFIG_PATH).remove_filename());
+    }
+    if (!res)
+        res = saveConfig();
+    return res;
+};
+} // namespace Config
 
 #if !PLUGIN_VERSION_IS_BETA
 static_assert(PLUGIN_NAME != "Template");

@@ -1,4 +1,6 @@
 #include "pch.h"
+#ifdef ENABLE_TEST_RECIPES
+
 #include "TestRegRecipe.h"
 #include <MC/Level.hpp>
 #include <MC/ItemStack.hpp>
@@ -69,3 +71,6 @@ void testRegRecipe()
 //        identifier, outputItems[0].toDebugString(), shapeMatrix.size(), types[0].toDebugString(), craftingTags[0].getString(), priority, (void*)&callback);
 //    return original(_this, identifier, outputItems, shapeMatrix, types, craftingTags, priority, callback);
 //}
+
+
+#endif // ENABLE_TEST_RECIPES

@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "TestPacket.h"
 #include <MC/Certificate.hpp>
 #include <MC/UpdateAttributesPacket.hpp>
 #include <MC/ReadOnlyBinaryStream.hpp>
@@ -33,6 +32,7 @@
 #include <MC/RespawnPacket.hpp>
 #include <MC/ShowCreditsPacket.hpp>
 #include <MC/StartGamePacket.hpp>
+#ifdef ENABLE_TEST_PACKET
 
 TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@AEBVPacket@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
               NetworkHandler, NetworkIdentifier& nid, class Packet& pkt, std::string const& data)
@@ -568,3 +568,72 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     original(this, nid, pkt, data);
 }
 
+#include <MC/MinecraftEventing.hpp>
+static Player* lastPlayer;
+TInstanceHook(NetworkPeer::DataStatus, "?receivePacket@Connection@NetworkHandler@@QEAA?AW4DataStatus@NetworkPeer@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAV2@AEBV?$shared_ptr@V?$time_point@Usteady_clock@chrono@std@@V?$duration@_JU?$ratio@$00$0DLJKMKAA@@std@@@23@@chrono@std@@@6@@Z",
+              NetworkHandler::Connection, std::string& data, NetworkHandler& handler, class std::shared_ptr<class std::chrono::time_point<struct std::chrono::steady_clock, class std::chrono::duration<__int64, struct std::ratio<1, 1000000000>>>> const& time_point)
+{
+    auto rtn = original(this, data, handler, time_point);
+    if (rtn != NetworkPeer::DataStatus::OK)
+        return rtn;
+    auto& nid = dAccess<NetworkIdentifier>(this, 0);
+    lastPlayer = Global<ServerNetworkHandler>->getServerPlayer(nid, dAccess<unsigned int>(&nid, 160));
+    return rtn;
+}
+TInstanceHook(void, "?sendPacketReceivedFrom@NetworkPacketEventCoordinator@@QEAAXAEBVPacketHeader@@AEBVPacket@@@Z",
+              NetworkPacketEventCoordinator, class PacketHeader const& header, class Packet const& pkt)
+{
+    auto pl = lastPlayer;
+    static int count = 0;
+    static size_t packetCount = 0;
+    static time_t timeStart = time(0);
+    if (++packetCount % 10000 == 0)
+    {
+        logger.warn("receivePacket - time: {} \t, count: {}", time(0) - timeStart, packetCount);
+    }
+    if (!pl)
+    {
+        DEBUGL("[Received] <- : {}({})", pkt.getName(), pkt.getId());
+        return original(this, header, pkt);
+    }
+    auto pktId = pkt.getId();
+    switch (pkt.getId())
+    {
+        case MinecraftPacketIds::Event:
+            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
+            break;
+        case MinecraftPacketIds::CraftingEvent:
+            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
+            break;
+            //case MinecraftPacketIds::ItemStackRequest:
+            //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
+            //    break;
+            //case MinecraftPacketIds::PlayerAction:
+            //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
+            //    break;
+            //case MinecraftPacketIds::MovePlayer:
+            //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
+            //    break;
+        case MinecraftPacketIds::PlayStatus:
+            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((PlayStatusPacket*)&pkt)->toDebugString());
+            break;
+        case MinecraftPacketIds::Respawn:
+            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
+            break;
+        case (MinecraftPacketIds)123:
+        case (MinecraftPacketIds)135:
+        case (MinecraftPacketIds)144:
+        case (MinecraftPacketIds)175:
+        case MinecraftPacketIds::MovePlayer:
+            if (!((++count) % 100))
+                DEBUGL("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
+            break;
+        default:
+            DEBUGL("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
+            break;
+    }
+
+    original(this, header, pkt);
+}
+
+#endif // ENABLE_TEST_PACKET

@@ -19,7 +19,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                 PLUGIN_VERSION_MAJOR,
                 PLUGIN_VERSION_MINOR,
                 PLUGIN_VERSION_REVISION,
+#ifdef PLUGIN_DEV_MODE
+                LL::Version::Dev
+#else
                 PLUGIN_VERSION_IS_BETA ? LL::Version::Beta : LL::Version::Release
+#endif // PLUGIN_DEV_MODE
             ), {
                 { "Git", PLUGIN_WEBSIDE },
                 { "License", PLUGIN_LICENCE },
@@ -39,16 +43,20 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 extern "C" {
     _declspec(dllexport) void onPostInit() {
         std::ios::sync_with_stdio(false);
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
         logConfig();
-        logger.warn("This plugin is a beta version and may have bugs");
+        logger.warn("This plugin is a development version and may have bugs");
 #else
+#if PLUGIN_VERSION_IS_BETA
+        logger.warn("This plugin is a beta version and may have bugs");
+#endif // PLUGIN_VERSION_IS_BETA
         //Set global SEH-Exception handler
         _set_se_translator(seh_exception::TranslateSEHtoCE);
-#endif
+#endif // PLUGIN_DEV_MODE
         entry();
         logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
         if (PLUGIN_USAGE)
             logger.info("Usage: {}", PLUGIN_USAGE);
+        Logger::setDefaultFile(PLUGIN_LOG_PATH, true);
     }
 }

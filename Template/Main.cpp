@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "TemplateCommand.h"
+#include "ActorDebugCommand.h"
 #include <EventAPI.h>
 
 void entry() {
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
-        TemplateCommand::setup(*ev.mCommandRegistry);
+        ActorDebugCommand::setup(*ev.mCommandRegistry);
         return true;
         });
 }

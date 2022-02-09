@@ -17,6 +17,12 @@
 #define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA true
 
+#ifdef PLUGIN_DEV_MODE
+#undef PLUGIN_VERSION_IS_BETA
+#define PLUGIN_VERSION_IS_BETA true
+#endif // PLUGIN_DEV_MODE
+
+
 #define STR1(R) #R
 #define STR2(R) STR1(R)
 

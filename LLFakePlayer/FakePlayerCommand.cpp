@@ -127,7 +127,7 @@ constexpr auto FULL_COMMAND_NAME = "llfakeplayer";
 void FakePlayerCommand::setup(CommandRegistry& registry)
 {
 
-    registry.registerCommand(FULL_COMMAND_NAME, "FakePlayer For LiteLoader", CommandPermissionLevel::Any, {(CommandFlagValue)0}, {(CommandFlagValue)0x80});
+    registry.registerCommand(FULL_COMMAND_NAME, "FakePlayer For LiteLoader", CommandPermissionLevel::GameMasters, {(CommandFlagValue)0}, {(CommandFlagValue)0x80});
     registry.registerAlias(FULL_COMMAND_NAME, "fp");
     registry.addEnum<Operation>("FpCreateAction", {
                                                       {"create", Operation::Create},
@@ -171,7 +171,7 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
     registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, actionImport, nameOptional);
 }
 
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
 
 // =============== Test ===============
 #include <MC/BlockSource.hpp>
@@ -272,4 +272,4 @@ void TickingCommand::setup(CommandRegistry& registry)
     registry.registerOverload<TickingCommand>("ticking",
                                               makeMandatory(&TickingCommand::range, "range", &TickingCommand::range_isSet));
 }
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE

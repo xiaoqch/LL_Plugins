@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "TrapdoorCommand.h"
+#include "TrapdoorCommands.h"
 #include <EventAPI.h>
 
 void entry() {
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
-        registryCommand(*ev.mCommandRegistry);
+        registryCommands(*ev.mCommandRegistry);
         return true;
         });
 }

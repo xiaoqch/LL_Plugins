@@ -46,6 +46,18 @@
     <ClInclude Include="SimulatedPlayerHelper.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\Global\DebugHelper.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Global\DlsymStatic.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Global\GlobalConfig.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Global\magic_enum.hpp">
+      <Filter>Default</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

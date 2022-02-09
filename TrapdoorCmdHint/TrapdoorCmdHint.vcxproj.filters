@@ -25,7 +25,7 @@
     <ClInclude Include="resource.h">
       <Filter>资源文件</Filter>
     </ClInclude>
-    <ClInclude Include="TrapdoorCommand.h">
+    <ClInclude Include="TrapdoorCommands.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -42,14 +42,9 @@
     <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="TrapdoorCommand.cpp">
+    <ClCompile Include="TrapdoorCommands.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Template.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib">

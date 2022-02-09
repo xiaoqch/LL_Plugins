@@ -238,13 +238,13 @@ FakePlayerManager::FakePlayerManager(std::string const& dbPath)
 
     mDatabase = KVDB::create(dbPath);
 
-#ifdef PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
     mDatabase->iter([](std::string_view key, std::string_view val) -> bool {
         DEBUGW(key);
         std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT() << std::endl;
         return true;
     });
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE
 
     loadData();
     initSortedNames();
