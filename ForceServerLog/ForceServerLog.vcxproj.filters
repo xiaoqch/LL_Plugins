@@ -33,11 +33,11 @@
     <ClCompile Include="pch.cpp">
       <Filter>Default</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="ForceServerLog.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

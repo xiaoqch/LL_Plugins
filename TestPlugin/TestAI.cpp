@@ -1,8 +1,9 @@
 #include "pch.h"
-#include "AiTest.h"
+#include "TestAI.h"
 #include <RegCommandAPI.h>
 #include <MC/CommandUtils.hpp>
 #include <MC/Level.hpp>
+#ifdef ENABLE_TEST_AI
 
 Logger aiLogger("AI");
 
@@ -468,4 +469,6 @@ namespace AiTest {
     void setupCommand(CommandRegistry& registry) {
         TestAICommand::setup(registry);
     }
-}
+} // namespace AiTest
+
+#endif // ENABLE_TEST_AI

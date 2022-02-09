@@ -39,7 +39,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 extern "C" {
     _declspec(dllexport) void onPostInit() {
         std::ios::sync_with_stdio(false);
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
         logConfig();
         logger.warn("This plugin is a beta version and may have bugs");
 #else

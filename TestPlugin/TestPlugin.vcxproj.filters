@@ -30,10 +30,10 @@
     </ClInclude>
     <ClInclude Include="TestRegRecipe.h" />
     <ClInclude Include="TestDBStorage.h" />
-    <ClInclude Include="AiTest.h" />
+    <ClInclude Include="TestAI.h" />
     <ClInclude Include="EnumGenerator.h" />
     <ClInclude Include="TestNbt.h" />
-    <ClInclude Include="TestPacket.h" />
+    <ClInclude Include="TestFakeName.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -47,10 +47,11 @@
     </ClCompile>
     <ClCompile Include="TestRegRecipe.cpp" />
     <ClCompile Include="TestDBStorage.cpp" />
-    <ClCompile Include="AiTest.cpp" />
+    <ClCompile Include="TestAI.cpp" />
     <ClCompile Include="EnumGenerator.cpp" />
     <ClCompile Include="TestNbt.cpp" />
     <ClCompile Include="TestPacket.cpp" />
+    <ClCompile Include="TestFakeName.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestPlugin.rc">

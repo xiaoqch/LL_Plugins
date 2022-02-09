@@ -27,7 +27,7 @@ public:
     static void setup(CommandRegistry& registry);
 };
 
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
 
 // =============== Test ===============
 class TickingCommand : public Command
@@ -43,4 +43,4 @@ public:
     static void setup(CommandRegistry& registry);
 };
 
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE

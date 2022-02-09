@@ -5,6 +5,7 @@
 #include <MC/Bedrock.hpp>
 #include <MC/CompoundTag.hpp>
 #include <MC/StringTag.hpp>
+#ifdef ENABLE_TEST_DBSTORAGE
 
 using string_span = gsl::string_span<-1>;
 using cstring_span = gsl::cstring_span<-1>;
@@ -323,3 +324,6 @@ TInstanceHook(std::shared_ptr<Bedrock::Threading::IAsyncResult<void>>&, "?saveDa
 //#define ServerInstance original
 //    TestTimeLog(ServerInstance, _this);
 //}
+
+
+#endif // ENABLE_TEST_DBSTORAGE

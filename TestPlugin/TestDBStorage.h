@@ -1,6 +1,9 @@
 #pragma once
 #include <RegCommandAPI.h>
 #include <PlayerInfoAPI.h>
+#ifdef ENABLE_TEST_DBSTORAGE
+
+
 namespace TestDBStorage
 {
     bool deletePlayerData(mce::UUID uuid);
@@ -52,3 +55,5 @@ class DBTestCommand : public Command {
 public:
     static void setup(CommandRegistry& registry);
 };
+
+#endif // ENABLE_TEST_DBSTORAGE

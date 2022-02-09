@@ -216,7 +216,7 @@ void handle(SimulatedPlayer* sp, MovePlayerPacket* packet)
 }
 void handlePacket(SimulatedPlayer* sp, Packet* packet)
 {
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
     switch (packet->getId())
     {
         case MinecraftPacketIds::MoveActorDelta:
@@ -254,7 +254,7 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
             DEBUGW("[Send] ->  {}: {}({}) {}", sp->getNameTag(), packet->getName(), packet->getId(), packet->clientSubId);
             break;
     }
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE
     switch (packet->getId())
     {
         case MinecraftPacketIds::ShowCredits:
@@ -311,233 +311,6 @@ TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacke
     }
     return original(this, networkID, packet, clientSubID);
 }
-template<>
-LoopbackPacketSender* Global<LoopbackPacketSender>;
-TInstanceHook(LoopbackPacketSender*, "??0LoopbackPacketSender@@QEAA@EAEAVNetworkHandler@@@Z",
-    LoopbackPacketSender, unsigned char unk, class NetworkHandler& handler) {
-    Global<LoopbackPacketSender> = this;
-    return original(this, unk, handler);
-}
-enum class DataItemKey : unsigned short
-{
-
-};
-enum class DataItemType2 : unsigned char
-{
-    //Flags,
-    Byte,
-    Short,
-    Int,
-    Float,
-    String,
-    CompoundTag,
-    BlockPos,
-    Int64,
-    Vec3
-};
-
-class DataItem
-{
-public:
-    DataItemType mDataType;
-    DataItemKey mDataKey;
-
-    /*0*/ virtual ~DataItem();
-    /*1*/ virtual bool isDataEqual(class DataItem const&) const;
-    /*2*/ virtual std::unique_ptr<DataItem> clone() const = 0;// ~DataItem()
-
-    template<typename T>
-    T const& getData() const 
-    {
-        return dAccess<T>(this, 16);
-    };
-    template <typename T>
-    T& getData()
-    {
-        return dAccess<T>(this, 16);
-    };
-    DataItem(){}
-    DataItem(DataItemType type, DataItemKey key)
-        : mDataKey(key)
-        , mDataType(type){}
-};
-//??1?$DataItem2@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@@UEAA@XZ
-//??_E?$DataItem2@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@@UEAAPEAXI@Z
-template <typename T>
-struct FakeDataItem2 {
-    void* vftbl;
-    DataItemType mDataType;
-    DataItemKey mDataKey;
-    T mValue;
-};
-template <typename T>
-class DataItem2 : public DataItem
-{
-    T mValue;
-
-public:
-    /*2*/ virtual std::unique_ptr<DataItem> clone() const; // ~DataItem()
-    template<typename T>
-    T& getData() const
-    {
-        return mValue;
-    };
-    DataItem2(DataItemKey key, T value)
-    {
-        mDataKey = key;
-        mValue = value;
-        if constexpr (std::is_same<T, signed char>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@C@@6B@");
-            mDataType = DataItemType::BYTE;
-        }
-        else if constexpr (std::is_same<T, short>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@F@@6B@");
-            mDataType = DataItemType::SHORT;
-        }
-        else if constexpr (std::is_same<T, int>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@M@@6B@");
-            mDataType = DataItemType::INT;
-        }
-        else if constexpr (std::is_same<T, float>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@M@@6B@");
-            mDataType = DataItemType::FLOAT;
-        }
-        else if constexpr (std::is_same<T, std::string>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@@6B@");
-            mDataType = DataItemType::STRING;
-        }
-        else if constexpr (std::is_same<T, CompoundTag>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@VCompoundTag@@@@6B@");
-            mDataType = DataItemType::NBT;
-        }
-        else if constexpr (std::is_same<T, BlockPos>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@VBlockPos@@@@6B@");
-            mDataType = DataItemType::POS;
-        }
-        else if constexpr (std::is_same<T, __int64>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@_J@@6B@");
-            mDataType = DataItemType::LONG;
-        }
-        else if constexpr (std::is_same<T, Vec3>::value) {
-            *(void**)this = dlsym_real("??_7?$DataItem2@VVec3@@@@6B@");
-            mDataType = DataItemType::VEC3;
-        }
-        else {
-            static_assert(false);
-        }
-    }
-    static std::unique_ptr<DataItem> create(DataItemKey key, T value) {
-
-    }
-};
-
-class SetActorDataPacket : public Packet
-{
-public:
-    ActorRuntimeID mRuntimeId;
-    __int64 unk56 = 0;
-    std::vector<std::unique_ptr<DataItem>> mDataItems; //64
-
-public:
-    /*0*/ virtual ~SetActorDataPacket();
-    /*1*/ virtual enum MinecraftPacketIds getId() const;
-    /*2*/ virtual std::string getName() const;
-    /*3*/ virtual void write(class BinaryStream&) const;
-    /*4*/ virtual bool disallowBatching() const;
-    /*5*/ virtual enum StreamReadResult _read(class ReadOnlyBinaryStream&);
-    MCAPI SetActorDataPacket(class ActorRuntimeID, class SynchedActorData&, bool);
-    MCAPI SetActorDataPacket();
-};
-static_assert(sizeof(SetActorDataPacket) == 88);
-static_assert(offsetof(SetActorDataPacket, mDataItems) == 64);
-
-void setActorFakeName(Actor* actor, std::string const& name)
-{
-    SetActorDataPacket packet;
-    packet.mRuntimeId = actor->getRuntimeID();
-    packet.mDataItems.emplace_back(DataItem2<std::string>((DataItemKey)4, name).clone());
-    packet.mDataItems.emplace_back(DataItem2<signed char>((DataItemKey)0x51u, true).clone());
-    Global<LoopbackPacketSender>->sendBroadcast(packet);
-}
-#include <MC/ActorDamageSource.hpp>
-TInstanceHook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
-    Player, class Actor& target, enum ActorDamageCause const& cause) {
-    static int index = 0;
-    index++;
-    setActorFakeName(&target, fmt::format("{}-{}-{}", getNameTag(), ActorDamageSource::lookupCauseName(cause), index));
-    return original(this, target, cause);
-}
-#include <MC/CommandUtils.hpp>
-#include <MC/Level.hpp>
-
-inline class Actor* getRuntimeEntity(class ActorRuntimeID a0, bool a1) {
-    class Actor* (Level::*rv)(class ActorRuntimeID, bool);
-    *((void**)&rv) = dlsym("?getRuntimeEntity@Level@@UEBAPEAVActor@@VActorRuntimeID@@_N@Z");
-    return (Global<Level>->*rv)(std::forward<class ActorRuntimeID>(a0), std::forward<bool>(a1));
-}
-//TInstanceHook(SetActorDataPacket*, "??0SetActorDataPacket@@QEAA@VActorRuntimeID@@AEAVSynchedActorData@@_N@Z",
-//    SetActorDataPacket, class ActorRuntimeID runtimeId,class SynchedActorData & sad,bool isAllData) {
-//    auto pkt = original(this, runtimeId, sad, isAllData);
-//    auto actor = getRuntimeEntity(mRuntimeId, true);
-//    mDataItems.emplace_back(DataItem2<std::string>((DataItemKey)4, CommandUtils::getActorName(*actor)).clone());
-//    mDataItems.emplace_back(DataItem2<signed char>((DataItemKey)0x51u, true).clone());
-//    return pkt;
-//}
-TInstanceHook(void, "?write@SetActorDataPacket@@UEBAXAEAVBinaryStream@@@Z",
-    SetActorDataPacket, class BinaryStream & bs) {
-    auto actor = getRuntimeEntity(mRuntimeId, true);
-    mDataItems.emplace_back(DataItem2<std::string>((DataItemKey)4, CommandUtils::getActorName(*actor)).clone());
-    mDataItems.emplace_back(DataItem2<signed char>((DataItemKey)0x51u, true).clone());
-    original(this, bs);
-}
-    //THook(void, "?write@?$serialize@VDataItem@@@@SAXAEBVDataItem@@AEAVBinaryStream@@@Z",
-//      class DataItem const& dataItem, class BinaryStream& bs)
-//{
-//    switch (dataItem.mDataType)
-//    {
-//        case DataItemType::BYTE:
-//            logger.info("Key: {}, Type: Byte, Value: {}", dataItem.mDataKey, (int)dataItem.getData<unsigned char>());
-//            break;
-//        case DataItemType::SHORT:
-//            logger.info("Key: {}, Type: Short, Value: {}", dataItem.mDataKey, dataItem.getData<unsigned short>());
-//            break;
-//        case DataItemType::INT:
-//            logger.info("Key: {}, Type: Int, Value: {}", dataItem.mDataKey, dataItem.getData<int>());
-//            break;
-//        case DataItemType::FLOAT:
-//            logger.info("Key: {}, Type: Float, Value: {}", dataItem.mDataKey, dataItem.getData<float>());
-//            break;
-//        case DataItemType::STRING:
-//            logger.info("Key: {}, Type: String, Value: {}", dataItem.mDataKey, dataItem.getData<std::string>());
-//            break;
-//        case DataItemType::NBT:
-//            logger.info("Key: {}, Type: CompoundTag, Value: {}", dataItem.mDataKey, dataItem.getData<CompoundTag>().toString());
-//            break;
-//        case DataItemType::POS:
-//            logger.info("Key: {}, Type: BlockPos, Value: {}", dataItem.mDataKey, dataItem.getData<BlockPos>().toString());
-//            break;
-//        case DataItemType::LONG:
-//            logger.info("Key: {}, Type: Int64, Value: {}", dataItem.mDataKey, dataItem.getData<__int64>());
-//            break;
-//        case DataItemType::VEC3:
-//            logger.info("Key: {}, Type: Vec3, Value: {}", dataItem.mDataKey, dataItem.getData<Vec3>().toString());
-//            break;
-//        default:
-//            logger.info("Key: {}, Type: Unknown", dataItem.mDataKey);
-//            break;
-//    }
-//    return original(dataItem, bs);
-//}
-//TClasslessInstanceHook(void, "?write@AddPlayerPacket@@UEBAXAEAVBinaryStream@@@Z",
-//                       class BinaryStream& bs)
-//{
-//    static int a= 0;
-//    a++;
-//    //auto b = (voids*)this;
-//    logger.error("{}, {}, {}", dAccess<std::string>(this, 72), dAccess<std::string>(this, 136), dAccess<std::string>(this, 568));
-//    dAccess<std::string>(this, 568) = fmt::format("aaa{}", a);
-//    return original(this, bs);
-//}
 
 //TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNetworkIdentifierWithSubId@@V?$allocator@UNetworkIdentifierWithSubId@@@std@@@std@@AEBVPacket@@@Z",
 //              LoopbackPacketSender, std::vector<NetworkIdentifierWithSubId> const& clients, class Packet& packet)
@@ -627,7 +400,7 @@ TInstanceHook(std::shared_ptr<class ChunkViewSource>, "?_createChunkSource@Simul
 // fix item change
 
 
-#if PLUGIN_VERSION_IS_BETA
+#ifdef PLUGIN_DEV_MODE
 
 // ================= Test =================
 
@@ -647,74 +420,6 @@ struct voids
 {
     void**** filler[1000];
 };
-#include <MC/MinecraftEventing.hpp>
-static Player* lastPlayer;
-TInstanceHook(NetworkPeer::DataStatus, "?receivePacket@Connection@NetworkHandler@@QEAA?AW4DataStatus@NetworkPeer@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEAV2@AEBV?$shared_ptr@V?$time_point@Usteady_clock@chrono@std@@V?$duration@_JU?$ratio@$00$0DLJKMKAA@@std@@@23@@chrono@std@@@6@@Z",
-              NetworkHandler::Connection, std::string& data, NetworkHandler& handler, class std::shared_ptr<class std::chrono::time_point<struct std::chrono::steady_clock, class std::chrono::duration<__int64, struct std::ratio<1, 1000000000>>>> const& time_point)
-{
-    auto rtn = original(this, data, handler, time_point);
-    if (rtn != NetworkPeer::DataStatus::OK)
-        return rtn;
-    auto& nid = dAccess<NetworkIdentifier>(this, 0);
-    lastPlayer = Global<ServerNetworkHandler>->getServerPlayer(nid, dAccess<unsigned int>(&nid, 160));
-    return rtn;
-}
-TInstanceHook(void, "?sendPacketReceivedFrom@NetworkPacketEventCoordinator@@QEAAXAEBVPacketHeader@@AEBVPacket@@@Z",
-              NetworkPacketEventCoordinator, class PacketHeader const& header, class Packet const& pkt)
-{
-    auto pl = lastPlayer;
-    static int count = 0;
-    static size_t packetCount = 0;
-    static time_t timeStart = time(0);
-    if (++packetCount % 10000 == 0)
-    {
-        logger.warn("receivePacket - time: {} \t, count: {}", time(0) - timeStart, packetCount);
-    }
-    if (!pl)
-    {
-        DEBUGL("[Received] <- : {}({})", pkt.getName(), pkt.getId());
-        return original(this, header, pkt);
-    }
-    auto pktId = pkt.getId();
-    switch (pkt.getId())
-    {
-        case MinecraftPacketIds::Event:
-            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((EventPacket*)&pkt)->toDebugString());
-            break;
-        case MinecraftPacketIds::CraftingEvent:
-            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((CraftingEventPacket*)&pkt)->toDebugString());
-            break;
-            //case MinecraftPacketIds::ItemStackRequest:
-            //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((ItemStackRequestPacket*)&pkt)->toDebugString());
-            //    break;
-            //case MinecraftPacketIds::PlayerAction:
-            //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((PlayerActionPacket*)&pkt)->toDebugString());
-            //    break;
-            //case MinecraftPacketIds::MovePlayer:
-            //    DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((MovePlayerPacket*)&pkt)->toDebugString());
-            //    break;
-        case MinecraftPacketIds::PlayStatus:
-            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((PlayStatusPacket*)&pkt)->toDebugString());
-            break;
-        case MinecraftPacketIds::Respawn:
-            DEBUGL("[Received] <- {}: {}", pl->getNameTag(), ((RespawnPacket*)&pkt)->toDebugString());
-            break;
-        case (MinecraftPacketIds)123:
-        case (MinecraftPacketIds)135:
-        case (MinecraftPacketIds)144:
-        case (MinecraftPacketIds)175:
-        case MinecraftPacketIds::MovePlayer:
-            if (!((++count) % 100))
-                DEBUGL("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
-            break;
-        default:
-            DEBUGL("[Received] <- {}: {}({})", pl->getNameTag(), pkt.getName(), pkt.getId());
-            break;
-    }
-
-    original(this, header, pkt);
-}
-
 TInstanceHook(ServerPlayer*, "??0ServerPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEBV?$OwnerPtrT@UEntityRefTraits@@@@@Z",
               ServerPlayer, class Level& level, class PacketSender& sender, class NetworkHandler& handler,
               class ActiveTransfersManager& blobCache, enum GameType gameType,
@@ -876,4 +581,4 @@ TInstanceHook(__int64, "?respawn@Player@@UEAAXXZ",
     return rtn;
 }
 
-#endif // PLUGIN_VERSION_IS_BETA
+#endif // PLUGIN_DEV_MODE

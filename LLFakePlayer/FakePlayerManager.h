@@ -84,13 +84,13 @@ public:
 //        if (!mManager)
 //            mManager = &FakePlayerManager::getManager();
 //        mDBStorage = KVDB::create(storagePath);
-//#ifdef PLUGIN_VERSION_IS_BETA
+//#ifdef PLUGIN_DEV_MODE
 //        mDBStorage->iter([this](std::string_view key, std::string_view val)->bool {
 //            DEBUGW("key: {}, value: ", key);
 //            std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT() << std::endl;
 //            return true;
 //            });
-//#endif // PLUGIN_VERSION_IS_BETA
+//#endif // PLUGIN_DEV_MODE
 //        initPlayerMap();
 //        initSortedNames();
 //    }
