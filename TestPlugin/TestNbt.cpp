@@ -13,7 +13,7 @@ void testRW(std::string const& binary, bool isLittle) {
     else {
         logger.error("bin->tag->bin 测试未通过");
     }
-    std::string snbt = tag->toSNBT(4);
+    std::string snbt = tag->toSNBT(4, SnbtFormat::Minimize);
     auto newTag = CompoundTag::fromSNBT(snbt);
     if (tag->equals(*newTag)) {
         logger.info("tag->snbt->tag 测试通过");
@@ -21,12 +21,12 @@ void testRW(std::string const& binary, bool isLittle) {
     else
     {
         auto newSnbt = newTag->toSNBT();
-        std::cout << newSnbt << std::endl;
+        //std::cout << newSnbt << std::endl;
         logger.error("tag->snbt->tag 测试未通过");
         WriteAllFile(fmt::format("./test/error{}.nbt", isLittle ? "" : "_big"), newTag->toBinaryNBT(isLittle), true);
         return;
     }
-    auto newSnbt = newTag->toSNBT(4);
+    auto newSnbt = newTag->toSNBT(4, SnbtFormat::Minimize);
     if (newSnbt == snbt) {
         //logger.info("snbt->tag->snbt 测试通过");
     }
@@ -35,7 +35,13 @@ void testRW(std::string const& binary, bool isLittle) {
         WriteAllFile(fmt::format("./test/error{}.nbt", isLittle ? "" : "_big"), newTag->toBinaryNBT(isLittle), true);
         return;
     }
-
+    logger.info<<newTag->toSNBT(4)<<logger.endl;
+    TestFuncTime(newTag->toSNBT, 4, SnbtFormat::Minimize);
+    TestFuncTime(newTag->toSNBT);
+    TestFuncTime(newTag->toSNBT, 4, SnbtFormat::PartialNewLine);
+    TestFuncTime(newTag->toSNBT);
+    TestFuncTime(newTag->toSNBT, 4, SnbtFormat::AlwayNewLine);
+    TestFuncTime(newTag->toSNBT);
 }
 void testNbt() {
     auto filePath = "./test/test.nbt";

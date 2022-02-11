@@ -241,7 +241,7 @@ FakePlayerManager::FakePlayerManager(std::string const& dbPath)
 #ifdef DEBUG
     mDatabase->iter([](std::string_view key, std::string_view val) -> bool {
         DEBUGW(key);
-        std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT() << std::endl;
+        std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT(4) << std::endl;
         return true;
     });
 #endif // DEBUG
