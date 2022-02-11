@@ -26,10 +26,10 @@ llfakeplayer gui - Show fake player manage gui
 #define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA true
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 #undef PLUGIN_VERSION_IS_BETA
 #define PLUGIN_VERSION_IS_BETA true
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
 #define STR1(R) #R
 #define STR2(R) STR1(R)
@@ -50,8 +50,6 @@ llfakeplayer gui - Show fake player manage gui
 #define PLUGIN_DATA_PATH PLUGIN_DIR "leveldb/"
 
 #if PLUGIN_VERSION_IS_BETA
-#define ASSERT(var) \
-    if (!(var)) { __debugbreak(); }
 #define DEBUGL(...) logger.info(__VA_ARGS__)
 #define DEBUGW(...) logger.warn(__VA_ARGS__)
 #else
@@ -62,7 +60,6 @@ llfakeplayer gui - Show fake player manage gui
 
 
 #if PLUGIN_VERSION_IS_BETA
-#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 inline void logConfig()
 {
     logger.debug("beta version, log config:");

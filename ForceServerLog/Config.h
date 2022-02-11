@@ -17,10 +17,10 @@
 #define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA true
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 #undef PLUGIN_VERSION_IS_BETA
 #define PLUGIN_VERSION_IS_BETA true
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
 
 #define STR1(R) #R
@@ -41,8 +41,6 @@
 #define PLUGIN_CONFIG_PATH PLUGIN_DIR "config.json"
 #define PLUGIN_DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
-
-#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 #if PLUGIN_VERSION_IS_BETA
 inline void logConfig() {
     logger.debug("beta version, log config:");

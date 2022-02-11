@@ -102,7 +102,7 @@ void logPlayerInfo(Player* player)
 {
 
     DEBUGW("FakePlayer: {}", player->getNameTag());
-    DEBUGW("Dimension: {}, Position: ({})", (int)player->getDimensionId(), ((Vec3&)player->getStateVectorComponent()).toString());
+    DEBUGW("Dimension: {}, Position: ({})", (int)player->getDimensionId(), ((Vec3&)player->getStateVector()).toString());
     auto tag = player->getNbt();
     for (auto& [k, v] : *tag)
     {
@@ -148,7 +148,7 @@ bool FakePlayer::login()
         return false;
     mLoggingIn = true;
     mLoggingInPlayer = this;
-    auto mPlayer = SimulatedPlayerHelper::create(mRealName);
+    mPlayer = SimulatedPlayerHelper::create(mRealName);
     if (!mPlayer)
     {
         mLoggingIn = false;
@@ -161,7 +161,7 @@ bool FakePlayer::login()
 
     mLoggingIn = false;
     mLoggingInPlayer = nullptr;
-    FakePlayerManager::getManager().saveData(*this);
+    //FakePlayerManager::getManager().saveData(*this);
     mOnline = true;
     logPlayerInfo(mPlayer);
     return true;
@@ -238,52 +238,57 @@ FakePlayerManager::FakePlayerManager(std::string const& dbPath)
 
     mDatabase = KVDB::create(dbPath);
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
     mDatabase->iter([](std::string_view key, std::string_view val) -> bool {
         DEBUGW(key);
         std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT() << std::endl;
         return true;
     });
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
     loadData();
     initSortedNames();
 }
 FakePlayerManager::~FakePlayerManager()
 {
-    DEBUGL("FakePlayerManager::FakePlayerManager()");
+    DEBUGW("FakePlayerManager::FakePlayerManager()");
 }
-void FakePlayerManager::saveData()
+bool FakePlayerManager::saveAllData(bool onlineOnly)
 {
+    auto res = true;
     for (auto& [uuid, player] : mFakePlayerMap)
     {
-        mDatabase->set(player->getStorageId(), player->serialize()->toBinaryNBT());
+        if (!saveData(*player))
+            res = false;
     }
+    return res;
 }
 
-void FakePlayerManager::saveData(mce::UUID uuid)
+bool FakePlayerManager::saveData(mce::UUID uuid)
 {
     auto uuidStr = uuid.asString();
     auto playerIter = mFakePlayerMap.find(uuidStr);
     if (playerIter != mFakePlayerMap.end())
-        mDatabase->set(playerIter->second->getStorageId(), playerIter->second->serialize()->toBinaryNBT());
+        return saveData(*playerIter->second);
+    return false;
 }
-void FakePlayerManager::saveData(FakePlayer& fakePlayer)
+bool FakePlayerManager::saveData(FakePlayer& fakePlayer)
 {
-    mDatabase->set(fakePlayer.getStorageId(), fakePlayer.serialize()->toBinaryNBT());
+    auto res = mDatabase->set(fakePlayer.getStorageId(), fakePlayer.serialize()->toBinaryNBT());
     if (fakePlayer.mOnline && fakePlayer.mPlayer)
     {
         auto tag = fakePlayer.getOnlinePlayerTag();
         if (tag.get())
-            mDatabase->set(fakePlayer.getServerId(), tag->toBinaryNBT());
+            return mDatabase->set(fakePlayer.getServerId(), tag->toBinaryNBT());
     }
+    return false;
 }
-void FakePlayerManager::saveData(SimulatedPlayer* simulatedPlayer)
+bool FakePlayerManager::saveData(SimulatedPlayer* simulatedPlayer)
 {
     auto uuidStr = simulatedPlayer->getUuid();
     auto playerIter = mFakePlayerMap.find(uuidStr);
     if (playerIter != mFakePlayerMap.end())
-        mDatabase->set(uuidStr, playerIter->second->serialize()->toBinaryNBT());
+        return saveData(*playerIter->second);
 }
 
 
@@ -440,7 +445,7 @@ bool FakePlayerManager::logout(SimulatedPlayer& simulatedPlayer)
 // }
 
 #include <MC/Certificate.hpp>
-TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEBV?$OwnerPtrT@UEntityRefTraits@@@@@Z",
+TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEAVEntityContext@@@Z",
               SimulatedPlayer,
               class Level& level,
               class PacketSender& sender,
@@ -455,7 +460,7 @@ TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketS
               class std::unique_ptr<Certificate> cert,
               int unk_int,
               bool unk_bool,
-              class OwnerPtrT<struct EntityRefTraits> const& refPtr)
+              class EntityContext& entity)
 {
     // fix Player subClinetId, for identify packet
     if (FakePlayer::mLoggingIn)
@@ -469,16 +474,16 @@ TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketS
         logger.warn("Unknown SimulatedPlayer creation detected, it is recommended to create an SimulatedPlayer through FakePlayerManager");
     }
 
-    DEBUGW("SimulatedPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, refPtr)",
+    DEBUGW("SimulatedPlayer(level, sender, handler, blobCache, gameType = {}, nid, subId = {}, func, uuid = {}, clientId = {}, cert, unk_int = {}, unk_bool = {}, entity)",
            (int)gameType, (int)subId, uuid.asString(), clientId, unk_int, unk_bool);
     // fix client sub id for identify packet
 
-    auto rtn = original(this, level, sender, handler, blobCache, gameType, nid, subId, onPlayerLoadedCallback, uuid, clientId, std::move(cert), unk_int, unk_bool, refPtr);
+    auto rtn = original(this, level, sender, handler, blobCache, gameType, nid, subId, onPlayerLoadedCallback, uuid, clientId, std::move(cert), unk_int, unk_bool, entity);
     // fix runtime id
     auto ueif = rtn->getUserEntityIdentifierComponent();
     ASSERT(dAccess<unsigned char>(ueif, 160) == subId);
 
-    DEBUGW("Simulated Player: {}, client sub id: {}, runtime id: {}", rtn->getNameTag(), rtn->getClientSubId(), rtn->getRuntimeID().id);
+    DEBUGW("Simulated Player: {}, client sub id: {}, runtime id: {}", rtn->getNameTag(), (int)rtn->getClientSubId(), rtn->getRuntimeID().id);
     return rtn;
 }
 
@@ -508,6 +513,7 @@ THook(std::unique_ptr<CompoundTag>&, "?loadServerPlayerData@LevelStorage@@QEAA?A
         {
             DEBUGW("Replace SimulatedPlayer data");
             auto& fp = FakePlayer::mLoggingInPlayer;
+            DEBUGW("Uuids: {}, {}", player.getUuid(), fp->getUUID().asString());
             ASSERT(player.getUuid() == fp->getUUID().asString());
             auto rtn2 = FakePlayer::mLoggingInPlayer->getStoragePlayerTag();
             if (rtn2)
@@ -515,4 +521,10 @@ THook(std::unique_ptr<CompoundTag>&, "?loadServerPlayerData@LevelStorage@@QEAA?A
         }
     }
     return rtn;
+}
+
+TClasslessInstanceHook(void, "?savePlayers@Level@@UEAAXXZ")
+{
+    original(this);
+    FakePlayerManager::getManager().saveAllData(true);
 }

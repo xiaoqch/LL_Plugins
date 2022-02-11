@@ -84,13 +84,13 @@ public:
 //        if (!mManager)
 //            mManager = &FakePlayerManager::getManager();
 //        mDBStorage = KVDB::create(storagePath);
-//#ifdef PLUGIN_DEV_MODE
+//#ifdef DEBUG
 //        mDBStorage->iter([this](std::string_view key, std::string_view val)->bool {
 //            DEBUGW("key: {}, value: ", key);
 //            std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT() << std::endl;
 //            return true;
 //            });
-//#endif // PLUGIN_DEV_MODE
+//#endif // DEBUG
 //        initPlayerMap();
 //        initSortedNames();
 //    }
@@ -217,10 +217,10 @@ public:
     FakePlayerManager(const FakePlayerManager&) = delete;
     FakePlayerManager& operator=(const FakePlayerManager&) = delete;
     void loadData();
-    void saveData();
-    void saveData(mce::UUID uuid);
-    void saveData(FakePlayer& fakePlayer);
-    void saveData(SimulatedPlayer* simulatedPlayer);
+    bool saveAllData(bool onlineOnly = false);
+    bool saveData(mce::UUID uuid);
+    bool saveData(FakePlayer& fakePlayer);
+    bool saveData(SimulatedPlayer* simulatedPlayer);
     void initSortedNames();
     bool importData_DDF(std::string const& name);
     friend class FakePlayer;

@@ -245,7 +245,9 @@ void printActorCategory()
     logger.info("enum class ActorType2 : int {");
     for (auto& [type, mapping] : sortedMap)
     {
-        auto trName = I18n::get(fmt::format("%entity.{}.name", mapping.mName));
+        auto currentLang = I18n::getCurrentLanguage().get();
+        auto nameKey = fmt::format("%entity.{}.name", mapping.mName);
+        auto trName = I18n::get(nameKey, currentLang);
         logger.info("                           \r    {:21s} = 0x{:08X}, // fullname: {}, 翻译: {}",
                     Util::toCamelCase("m_" + mapping.getMappingName((ActorTypeNamespaceRules)0), '_').substr(1),
                     (int)type,
@@ -273,13 +275,13 @@ LoopbackPacketSender* Global<LoopbackPacketSender>;
 TInstanceHook(LoopbackPacketSender*, "??0LoopbackPacketSender@@QEAA@EAEAVNetworkHandler@@@Z",
               LoopbackPacketSender, unsigned char unk, class NetworkHandler& handler)
 {
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
     testDataItem();
     Schedule::delay([]() {
         printActorCategory();
     },
                     50);
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
     Global<LoopbackPacketSender> = this;
     return original(this, unk, handler);
@@ -500,8 +502,8 @@ public:
         auto dataItems = mActorData->packAll();
         auto actor = getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
-        dataItems.emplace_back(DataItem::create((unsigned short)DataItemIds::NAMETAG, fakeName));
-        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG, true));
+        dataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
+        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
         bs.writeType(dataItems);
 
         //writeLinks
@@ -555,8 +557,8 @@ public:
         auto dataItems = mActorData->packAll();
         auto actor = getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
-        dataItems.emplace_back(DataItem::create((unsigned short)DataItemIds::NAMETAG, fakeName));
-        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG, true));
+        dataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
+        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
         bs.writeType(dataItems);
 
         bs.writeBool(mIsFromFishing);
@@ -708,8 +710,8 @@ public:
         auto dataItems = mActorData->packAll();
         auto actor = getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
-        dataItems.emplace_back(DataItem::create((unsigned short)DataItemIds::NAMETAG, fakeName));
-        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG, true));
+        dataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
+        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
         bs.writeType(dataItems);
         AdventureSettingsPacket settings(AdventureSettings{}, mAbilities, {-1}, false);
         settings.write(bs);
@@ -738,14 +740,17 @@ void setActorFakeName(Actor* actor, std::string const& fakeName)
 {
     SetActorDataPacket packet;
     packet.mRuntimeId = actor->getRuntimeID();
-    packet.mDataItems.emplace_back(DataItem::create((unsigned short)DataItemIds::NAMETAG, fakeName));
-    packet.mDataItems.emplace_back(DataItem::create<signed char>((unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG, true));
+    packet.mDataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
+    packet.mDataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
     Global<LoopbackPacketSender>->sendBroadcast(packet);
 }
 
 #define FmtArg(name) fmt::arg(#name, name)
-#define DefineArg(name) ActorArg::ArgType::name name
-#define GetArg(name) ActorArg::getArg<currentActorType, ActorArg::ArgName::name, ActorArg::ArgType::name>(actor, name)
+#define GetArg(name) std::move(name)
+#define BuildArg(name)\
+ActorArg::ArgType::name __##name;\
+auto&& name = ActorArg::getArg<currentActorType, ActorArg::ArgName::name, ActorArg::ArgType::name>(actor, __##name)
+
 
 #include <MC/SharedAttributes.hpp>
 namespace ActorArg
@@ -1038,7 +1043,7 @@ template <>
 inline ArgType::Exp getArgValue<ArgName::Exp>(Actor* actor, FormatType actorType)
 {
     if (actorType == FormatType::XpOrb)
-        return dAccess<SynchedActorData>(actor, 376).getInt((unsigned short)DataItemIds::EXPERIENCE_VALUE);
+        return dAccess<SynchedActorData>(actor, 376).getInt((unsigned short)ActorDataIDs::EXPERIENCE_VALUE);
     return ArgType::Exp();
 }
 template <>
@@ -1065,13 +1070,13 @@ inline fmt::detail::named_arg<char, ArgType> getArg(Actor* actor, ArgType& argVa
 
 } // namespace ActorArg
 
-#define DefineCommomArg()    \
-    DefineArg(Name);         \
-    DefineArg(Type);         \
-    DefineArg(UID);          \
-    DefineArg(Speed);        \
-    DefineArg(JumpStrength); \
-    DefineArg(HealthInfo);
+#define BuildCommomArg()    \
+    BuildArg(Name);         \
+    BuildArg(Type);         \
+    BuildArg(UID);          \
+    BuildArg(Speed);        \
+    BuildArg(JumpStrength); \
+    BuildArg(HealthInfo);
 
 #define GetCommomArg() \
     GetArg(Name), GetArg(Type), GetArg(UID), GetArg(Speed), GetArg(JumpStrength), GetArg(HealthInfo)
@@ -1085,9 +1090,9 @@ std::string getFakeName<ActorArg::FormatType::Item>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Item;
     static auto formatItemActor = "{Name}{ItemInfo}\n§7{Type}\n{AgeInfo}";
 
-    DefineCommomArg();
-    DefineArg(ItemInfo);
-    DefineArg(AgeInfo);
+    BuildCommomArg();
+    BuildArg(ItemInfo);
+    BuildArg(AgeInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(ItemInfo), GetArg(AgeInfo));
 }
@@ -1097,8 +1102,8 @@ std::string getFakeName<ActorArg::FormatType::Projectile>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Projectile;
     static auto formatItemActor = "{Name}\n§7{Type}{OwnerInfo}";
 
-    DefineCommomArg();
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(OwnerInfo));
 }
@@ -1108,10 +1113,10 @@ std::string getFakeName<ActorArg::FormatType::Arrow>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Arrow;
     static auto formatItemActor = "{Name}\n§7{Type}{OwnerInfo}\n§e创造§r：{IsCreative}，§e玩家§r：{IsPlayer}";
 
-    DefineCommomArg();
-    DefineArg(OwnerInfo);
-    DefineArg(IsCreative);
-    DefineArg(IsPlayer);
+    BuildCommomArg();
+    BuildArg(OwnerInfo);
+    BuildArg(IsCreative);
+    BuildArg(IsPlayer);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(OwnerInfo), GetArg(IsCreative), GetArg(IsPlayer));
 }
@@ -1121,11 +1126,11 @@ std::string getFakeName<ActorArg::FormatType::Trident>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Trident;
     static auto formatItemActor = "{Name} {DamageInfo}\n§7{Type}{OwnerInfo}\n§e创造§r：{IsCreative}，§e玩家§r：{IsPlayer}";
 
-    DefineCommomArg();
-    DefineArg(DamageInfo);
-    DefineArg(OwnerInfo);
-    DefineArg(IsCreative);
-    DefineArg(IsPlayer);
+    BuildCommomArg();
+    BuildArg(DamageInfo);
+    BuildArg(OwnerInfo);
+    BuildArg(IsCreative);
+    BuildArg(IsPlayer);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(DamageInfo), GetArg(OwnerInfo), GetArg(IsCreative), GetArg(IsPlayer));
 }
@@ -1135,9 +1140,9 @@ std::string getFakeName<ActorArg::FormatType::XpOrb>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::XpOrb;
     static auto formatItemActor = "{Name} - {Exp}\n§7{Type}\n{AgeInfo}";
 
-    DefineCommomArg();
-    DefineArg(AgeInfo);
-    DefineArg(Exp);
+    BuildCommomArg();
+    BuildArg(AgeInfo);
+    BuildArg(Exp);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(AgeInfo), GetArg(Exp));
 }
@@ -1147,11 +1152,11 @@ std::string getFakeName<ActorArg::FormatType::Player>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Player;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo} §b{Hunger}§r/§b{MaxHunger}§r";
 
-    DefineCommomArg();
-    DefineArg(Health);
-    DefineArg(MaxHealth);
-    DefineArg(Hunger);
-    DefineArg(MaxHunger);
+    BuildCommomArg();
+    BuildArg(Health);
+    BuildArg(MaxHealth);
+    BuildArg(Hunger);
+    BuildArg(MaxHunger);
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(Health), GetArg(MaxHealth), GetArg(Hunger), GetArg(MaxHunger));
 }
 template <>
@@ -1160,7 +1165,7 @@ std::string getFakeName<ActorArg::FormatType::Unmovable>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Unmovable;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo}";
 
-    DefineCommomArg();
+    BuildCommomArg();
 
     return fmt::format(formatItemActor, GetCommomArg());
 }
@@ -1170,8 +1175,8 @@ std::string getFakeName<ActorArg::FormatType::Monster>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Monster;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo} §l§4⚔§r: {Attack}";
 
-    DefineCommomArg();
-    DefineArg(Attack);
+    BuildCommomArg();
+    BuildArg(Attack);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(Attack));
 }
@@ -1181,9 +1186,9 @@ std::string getFakeName<ActorArg::FormatType::Attackable>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Attackable;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo} §l§4⚔§r: {Attack}{OwnerInfo}";
 
-    DefineCommomArg();
-    DefineArg(Attack);
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(Attack);
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(Attack), GetArg(OwnerInfo));
 }
@@ -1193,9 +1198,9 @@ std::string getFakeName<ActorArg::FormatType::Boss>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Boss;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo} §l§4⚔§r: {Attack}";
 
-    DefineCommomArg();
-    DefineArg(Attack);
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(Attack);
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(Attack), GetArg(OwnerInfo));
 }
@@ -1205,8 +1210,8 @@ std::string getFakeName<ActorArg::FormatType::Friendly>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Friendly;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo}{OwnerInfo}";
 
-    DefineCommomArg();
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(OwnerInfo));
 }
@@ -1216,7 +1221,7 @@ std::string getFakeName<ActorArg::FormatType::Villager>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Villager;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo}";
 
-    DefineCommomArg();
+    BuildCommomArg();
 
     return fmt::format(formatItemActor, GetCommomArg());
 }
@@ -1226,9 +1231,9 @@ std::string getFakeName<ActorArg::FormatType::Crafted>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Crafted;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo} §l§4⚔§r: {Attack}{OwnerInfo}";
 
-    DefineCommomArg();
-    DefineArg(Attack);
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(Attack);
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(Attack), GetArg(OwnerInfo));
 }
@@ -1238,7 +1243,7 @@ std::string getFakeName<ActorArg::FormatType::Vehicle>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Vehicle;
     static auto formatItemActor = "{Name}\n§7{Type}";
 
-    DefineCommomArg();
+    BuildCommomArg();
 
     return fmt::format(formatItemActor, GetCommomArg());
 }
@@ -1248,8 +1253,8 @@ std::string getFakeName<ActorArg::FormatType::Mount>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Mount;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo}\nSpeed: {Speed:.2f}, Jump: {JumpStrength:.2f}{OwnerInfo}";
 
-    DefineCommomArg();
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(OwnerInfo));
 }
@@ -1259,8 +1264,8 @@ std::string getFakeName<ActorArg::FormatType::Other>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::Other;
     static auto formatItemActor = "{Name}\n§7{Type}{OwnerInfo}";
 
-    DefineCommomArg();
-    DefineArg(OwnerInfo);
+    BuildCommomArg();
+    BuildArg(OwnerInfo);
 
     return fmt::format(formatItemActor, GetCommomArg(), GetArg(OwnerInfo));
 }
@@ -1270,7 +1275,7 @@ std::string getFakeName<ActorArg::FormatType::WanderingTrader>(Actor* actor)
     constexpr auto currentActorType = ActorArg::FormatType::WanderingTrader;
     static auto formatItemActor = "{Name}\n§7{Type}\n{HealthInfo}";
 
-    DefineCommomArg();
+    BuildCommomArg();
 
     return fmt::format(formatItemActor, GetCommomArg());
 }
@@ -1464,8 +1469,8 @@ void refreshActorFakeName(Actor* actor, Player* player = nullptr)
     packet.mRuntimeId = actor->getRuntimeID();
     if (packet.mRuntimeId.id == 0)
         return;
-    packet.mDataItems.emplace_back(DataItem::create((unsigned short)DataItemIds::NAMETAG, actor->getNameTag()));
-    packet.mDataItems.emplace_back(DataItem2<signed char>::create((unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG, Config::globalActive));
+    packet.mDataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, actor->getNameTag()));
+    packet.mDataItems.emplace_back(DataItem2<signed char>::create((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, Config::globalActive));
     if (!player)
     {
         auto& dim = actor->getDimension();
@@ -1485,13 +1490,13 @@ inline DataItem2<std::string>* findNameItemAndSetAlwayShow(std::vector<std::uniq
     {
         if (!item)
             continue;
-        if (item->mId == (unsigned short)DataItemIds::NAMETAG)
+        if (item->mId == (unsigned short)ActorDataIDs::NAMETAG)
         {
             result = (DataItem2<std::string>*)item.get();
-            dataItems.emplace_back(DataItem2<signed char>::create((unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG, true));
+            dataItems.emplace_back(DataItem2<signed char>::create((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
             break;
         }
-        else if (item->mId == (unsigned short)DataItemIds::ALWAYS_SHOW_NAMETAG)
+        else if (item->mId == (unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG)
         {
             item->setData<signed char>(true);
         }
@@ -1692,7 +1697,7 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
     {
         SetActorDataPacket fakeNamePacket;
         fakeNamePacket.mRuntimeId = ((SetActorDataPacket&)packet).mRuntimeId;
-        fakeNamePacket.mDataItems.emplace_back(DataItem2<std::string>::create((unsigned short)DataItemIds::NAMETAG, ""));
+        fakeNamePacket.mDataItems.emplace_back(DataItem2<std::string>::create((unsigned short)ActorDataIDs::NAMETAG, ""));
         for (auto& nidWithSubId : nidWithSubIds)
         {
             auto player = tryGetDebugPlayer((NetworkIdentifier&)nidWithSubId, dAccess<unsigned char>(&nidWithSubId, 160));
@@ -1702,7 +1707,7 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
     }
 }
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 
 TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@AEBVPacket@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
               NetworkHandler, NetworkIdentifier& nid, class Packet& pkt, std::string const& data)
@@ -1716,7 +1721,7 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     return original(this, nid, pkt, data);
 }
 
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
 // ============= Update Fake Name =============
 TInstanceHook(bool, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo@@@Z",

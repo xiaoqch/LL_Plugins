@@ -1,13 +1,16 @@
 #include "pch.h"
 #include <MC/SimulatedPlayer.hpp>
 #include <MC/CompoundTag.hpp>
+#include <Utils/DbgHelper.h>
 
 void entry()
 {
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
     logger.error("Actor::`vftable' Rva: {}", (uintptr_t)dlsym_real("??_7Actor@@6B@") - (uintptr_t)GetModuleHandle(NULL));
-#endif // PLUGIN_DEV_MODE
+    PrintCurrentStackTraceback(&logger);
+#endif // DEBUG
 }
+
 
 template <typename T>
 void logActorInfo(T* actor, std::string const& func)
@@ -45,6 +48,7 @@ void logActorInfo(T* actor, std::string const& func)
     {
         logger.error("Error in actor->getNbt()->toSNBT()");
     }
+    PrintCurrentStackTraceback(&logger);
     return;
 }
 
@@ -68,4 +72,15 @@ TInstanceHook(bool, "?isInWaterOrRain@Actor@@QEBA_NXZ",
         return false;
     }
     return original(this);
+}
+
+TInstanceHook(float, "?getBrightness@Actor@@UEBAMM@Z",
+              Actor, float a2)
+{
+    if (this == nullptr || &getRegion() == nullptr)
+    {
+        logActorInfo(this, "Actor::getBrightness");
+        return 0;
+    }
+    return original(this, a2);
 }

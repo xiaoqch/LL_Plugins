@@ -17,10 +17,10 @@
 #define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA true
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 #undef PLUGIN_VERSION_IS_BETA
 #define PLUGIN_VERSION_IS_BETA true
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
 #define STR1(R) #R
 #define STR2(R) STR1(R)
@@ -43,7 +43,6 @@
 #define ENABLE_LOG_FILE false
 
 #if PLUGIN_VERSION_IS_BETA
-#define LOG_VAR(var) logger.debug("{} = {}", #var, var);
 inline void logConfig() {
     logger.debug("beta version, log config:");
     LOG_VAR(PLUGIN_NAME);

@@ -1,7 +1,7 @@
 #pragma once
 #include <RegCommandAPI.h>
 
-class ActorDebugCommand :
+class TemplateCommand :
     public Command
 {
     enum class Operation {}mOperation;

@@ -39,12 +39,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 extern "C" {
     _declspec(dllexport) void onPostInit() {
         std::ios::sync_with_stdio(false);
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
         logConfig();
 #else
         //Set global SEH-Exception handler
         _set_se_translator(seh_exception::TranslateSEHtoCE);
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
         entry();
         logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
         if (PLUGIN_USAGE)

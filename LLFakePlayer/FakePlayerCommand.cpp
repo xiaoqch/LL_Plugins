@@ -171,7 +171,7 @@ void FakePlayerCommand::setup(CommandRegistry& registry)
     registry.registerOverload<FakePlayerCommand>(FULL_COMMAND_NAME, actionImport, nameOptional);
 }
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 
 // =============== Test ===============
 #include <MC/BlockSource.hpp>
@@ -272,4 +272,4 @@ void TickingCommand::setup(CommandRegistry& registry)
     registry.registerOverload<TickingCommand>("ticking",
                                               makeMandatory(&TickingCommand::range, "range", &TickingCommand::range_isSet));
 }
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG

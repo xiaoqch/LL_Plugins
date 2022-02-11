@@ -17,10 +17,10 @@
 #define PLUGIN_VERSION_REVISION 1
 #define PLUGIN_VERSION_IS_BETA true
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 #undef PLUGIN_VERSION_IS_BETA
 #define PLUGIN_VERSION_IS_BETA true
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 
 #define STR1(R) #R
 #define STR2(R) STR1(R)
@@ -67,12 +67,9 @@ inline void logConfig()
 #endif // PLUGIN_VERSION_IS_BETA
 
 #if PLUGIN_VERSION_IS_BETA
-#define ASSERT(var) \
-    if (!(var)) { __debugbreak(); }
 #define DEBUGL(...) logger.info(__VA_ARGS__)
 #define DEBUGW(...) logger.warn(__VA_ARGS__)
 #else
-#define ASSERT(var) ((void)0)
 #define DEBUGL(...) ((void)0)
 #define DEBUGW(...) ((void)0)
 #endif // PLUGIN_VERSION_IS_BETA
