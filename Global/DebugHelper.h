@@ -12,6 +12,25 @@ inline double ns_time(LARGE_INTEGER begin_time, LARGE_INTEGER end_time, LARGE_IN
         QueryPerformanceFrequency(&freq_);                                           \
         QueryPerformanceCounter(&begin_time);                                        \
         func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
+        func(__VA_ARGS__);                                                           \
         QueryPerformanceCounter(&end_time);                                          \
         logger.warn("{}\t time: {}ns", #func, ns_time(begin_time, end_time, freq_)); \
     }

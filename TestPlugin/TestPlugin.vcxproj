@@ -78,12 +78,28 @@
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
-copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
+      <Command>if exist ”$(LocalDebuggerWorkingDirectory)\plugins\“ (
+copy /Y ”$(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins“
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
     <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib" goto process
+if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib" goto process
+goto end
+
+:process
+cd /d "$(SolutionDir)\LiteLoaderSDK\Tools\"
+if exist "$(LocalDebuggerWorkingDirectory)\bedrock_server.pdb" (
+LibraryBuilder.exe -o ..\Lib\ "$(LocalDebuggerWorkingDirectory)"
+) else (
+LibraryBuilder.exe -o ..\Lib\
+)
+
+:end
+			</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -110,12 +126,28 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
-copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
+      <Command>if exist ”$(LocalDebuggerWorkingDirectory)\plugins\“ (
+copy /Y ”$(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins“
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
     <PreBuildEvent />
+    <PreBuildEvent>
+      <Command>if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib" goto process
+if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib" goto process
+goto end
+
+:process
+cd /d "$(SolutionDir)\LiteLoaderSDK\Tools\"
+if exist "$(LocalDebuggerWorkingDirectory)\bedrock_server.pdb" (
+LibraryBuilder.exe -o ..\Lib\ "$(LocalDebuggerWorkingDirectory)"
+) else (
+LibraryBuilder.exe -o ..\Lib\
+)
+
+:end
+			</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="TestAI.h" />
