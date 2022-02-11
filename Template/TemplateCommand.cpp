@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "ActorDebugCommand.h"
+#include "TemplateCommand.h"
 
 using namespace RegisterCommandHelper;
 
-void ActorDebugCommand::execute(class CommandOrigin const& ori, class CommandOutput& outp) const {
+void TemplateCommand::execute(class CommandOrigin const& ori, class CommandOutput& outp) const {
     if (mOperation_isSet) {
         switch (mOperation)
         {
@@ -16,13 +16,13 @@ void ActorDebugCommand::execute(class CommandOrigin const& ori, class CommandOut
     }
 }
 
-void ActorDebugCommand::setup(CommandRegistry& registry) {
+void TemplateCommand::setup(CommandRegistry& registry) {
     registry.registerCommand("template", "Command Template", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
 
     registry.addEnum<Operation>("Template_Action", {/* ... */});
     auto action = makeMandatory<CommandParameterDataType::ENUM>(
-        &ActorDebugCommand::mOperation, "action", "Template_Action", &ActorDebugCommand::mOperation_isSet);
+        &TemplateCommand::mOperation, "action", "Template_Action", &TemplateCommand::mOperation_isSet);
 
-    registry.registerOverload<ActorDebugCommand>("template");
-    registry.registerOverload<ActorDebugCommand>("template", action);
+    registry.registerOverload<TemplateCommand>("template");
+    registry.registerOverload<TemplateCommand>("template", action);
 }

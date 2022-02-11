@@ -23,17 +23,23 @@ void modifyVftbl()
 
 #include <MC/Block.hpp>
 #include <MC/NetworkIdentifier.hpp>
+#include <MC/TakePictureCommand.hpp>
+inline void unlockCommands(CommandRegistry& registry)
+{
+    TakePictureCommand::setup(registry);
+}
 void entry()
 {
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) -> bool {
-        FakePlayerCommand::setup(*ev.mCommandRegistry);
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
         TickingCommand::setup(*ev.mCommandRegistry);
-#endif // PLUGIN_DEV_MODE
+        unlockCommands(*ev.mCommandRegistry);
+#endif // DEBUG
+        FakePlayerCommand::setup(*ev.mCommandRegistry);
         return true;
     });
     // ========== Test ==========
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
     auto listener = Event::PlayerJoinEvent::subscribe([](Event::PlayerJoinEvent const& ev) -> bool {
         DEBUGW(ev.mPlayer->getNetworkIdentifier()->toString());
         return true;
@@ -43,5 +49,5 @@ void entry()
         //FakePlayerManager::getManager();
         return true;
     });
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG
 }

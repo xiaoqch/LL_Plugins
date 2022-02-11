@@ -19,15 +19,14 @@ class FakePlayerCommand : public Command
     CommandPosition commandPos;
     int dimensionId;
     bool name_isSet, commandPos_isSet, dimensionId_isSet;
-    inline BlockPos getExpectedPosition(CommandOrigin const& origin) const;
-    SimulatedPlayer* createSimulatedPlayer(class CommandOrigin const& origin, class CommandOutput& output) const;
+
     virtual void execute(class CommandOrigin const& origin, class CommandOutput& output) const override;
 
 public:
     static void setup(CommandRegistry& registry);
 };
 
-#ifdef PLUGIN_DEV_MODE
+#ifdef DEBUG
 
 // =============== Test ===============
 class TickingCommand : public Command
@@ -43,4 +42,4 @@ public:
     static void setup(CommandRegistry& registry);
 };
 
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG

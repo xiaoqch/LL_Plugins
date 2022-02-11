@@ -34,7 +34,8 @@ public:
 
     inline SimulatedPlayer* tryGetSimulatedPlayer(bool b = false)
     {
-        auto player = Player::tryGetFromEntity(*this, b);
+        auto& ownerRef = ((StackResultStorageEntity*)this)->getStackRef();
+        auto player = SimulatedPlayer::tryGetFromEntity(ownerRef, b);
         if (player && player->isSimulatedPlayer())
         {
             return (SimulatedPlayer*)player;
@@ -76,7 +77,7 @@ inline SimulatedPlayer* tryGetSimulatedPlayer(Actor* actor)
 {
     try
     {
-        if (actor && *(void**)actor == dlsym_static(""))
+        if (actor && actor->isSimulatedPlayer())
             return (SimulatedPlayer*)actor;
         return nullptr;
     }

@@ -58,6 +58,9 @@
     <ClInclude Include="..\Global\magic_enum.hpp">
       <Filter>Default</Filter>
     </ClInclude>
+    <ClInclude Include="MyPackets.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="SimulatedPlayerHelper.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="MyPackets.cpp">
+      <Filter>Packet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

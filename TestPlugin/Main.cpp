@@ -2,6 +2,7 @@
 #include "TestRegRecipe.h"
 #include <EventAPI.h>
 #include "TestDBStorage.h"
+#include "TestNbt.h"
 
 LARGE_INTEGER freq_;
 auto INITPERFORMANCE = QueryPerformanceFrequency(&freq_);
@@ -512,6 +513,7 @@ void testMCAPI() {
 
 #include <filesystem>
 #include <fstream>
+#include "TestNbt.h"
 void verifyHashUnique() {
     std::vector<__int64> hashs;
     std::ifstream file("bedrock_server_SymList.txt");
@@ -539,11 +541,16 @@ void verifyHashUnique() {
 inline void testStaticDlsym(){};
 inline void testMCAPI(){};
 #endif // ENABLE_TEST_DLSYM
+//#include <MC/ItemDescriptor.hpp>
 void entry() {
+    //ItemDescriptor i1;
+    //ItemDescriptor i2;
+    //i1 = i2;
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev)->bool {
         testRegRecipe();
         testStaticDlsym();
         testMCAPI();
+        TestNbt::test();
         //verifyHashUnique();
         return true;
         });
@@ -558,3 +565,19 @@ void entry() {
         return true;
         });
 }
+
+//namespace
+//{
+//bool isEdu = false;
+//}
+//TClasslessInstanceHook(bool, "?isEducationEditionLevel@LevelData@@QEBA_NXZ")
+//{
+//    return isEdu;
+//}
+//TClasslessInstanceHook(void, "?setupStandardServer@ServerCommands@@YAXAEAVMinecraft@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@1PEAVPermissionsFile@@@Z",
+//                       class Minecraft& mc, std::string const&a2, std::string const& a3, class PermissionsFile* a4)
+//{
+//    isEdu = true;
+//    original(this, mc, a2, a3, a4);
+//    isEdu = false;
+//}

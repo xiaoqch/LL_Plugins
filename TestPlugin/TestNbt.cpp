@@ -13,17 +13,20 @@ void testRW(std::string const& binary, bool isLittle) {
     else {
         logger.error("bin->tag->bin 测试未通过");
     }
-    auto snbt = tag->toSNBT();
+    std::string snbt = tag->toSNBT(4);
     auto newTag = CompoundTag::fromSNBT(snbt);
     if (tag->equals(*newTag)) {
         logger.info("tag->snbt->tag 测试通过");
     }
-    else {
+    else
+    {
+        auto newSnbt = newTag->toSNBT();
+        std::cout << newSnbt << std::endl;
         logger.error("tag->snbt->tag 测试未通过");
         WriteAllFile(fmt::format("./test/error{}.nbt", isLittle ? "" : "_big"), newTag->toBinaryNBT(isLittle), true);
         return;
     }
-    auto newSnbt = newTag->toSNBT();
+    auto newSnbt = newTag->toSNBT(4);
     if (newSnbt == snbt) {
         //logger.info("snbt->tag->snbt 测试通过");
     }

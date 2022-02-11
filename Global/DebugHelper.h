@@ -1,4 +1,4 @@
-﻿#ifdef PLUGIN_DEV_MODE
+﻿#ifdef DEBUG
 extern class Logger logger;
 inline double ns_time(LARGE_INTEGER begin_time, LARGE_INTEGER end_time, LARGE_INTEGER freq_)
 {
@@ -37,4 +37,4 @@ inline void _WASSERT(
 #define DEBUGL(...) ((void)0)
 #define DEBUGW(...) ((void)0)
 #define LOG_VAR(var) ((void)0)
-#endif // PLUGIN_DEV_MODE
+#endif // DEBUG

@@ -73,7 +73,7 @@ THook(Actor*, "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUAct
         auto master = AgentManager::tryGetMaster(spawner);
         if (master != nullptr) {
             sendTextOrLog(spawner, "代理" + getActorDescription(master) + "投掷");
-            auto mpos = (Vec3*)&master->getStateVectorComponent();
+            auto mpos = (Vec3*)&master->getStateVector();
             return original(_this, bs, adi, master, mpos, direct);
         }
         return original(_this, bs, adi, spawner, pos, direct);
@@ -208,7 +208,7 @@ THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
 //    auto master = AgentManager::tryGetMaster(player);
 //    if (master != nullptr) {
 //        sendTextOrLog(player, "代理" + getActorDescription(master) + "移动");
-//        auto mpos = (Vec3&)master->getStateVectorComponent();
+//        auto mpos = (Vec3&)master->getStateVector();
 //        logger.info(mpos.toString());
 //        Vec3 dst = mpos + *v3 + Vec3{0.0f,-1.619996f,0.0f};
 //        master->teleport(dst, master->getDimensionId());
