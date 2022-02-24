@@ -1,6 +1,11 @@
 #pragma once
 class EnumGenerator
 {
-    void gen();
+public:
+#ifdef ENABLE_TEST_ENUM
+    static void gen();
+#else
+    static void gen(){};
+#endif // ENABLE_TEST_ENUM
 };
 

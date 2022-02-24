@@ -3,9 +3,35 @@
 #ifdef ENABLE_TEST_NBT
 
 #include <MC/CompoundTag.hpp>
-void testRW(std::string const& binary, bool isLittle) {
+#include <MC/PrettySnbtFormat.hpp>
+#include <MC/ColorFormat.hpp>
+
+inline void toFormatted(CompoundTag& tag, int indent, SnbtFormat snbtFormat)
+{
+    tag.toSNBT(indent, snbtFormat);
+}
+inline std::string toPrettySNBT(CompoundTag& tag, bool forPlayer)
+{
+    PrettySnbtFormat format = PrettySnbtFormat::getDefaultFormat(forPlayer);
+    format.setValueColor<Tag::Type::Short>(ColorFormat::colorCodeToColorMap.at("§7"));
+    return tag.toPrettySNBT(format);
+}
+void testRW(std::string const& binary, bool isLittle)
+{
     logger.info("size: {}, isLittleEndian: {}", binary.size(), isLittle);
     auto tag = CompoundTag::fromBinaryNBT((void*)binary.c_str(), binary.size(), isLittle);
+    TestFuncTime(tag->toSNBT);
+    TestFuncTime(toFormatted, *tag, 4, SnbtFormat::Minimize);
+    TestFuncTime(toPrettySNBT, *tag, true);
+    TestFuncTime(tag->toSNBT);
+    TestFuncTime(toFormatted, *tag, 4, SnbtFormat::PartialNewLine);
+    TestFuncTime(toPrettySNBT, *tag, true);
+    TestFuncTime(tag->toSNBT);
+    TestFuncTime(toFormatted, *tag, 4, SnbtFormat::PartialNewLine);
+    TestFuncTime(toPrettySNBT, *tag, true);
+    logger.info(tag->toPrettySNBT(false));
+    logger.info(tag->toPrettySNBT(true));
+    return;
     auto newBinary = tag->toBinaryNBT(isLittle);
     if (binary == newBinary) {
         logger.info("bin->tag->bin 测试通过");
@@ -35,13 +61,7 @@ void testRW(std::string const& binary, bool isLittle) {
         WriteAllFile(fmt::format("./test/error{}.nbt", isLittle ? "" : "_big"), newTag->toBinaryNBT(isLittle), true);
         return;
     }
-    logger.info<<newTag->toSNBT(4)<<logger.endl;
-    TestFuncTime(newTag->toSNBT, 4, SnbtFormat::Minimize);
-    TestFuncTime(newTag->toSNBT);
-    TestFuncTime(newTag->toSNBT, 4, SnbtFormat::PartialNewLine);
-    TestFuncTime(newTag->toSNBT);
-    TestFuncTime(newTag->toSNBT, 4, SnbtFormat::AlwayNewLine);
-    TestFuncTime(newTag->toSNBT);
+    logger.info(newTag->toSNBT(3));
 }
 void testNbt() {
     auto filePath = "./test/test.nbt";

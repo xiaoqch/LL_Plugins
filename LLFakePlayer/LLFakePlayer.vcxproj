@@ -70,6 +70,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -80,8 +81,8 @@
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist ”$(LocalDebuggerWorkingDirectory)\plugins\“ (
-copy /Y ”$(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins“
+      <Command>if exist "$(LocalDebuggerWorkingDirectory)plugins\" (
+copy /Y "$(TargetPath)" "$(LocalDebuggerWorkingDirectory)plugins"
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
@@ -117,6 +118,7 @@ LibraryBuilder.exe -o ..\Lib\
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -127,8 +129,8 @@ LibraryBuilder.exe -o ..\Lib\
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist ”$(LocalDebuggerWorkingDirectory)\plugins\“ (
-copy /Y ”$(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins“
+      <Command>if exist "$(LocalDebuggerWorkingDirectory)plugins\" (
+copy /Y "$(TargetPath)" "$(LocalDebuggerWorkingDirectory)plugins"
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>

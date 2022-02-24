@@ -4,7 +4,7 @@
 
 void entry()
 {
-#ifdef DEBUG_
+#ifdef DEBUG
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev) {
         auto unk = (__int64)dlsym_real("?gAssertTelemetryRegistered@DebugUtils@@3_NA");
         auto gAreaFilterMap = (std::map<std::string, unsigned int>*)(unk + 8);
@@ -21,7 +21,6 @@ void entry()
     });
 #endif // DEBUG
 }
-
 
 namespace
 {
@@ -177,8 +176,6 @@ THook(void, "?log_va@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule
     auto size = vsprintf_s(buf, format, args);
     if (size >= 1 && buf[size - 1] == '\n')
         buf[size - 1] = '\0';
-    //auto process = BedrockLog::_processIdString();
-    //auto message = BedrockLog::_messageIdString(messageId);
     Logger::OutputStream* log = &logger.info;
     switch (priority)
     {

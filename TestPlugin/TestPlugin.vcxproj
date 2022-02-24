@@ -68,6 +68,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,8 +79,8 @@
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist ”$(LocalDebuggerWorkingDirectory)\plugins\“ (
-copy /Y ”$(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins“
+      <Command>if exist "$(LocalDebuggerWorkingDirectory)plugins\" (
+copy /Y "$(TargetPath)" "$(LocalDebuggerWorkingDirectory)plugins"
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
@@ -116,6 +117,7 @@ LibraryBuilder.exe -o ..\Lib\
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,8 +128,8 @@ LibraryBuilder.exe -o ..\Lib\
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist ”$(LocalDebuggerWorkingDirectory)\plugins\“ (
-copy /Y ”$(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins“
+      <Command>if exist "$(LocalDebuggerWorkingDirectory)plugins\" (
+copy /Y "$(TargetPath)" "$(LocalDebuggerWorkingDirectory)plugins"
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
@@ -156,6 +158,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TestCommandReg.h" />
     <ClInclude Include="TestDBStorage.h" />
     <ClInclude Include="TestFakeName.h" />
     <ClInclude Include="TestNbt.h" />
@@ -174,6 +177,7 @@ LibraryBuilder.exe -o ..\Lib\
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestCommandReg.cpp" />
     <ClCompile Include="TestDBStorage.cpp" />
     <ClCompile Include="TestFakeName.cpp" />
     <ClCompile Include="TestNbt.cpp" />

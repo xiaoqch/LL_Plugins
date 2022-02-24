@@ -2,7 +2,6 @@
 #include "EnumGenerator.h"
 #ifdef ENABLE_TEST_ENUM
 #include <MC/BlockLegacy.hpp>
-#include <MC/BlockTypeRegistry.hpp>
 #include <MC/Util.hpp>
 #include <MC/MinecraftPackets.hpp>
 #include <MC/Packet.hpp>
@@ -35,13 +34,28 @@ void genBlockType() {
     }
     std::cout << "};" << std::endl;
 }
-#endif // ENABLE_TEST_ENUM
+#include <MC/Container.hpp>
+struct FContainer : public Container
+{
+    inline static auto getMap()
+    {
+        return containerTypeMap;
+    }
+};
+void validContainerType()
+{
+    for (auto& [type, name] : FContainer::getMap().mMap1)
+    {
+        if (name != magic_enum::enum_name(type))
+            __debugbreak();
+    }
+}
 
 void EnumGenerator::gen()
 {
-#ifdef ENABLE_TEST_ENUM
     genBlockType();
-    testNbt();
     genPktIDs();
-#endif // ENABLE_TEST_ENUM
+    validContainerType();
 }
+
+#endif // ENABLE_TEST_ENUM

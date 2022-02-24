@@ -225,7 +225,7 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
         case MinecraftPacketIds::ModalFormRequest:
             FakeHandler::handle((SimulatedPlayer*)sp, (ModalFormRequestPacket*)packet);
             break;
-#ifdef DEBUG
+#ifndef DEBUG
         case MinecraftPacketIds::MoveActorDelta:
         case MinecraftPacketIds::LevelChunk:
         case MinecraftPacketIds::LevelSoundEvent:
@@ -252,21 +252,22 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
             {
                 BinaryStream bs;
                 packet->write(bs);
-                DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
-                DEBUGW("getReadPointer: {}", bs.getReadPointer());
+                logger.warn("getUnreadLength: {}", bs.getUnreadLength());
+                logger.warn("getReadPointer: {}", bs.getReadPointer());
                 bs.setReadPointer(0);
-                DEBUGW("Actor Runtime Id: {} - {}", bs.getUnsignedVarInt64(), sp->getRuntimeID().id);
+                logger.warn("Actor Runtime Id: {} - {}", bs.getUnsignedVarInt64(), sp->getRuntimeID().id);
                 int count = bs.getUnsignedVarInt();
-                DEBUGW("count {}", count);
+                logger.warn("count {}", count);
                 if (count > 100)
                     count = 100;
                 for (int i = 0; i < count; ++i)
                 {
-                    DEBUGW("[{}, {}, {}, {}, {}]", bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
+                    logger.warn("[{}, {}, {}, {}, {}]",
+                        bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
                 }
-                DEBUGW("tick: {}", bs.getUnsignedVarInt64());
-                DEBUGW("getUnreadLength: {}", bs.getUnreadLength());
-                DEBUGW("getReadPointer: {}", bs.getReadPointer());
+                logger.warn("tick: {}", bs.getUnsignedVarInt64());
+                logger.warn("getUnreadLength: {}", bs.getUnreadLength());
+                logger.warn("getReadPointer: {}", bs.getReadPointer());
                 break;
             }
         case MinecraftPacketIds::PlayerList:

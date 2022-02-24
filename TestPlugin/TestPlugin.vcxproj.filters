@@ -34,6 +34,7 @@
     <ClInclude Include="EnumGenerator.h" />
     <ClInclude Include="TestNbt.h" />
     <ClInclude Include="TestFakeName.h" />
+    <ClInclude Include="TestCommandReg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -52,6 +53,7 @@
     <ClCompile Include="TestNbt.cpp" />
     <ClCompile Include="TestPacket.cpp" />
     <ClCompile Include="TestFakeName.cpp" />
+    <ClCompile Include="TestCommandReg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestPlugin.rc">

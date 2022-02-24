@@ -36,6 +36,8 @@ std::vector<std::string> FakePlayerCommand::mList;
 #include <MC/Scoreboard.hpp>
 void FakePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& output) const
 {
+    output.success("{");
+    return;
     auto& manager = FakePlayerManager::getManager();
     bool res = false;
     switch (operation)
