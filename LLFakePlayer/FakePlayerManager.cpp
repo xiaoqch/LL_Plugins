@@ -251,7 +251,7 @@ FakePlayerManager::FakePlayerManager(std::string const& dbPath)
 }
 FakePlayerManager::~FakePlayerManager()
 {
-    DEBUGW("FakePlayerManager::FakePlayerManager()");
+    DEBUGW("FakePlayerManager::~FakePlayerManager()");
 }
 bool FakePlayerManager::saveAllData(bool onlineOnly)
 {

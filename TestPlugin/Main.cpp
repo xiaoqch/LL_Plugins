@@ -2,6 +2,8 @@
 #include "TestRegRecipe.h"
 #include <EventAPI.h>
 #include "TestDBStorage.h"
+#include "TestCommandReg.h"
+#include "EnumGenerator.h"
 #include "TestNbt.h"
 
 LARGE_INTEGER freq_;
@@ -551,6 +553,8 @@ void entry() {
         testStaticDlsym();
         testMCAPI();
         TestNbt::test();
+        TestCommandReg::test();
+        EnumGenerator::gen();
         //verifyHashUnique();
         return true;
         });
@@ -581,3 +585,9 @@ void entry() {
 //    original(this, mc, a2, a3, a4);
 //    isEdu = false;
 //}
+#include <MC/FurnaceContainerScreenValidator.hpp>
+TInstanceHook(void, "?commitResults@FurnaceContainerScreenValidator@@UEAAXAEBVContainerScreenContext@@@Z",
+              FurnaceContainerScreenValidator, class ContainerScreenContext const& screen)
+{
+    original(this, screen);
+}

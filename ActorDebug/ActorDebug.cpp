@@ -40,14 +40,6 @@
 //#include <MC/AttributeInstanceHandle.hpp>
 //#include <MC/SynchedActorData.hpp>
 
-void entry()
-{
-    Config::initConfig();
-    Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
-        ActorDebugCommand::setup(*ev.mCommandRegistry);
-        return true;
-    });
-}
 
 enum class ActorCategory2 : int
 {
@@ -291,7 +283,6 @@ class SynchedActorData
 {
 public:
     //using DataList = std::vector<std::unique_ptr<DataItem>>;
-
     std::vector<std::unique_ptr<DataItem>> mItemsArray; //0
 private:
     unsigned short mMinDirtyId; //24
@@ -502,8 +493,8 @@ public:
         auto dataItems = mActorData->packAll();
         auto actor = getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
-        dataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
-        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
+        dataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
+        dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
         bs.writeType(dataItems);
 
         //writeLinks
@@ -557,8 +548,8 @@ public:
         auto dataItems = mActorData->packAll();
         auto actor = getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
-        dataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
-        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
+        dataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
+        dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
         bs.writeType(dataItems);
 
         bs.writeBool(mIsFromFishing);
@@ -710,8 +701,8 @@ public:
         auto dataItems = mActorData->packAll();
         auto actor = getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
-        dataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
-        dataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
+        dataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
+        dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
         bs.writeType(dataItems);
         AdventureSettingsPacket settings(AdventureSettings{}, mAbilities, {-1}, false);
         settings.write(bs);
@@ -740,8 +731,8 @@ void setActorFakeName(Actor* actor, std::string const& fakeName)
 {
     SetActorDataPacket packet;
     packet.mRuntimeId = actor->getRuntimeID();
-    packet.mDataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, fakeName));
-    packet.mDataItems.emplace_back(DataItem::create<signed char>((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
+    packet.mDataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
+    packet.mDataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
     Global<LoopbackPacketSender>->sendBroadcast(packet);
 }
 
@@ -835,10 +826,13 @@ inline ArgType::Name getArgValue<ArgName::Name>(Actor* actor, FormatType actorTy
 {
     if (actorType == FormatType::Trident)
     {
-        auto& item = dAccess<ItemStack>(actor, 1872);
-        std::string customName = item.getCustomName();
-        if (!customName.empty())
-            return customName;
+        auto item = &dAccess<ItemStack>(actor, 1872);
+        if (item&&!item->isNull())
+        {
+            std::string customName = item->getCustomName();
+            if (!customName.empty())
+                return customName;
+        }
     }
     return CommandUtils::getActorName(*actor);
 }
@@ -892,7 +886,7 @@ inline ArgType::DamageInfo getArgValue<ArgName::DamageInfo>(Actor* actor, Format
     }
     else if (actorType == FormatType::Trident)
     {
-        auto& item = dAccess<ItemStack>(actor, 1872);
+        auto& item = dAccess<ItemStack>(actor, 1848); // ThrownTrident::playerTouch
         MaxDamage = item.getMaxDamage();
         Damage = item.getDamageValue();
     }
@@ -1469,8 +1463,8 @@ void refreshActorFakeName(Actor* actor, Player* player = nullptr)
     packet.mRuntimeId = actor->getRuntimeID();
     if (packet.mRuntimeId.id == 0)
         return;
-    packet.mDataItems.emplace_back(DataItem::create((unsigned short)ActorDataIDs::NAMETAG, actor->getNameTag()));
-    packet.mDataItems.emplace_back(DataItem2<signed char>::create((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, Config::globalActive));
+    packet.mDataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, actor->getNameTag()));
+    packet.mDataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, Config::globalActive));
     if (!player)
     {
         auto& dim = actor->getDimension();
@@ -1493,7 +1487,7 @@ inline DataItem2<std::string>* findNameItemAndSetAlwayShow(std::vector<std::uniq
         if (item->mId == (unsigned short)ActorDataIDs::NAMETAG)
         {
             result = (DataItem2<std::string>*)item.get();
-            dataItems.emplace_back(DataItem2<signed char>::create((unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
+            dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
             break;
         }
         else if (item->mId == (unsigned short)ActorDataIDs::ALWAYS_SHOW_NAMETAG)
@@ -1697,7 +1691,7 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
     {
         SetActorDataPacket fakeNamePacket;
         fakeNamePacket.mRuntimeId = ((SetActorDataPacket&)packet).mRuntimeId;
-        fakeNamePacket.mDataItems.emplace_back(DataItem2<std::string>::create((unsigned short)ActorDataIDs::NAMETAG, ""));
+        fakeNamePacket.mDataItems.emplace_back(DataItem::create<std::string>(ActorDataIDs::NAMETAG, ""));
         for (auto& nidWithSubId : nidWithSubIds)
         {
             auto player = tryGetDebugPlayer((NetworkIdentifier&)nidWithSubId, dAccess<unsigned char>(&nidWithSubId, 160));
@@ -1769,3 +1763,26 @@ TInstanceHook(bool, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo
 //        refreshActorFakeName(this);
 //    }
 //}
+
+void entry()
+{
+    Config::initConfig();
+    Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
+        ActorDebugCommand::setup(*ev.mCommandRegistry);
+        //Schedule::repeat(
+        //    []() {
+        //        Global<Level>->forEachPlayer(
+        //            [](Player& player) -> bool {
+        //                auto actor = player.getActorFromViewVector(6);
+        //                if (actor) {
+        //                    SetActorDataPacket packet;
+        //                    packet.mRuntimeId = actor->getRuntimeID();
+        //                    packet.mDataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, CommandUtils::getActorName(*actor)));
+        //                    player.sendNetworkPacket(packet);
+        //                }
+        //            });
+        //    },
+        //    20);
+        return true;
+    });
+}
