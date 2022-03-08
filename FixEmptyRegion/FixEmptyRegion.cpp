@@ -78,6 +78,7 @@ bool kill = true;
 template <typename T>
 void logActorInfo(T* actor, std::string const& func)
 {
+    bool ignoreKill = false;
     if (actor == nullptr)
     {
         return logger.error("Detected actor nullptr in {}", func);
@@ -120,6 +121,7 @@ void logActorInfo(T* actor, std::string const& func)
     }
     catch (...)
     {
+        ignoreKill = true;
         logger.error("Error in actor->getNbt()->toSNBT()");
     }
     // Structure
@@ -155,7 +157,7 @@ void logActorInfo(T* actor, std::string const& func)
     logger.error("StackTraceback:");
     PrintCurrentStackTraceback(&logger);
     logger.info << Logger::endl;
-    if (kill)
+    if (kill && !ignoreKill)
     {
         try
         {
@@ -169,6 +171,7 @@ void logActorInfo(T* actor, std::string const& func)
     return;
 }
 
+//BreakDoorAnnotationComponent::_shouldBreakDoor
 TClasslessInstanceHook(bool, "?_shouldBreakDoor@BreakDoorAnnotationComponent@@AEAA_NAEAVMob@@@Z",
                        Mob* mob)
 {
@@ -180,6 +183,7 @@ TClasslessInstanceHook(bool, "?_shouldBreakDoor@BreakDoorAnnotationComponent@@AE
     return original(this, mob);
 }
 
+//Actor::isInWaterOrRain
 TInstanceHook(bool, "?isInWaterOrRain@Actor@@QEBA_NXZ",
               Actor)
 {
@@ -191,6 +195,7 @@ TInstanceHook(bool, "?isInWaterOrRain@Actor@@QEBA_NXZ",
     return original(this);
 }
 
+//Actor::getBrightness
 TInstanceHook(float, "?getBrightness@Actor@@UEBAMM@Z",
               Actor, float a2)
 {
@@ -201,3 +206,121 @@ TInstanceHook(float, "?getBrightness@Actor@@UEBAMM@Z",
     }
     return original(this, a2);
 }
+//SensingComponent::canSee
+TClasslessInstanceHook(bool, "?canSee@SensingComponent@@QEAA_NAEAVMob@@AEBVActor@@@Z",
+                       class Mob& a2, class Actor const& a3)
+{
+    if (&a2 == nullptr || &a2.getRegion() == nullptr)
+    {
+        logActorInfo(&a2, "SensingComponent::canSee");
+        return false;
+    }
+    return original(this, a2, a3);
+}
+
+#ifndef ADDR_HOOK
+
+void const* HOOK_ADDR = ([]() {
+    return (void*)((uintptr_t)GetModuleHandle(NULL) + 0x7F11A0);
+})();
+constexpr auto HOOK_NAME = "std___Func_impl_no_alloc__lambda_402054a1cc8ac232f46e648b3b6daed6__void_ITickingSystem______Do_call";
+
+class ITickingSystem
+{
+public:
+    /*0*/ virtual ~ITickingSystem() = 0;
+    /*1*/ virtual void registerEvents(class entt::dispatcher&);
+    /*2*/ virtual void tick(class EntityRegistry&);
+};
+template <>
+struct THookTemplate<do_hash(HOOK_NAME), do_hash2(HOOK_NAME)>
+{
+    typedef void (*original_type)(void* a1, ITickingSystem* a2);
+    static original_type& _original()
+    {
+        static original_type storage;
+        return storage;
+    }
+    template <typename... Params>
+    static void original(Params&&... params)
+    {
+        return _original()(std::forward<Params>(params)...);
+    }
+    static void _hook(void* a1, ITickingSystem* a2);
+};
+template <>
+static THookRegister THookRegisterTemplate<do_hash(HOOK_NAME), do_hash2(HOOK_NAME)>{
+    const_cast<void*>(HOOK_ADDR), &THookTemplate<do_hash(HOOK_NAME), do_hash2(HOOK_NAME)>::_hook,
+    (void**)&THookTemplate<do_hash(HOOK_NAME), do_hash2(HOOK_NAME)>::_original()};
+
+class EntityRegistryBase
+{
+public:
+    void* mEntityId;
+    int unk8 = -1;
+    std::string const* unk16;
+    unsigned char unk24 = 0;
+    int index;
+
+public:
+    MCAPI EntityRegistryBase(class entt::basic_registry<class EntityId>&);
+    MCAPI bool isValidEntity(class EntityContextBase const&) const;
+    MCAPI ~EntityRegistryBase();
+
+protected:
+    MCAPI void _assertValidRegistry(class EntityContextBase const&) const;
+    MCAPI static struct std::atomic<unsigned int> mRegistryCount;
+};
+class EntityRegistry : public EntityRegistryBase
+{
+protected:
+    MCAPI EntityRegistry();
+};
+#ifdef DEBUG
+struct voids
+{
+    void**** val[100];
+};
+#endif // DEBUG
+
+#include <MC/EntitySystems.hpp>
+
+void logTickingInfo(void* a1, ITickingSystem* a2) 
+{
+    try
+    {
+        logger.error("vftable RVA: {}", dAccess<uintptr_t, 0>(a2) - (uintptr_t)GetModuleHandle(NULL));
+    }
+    catch (const std::exception&)
+    {
+    }
+};
+void THookTemplate<do_hash(HOOK_NAME), do_hash2(HOOK_NAME)>::_hook(void* a1, ITickingSystem* a2)
+{
+#ifdef DEBUG
+    auto& reg = dAccess<EntityRegistry>(a1, 8);
+    auto& sys = *dAccess<EntitySystems*>(a1, 16);
+    auto& unk = *(voids*)&sys;
+    auto& unka1 = **(voids**)&a1;
+    auto& unka2 = **(voids**)&a2;
+    auto& unkreg = *(voids*)&reg;
+    unk.val;
+    unka1.val;
+    unka2.val;
+    unkreg.val;
+
+#endif // DEBUG
+    try
+    {
+        original(a1, a2);
+    }
+    catch (...)
+    {
+        logger.error("Error in DefaultEntitySystemsCollection::foreachTickingSystem");
+        logger.error("StackTraceback:");
+        PrintCurrentStackTraceback(&logger);
+        logger.info << Logger::endl;
+        logTickingInfo(a1, a2);
+    }
+}
+#endif // ADDR_HOOK

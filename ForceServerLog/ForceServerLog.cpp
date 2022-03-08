@@ -4,7 +4,7 @@
 
 void entry()
 {
-#ifdef DEBUG
+#ifdef PRINT_ENUM
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev) {
         auto unk = (__int64)dlsym_real("?gAssertTelemetryRegistered@DebugUtils@@3_NA");
         auto gAreaFilterMap = (std::map<std::string, unsigned int>*)(unk + 8);

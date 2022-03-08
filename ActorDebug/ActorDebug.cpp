@@ -267,12 +267,13 @@ LoopbackPacketSender* Global<LoopbackPacketSender>;
 TInstanceHook(LoopbackPacketSender*, "??0LoopbackPacketSender@@QEAA@EAEAVNetworkHandler@@@Z",
               LoopbackPacketSender, unsigned char unk, class NetworkHandler& handler)
 {
-#ifdef DEBUG
+#ifdef PRINT_ENUM
     testDataItem();
-    Schedule::delay([]() {
-        printActorCategory();
-    },
-                    50);
+    Schedule::delay(
+        []() {
+            printActorCategory();
+        },
+        50);
 #endif // DEBUG
 
     Global<LoopbackPacketSender> = this;
@@ -332,6 +333,8 @@ inline class Actor* getRuntimeEntity(class ActorRuntimeID a0, bool a1)
     return (Global<Level>->*rv)(std::forward<class ActorRuntimeID>(a0), std::forward<bool>(a1));
 }
 
+#pragma region SetActorDataPacket
+
 // ============= SetActorDataPacket =============
 class SetActorDataPacket : public Packet
 {
@@ -352,6 +355,10 @@ public:
 };
 static_assert(sizeof(SetActorDataPacket) == 88);
 static_assert(offsetof(SetActorDataPacket, mDataItems) == 64);
+
+#pragma endregion
+
+#pragma region AddActorPacket
 
 // ============= AddActorPacket =============
 class AttributeInstanceHandle
@@ -516,6 +523,10 @@ static_assert(offsetof(AddActorPacket, mRuntimeId) == 120);
 static_assert(offsetof(AddActorPacket, mType) == 160);
 static_assert(offsetof(AddActorPacket, mAttributeHandles) == 336);
 
+#pragma endregion
+
+#pragma region AddItemActorPacket
+
 // ============= AddItemActorPacket =============
 class AddItemActorPacket : public Packet
 {
@@ -558,6 +569,10 @@ public:
 static_assert(offsetof(AddItemActorPacket, mActorData) == 72);
 static_assert(sizeof(AddItemActorPacket) == 256);
 
+#pragma endregion
+
+#pragma region AddPaintingPacket
+
 // ============= AddPaintingPacket =============
 class AddPaintingPacket : public Packet
 {
@@ -585,6 +600,10 @@ public:
         bs.writeString(mMotive);
     }
 };
+
+#pragma endregion
+
+#pragma region AddPlayerPacket
 
 // ============= AddPlayerPacket =============
 class Ability
@@ -727,6 +746,8 @@ static_assert(offsetof(AddPlayerPacket, mDeviceId) == 568);
 static_assert(offsetof(AddPlayerPacket, mCarriedItem) == 608);
 static_assert(offsetof(AddPlayerPacket, mActorData) == 736);
 
+#pragma endregion
+
 void setActorFakeName(Actor* actor, std::string const& fakeName)
 {
     SetActorDataPacket packet;
@@ -742,6 +763,7 @@ void setActorFakeName(Actor* actor, std::string const& fakeName)
 ActorArg::ArgType::name __##name;\
 auto&& name = ActorArg::getArg<currentActorType, ActorArg::ArgName::name, ActorArg::ArgType::name>(actor, __##name)
 
+#pragma region ActorFakeNameBuilder
 
 #include <MC/SharedAttributes.hpp>
 namespace ActorArg
@@ -815,12 +837,7 @@ typedef float JumpStrength;
 template <FormatType actorType, ArgName argName>
 static bool argEnable = false;
 template <ArgName argName, typename ArgType>
-inline ArgType getArgValue(Actor* actor, FormatType actorType = FormatType::Actor)
-{
-    constexpr auto name = magic_enum::enum_name(argName).data();
-    static_assert(false, "No Implement");
-    return ArgType();
-};
+inline ArgType getArgValue(Actor* actor, FormatType actorType = FormatType::Actor) = delete;
 template <>
 inline ArgType::Name getArgValue<ArgName::Name>(Actor* actor, FormatType actorType)
 {
@@ -1274,7 +1291,6 @@ std::string getFakeName<ActorArg::FormatType::WanderingTrader>(Actor* actor)
     return fmt::format(formatItemActor, GetCommomArg());
 }
 
-
 std::string getActorFakeName(Actor* actor)
 {
     _set_se_translator(seh_exception::TranslateSEHtoCE);
@@ -1456,6 +1472,8 @@ std::string getActorFakeName(Actor* actor)
     }
     return "";
 }
+
+#pragma endregion
 
 void refreshActorFakeName(Actor* actor, Player* player = nullptr)
 {
@@ -1729,6 +1747,7 @@ TInstanceHook(bool, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo
     }
     return rtn;
 }
+
 //#include <MC/ChorusFlowerBlock.hpp>
 //TClasslessInstanceHook(void, "?_placeGrownFlower@ChorusFlowerBlock@@AEBAXAEAVBlockSource@@AEBVBlockPos@@H@Z",
 //               class BlockSource& bs, class BlockPos const& bpos, int age)
@@ -1766,23 +1785,8 @@ TInstanceHook(bool, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo
 
 void entry()
 {
-    Config::initConfig();
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
         ActorDebugCommand::setup(*ev.mCommandRegistry);
-        //Schedule::repeat(
-        //    []() {
-        //        Global<Level>->forEachPlayer(
-        //            [](Player& player) -> bool {
-        //                auto actor = player.getActorFromViewVector(6);
-        //                if (actor) {
-        //                    SetActorDataPacket packet;
-        //                    packet.mRuntimeId = actor->getRuntimeID();
-        //                    packet.mDataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, CommandUtils::getActorName(*actor)));
-        //                    player.sendNetworkPacket(packet);
-        //                }
-        //            });
-        //    },
-        //    20);
         return true;
     });
 }

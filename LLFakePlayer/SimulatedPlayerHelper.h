@@ -11,12 +11,13 @@ class OwnerPtrT<struct EntityRefTraits>
     char filler[24];
 
 public:
-    inline ~OwnerPtrT()
-    {
-        void (OwnerPtrT::*rv)() const;
-        *((void**)&rv) = dlsym("??1?$OwnerPtrT@UEntityRefTraits@@@@QEAA@XZ");
-        (this->*rv)();
-    }
+    LIAPI ~OwnerPtrT();
+    //inline ~OwnerPtrT()
+    //{
+    //    void (OwnerPtrT::*rv)() const;
+    //    *((void**)&rv) = dlsym("??1?$OwnerPtrT@UEntityRefTraits@@@@QEAA@XZ");
+    //    (this->*rv)();
+    //}
 
     inline OwnerPtrT(OwnerPtrT&& right) noexcept
     {
@@ -58,6 +59,7 @@ inline SimulatedPlayer* create(std::string const& name)
 {
     OwnerPtrT<EntityRefTraits> ownerPtr = Global<ServerNetworkHandler>->createSimulatedPlayer(name);
     auto player = ownerPtr.tryGetSimulatedPlayer();
+
     if (player /* && player->isSimulatedPlayer() */)
     {
         //dAccess<AutomaticID<Dimension, int>>(player, 57) = dimId;

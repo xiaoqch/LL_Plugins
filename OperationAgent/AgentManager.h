@@ -3,6 +3,7 @@
 #include <MC/Actor.hpp>
 #include <MC/Level.hpp>
 #include <MC/CommandUtils.hpp>
+#include <third-party/Nlohmann/json.hpp>
 
 template<>
 struct std::hash<ActorUniqueID> {

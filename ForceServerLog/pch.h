@@ -10,7 +10,7 @@
 // 添加要在此处预编译的标头
 #include <iostream>
 #include <Global.h>
-#include "../Global/GlobalConfig.h"
+#include "Config.h"
 #include <LLAPI.h>
 
 #endif //PCH_H

@@ -3,21 +3,26 @@
 
 using namespace RegisterCommandHelper;
 
-void TemplateCommand::execute(class CommandOrigin const& ori, class CommandOutput& outp) const {
-    if (mOperation_isSet) {
+void TemplateCommand::execute(class CommandOrigin const& ori, class CommandOutput& outp) const
+{
+    if (mOperation_isSet)
+    {
         switch (mOperation)
         {
-        default:
-            break;
+            case (Operation)0:
+                break;
+            default:
+                break;
         }
     }
-    else {
-
+    else
+    {
     }
 }
 
-void TemplateCommand::setup(CommandRegistry& registry) {
-    registry.registerCommand("template", "Command Template", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
+void TemplateCommand::setup(CommandRegistry& registry)
+{
+    registry.registerCommand("template", "Command Template", CommandPermissionLevel::Any, {(CommandFlagValue)0}, {(CommandFlagValue)0x80});
 
     registry.addEnum<Operation>("Template_Action", {/* ... */});
     auto action = makeMandatory<CommandParameterDataType::ENUM>(

@@ -10,12 +10,6 @@
 #include <filesystem>
 
 void entry() {
-    if (!Config::initConfig()) {
-        logger.warn("Error when load config, use default config");
-        std::filesystem::create_directories(std::filesystem::path(PLUGIN_CONFIG_PATH).remove_filename());
-        auto jsonStr = Config::serialize();
-        WriteAllFile(PLUGIN_CONFIG_PATH, jsonStr, false);
-    };
     Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
         OperationAgentCommand::setup(*ev.mCommandRegistry);
         return true;

@@ -19,25 +19,10 @@
 
 using namespace RegisterCommandHelper;
 std::vector<std::string> FakePlayerCommand::mList;
-//inline BlockPos FakePlayerCommand::getExpectedPosition(CommandOrigin const& origin) const
-//{
-//    BlockPos bpos;
-//    if (commandPos_isSet) {
-//        bpos = commandPos.getBlockPos(origin, { 0,0,0 });
-//    }
-//    else if (origin.getBlockPosition().toVec3().length() < 0.1) {
-//        bpos = Global<Level>->getDefaultSpawn();
-//    }
-//    else {
-//        bpos = origin.getBlockPosition();
-//    }
-//    return bpos;
-//}
+
 #include <MC/Scoreboard.hpp>
 void FakePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& output) const
 {
-    output.success("{");
-    return;
     auto& manager = FakePlayerManager::getManager();
     bool res = false;
     switch (operation)

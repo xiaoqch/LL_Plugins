@@ -11,7 +11,7 @@
 #include <iostream>
 #include <Global.h>
 #include <LLAPI.h>
-#include "../Global/GlobalConfig.h"
+#include "Config.h"
 #include <RegCommandAPI.h>
 #include <MC/Level.hpp>
 #include <MC/Minecraft.hpp>
