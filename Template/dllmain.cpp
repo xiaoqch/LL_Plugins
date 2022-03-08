@@ -13,7 +13,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            LL::registerPlugin(PLUGIN_DISPLAY_NAME, PLUGIN_DESCRIPTION,
+            LL::registerPlugin(PLUGIN_NAME, PLUGIN_DESCRIPTION,
                                LL::Version(
                                    PLUGIN_VERSION_MAJOR,
                                    PLUGIN_VERSION_MINOR,
@@ -40,17 +40,19 @@ _declspec(dllexport) void onPostInit()
 {
     std::ios::sync_with_stdio(false);
 #ifdef DEBUG
-    logConfig();
+    logBetaInfo();
     logger.warn("This plugin is a beta version and may have bugs");
 #else
     //Set global SEH-Exception handler
     _set_se_translator(seh_exception::TranslateSEHtoCE);
 #endif // DEBUG
+    if constexpr (ENABLE_CONFIG)
+        Config::initConfig();
     entry();
     logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
-    if (PLUGIN_USAGE)
-        logger.info("Usage: {}", PLUGIN_USAGE);
-    if (ENABLE_LOG_FILE)
+    if constexpr (PLUGIN_USAGE)
+        logger.info("Usage: \n{}", PLUGIN_USAGE);
+    if constexpr (ENABLE_LOG_FILE)
         logger.setFile(PLUGIN_LOG_PATH, std::ios::app);
 }
 }

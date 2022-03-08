@@ -1,6 +1,9 @@
-#include "pch.h"
+﻿#include "pch.h"
+#include "Config.h"
 #include <third-party/Nlohmann/json.hpp>
 #include <filesystem>
+
+#pragma region Config
 
 // Write config value to json
 #define SerializeVaule(var) json[#var] = Config::var
@@ -49,21 +52,39 @@ std::string serialize()
 {
     nlohmann::json json;
 
-    SerializeVaule(globalActive);
-    SerializeVaule(commandAlias);
-    SerializeEnumVaule(permissionLevel);
+    SerializeVaule(autoClean);
+    SerializeVaule(cancelAfterSleep);
+    SerializeVaule(cancelAfterRide);
+    SerializeVaule(autoSleep);
+    SerializeVaule(autoRideWhenJoin);
+    SerializeVaule(useNewProjectMode);
+    SerializeVaule(forProjectile);
+    SerializeVaule(forAttack);
+    SerializeVaule(forSleep);
+    //SerializeVaule(forMove);
+    SerializeVaule(forRide);
+    SerializeVaule(autoSwapAttack);
 
     return json.dump(4);
 }
 
-bool deserialize(std::string jsonStr)
+bool deserialize(std::string const& jsonStr)
 {
     auto json = nlohmann::json::parse(jsonStr, nullptr, false, true);
     bool needUpdate = false;
 
-    DeserializeVaule(globalActive);
-    DeserializeVaule(commandAlias);
-    DeserializeEnumVaule(permissionLevel);
+    DeserializeVaule(autoClean);
+    DeserializeVaule(cancelAfterSleep);
+    DeserializeVaule(cancelAfterRide);
+    DeserializeVaule(autoSleep);
+    DeserializeVaule(autoRideWhenJoin);
+    DeserializeVaule(useNewProjectMode);
+    DeserializeVaule(forProjectile);
+    DeserializeVaule(forAttack);
+    DeserializeVaule(forSleep);
+    //DeserializeVaule(forMove);
+    DeserializeVaule(forRide);
+    DeserializeVaule(autoSwapAttack);
 
     return !needUpdate;
 }
@@ -100,14 +121,9 @@ bool initConfig()
     return !needToSave;
 }
 
-bool switchActivation()
-{
-    globalActive = !globalActive;
-    saveConfig();
-    return globalActive;
-}
-
 } // namespace Config
+
+#pragma endregion
 
 #if PLUGIN_VERSION_IS_BETA
 void logBetaInfo()

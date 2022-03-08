@@ -48,6 +48,9 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Default</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib">

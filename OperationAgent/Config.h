@@ -1,12 +1,12 @@
 #pragma once
-#include <LoggerAPI.h>
+#include "../Global/GlobalConfig.h"
 
 // Plugin Info
 #define PLUGIN_NAME "OperationAgent"
 #define PLUGIN_AUTHOR "xiaoqch"
 #define PLUGIN_DISPLAY_NAME "Operation Agent"
 #define PLUGIN_DESCRIPTION "Operation Agent"
-#define PLUGIN_WEBSIDE "https://github.com/xiaoqch/LL_Plugins/" PLUGIN_NAME
+#define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
 #define PLUGIN_LICENCE "GPLv3"
 #define PLUGIN_USAGE false
 
@@ -38,124 +38,42 @@ opagent clearall - 清除所有\n\
 #define PLUGIN_VERSION_IS_BETA true
 #endif // DEBUG
 
-#define STR1(R) #R
-#define STR2(R) STR1(R)
-
-#if PLUGIN_VERSION_IS_BETA
-#define PLUGIN_VERSION_STRING STR2(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR.PLUGIN_VERSION_REVISION beta)
-#else
-#define PLUGIN_VERSION_STRING STR2(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR.PLUGIN_VERSION_REVISION)
-#endif // PLUGIN_VERSION_IS_BETA
-
-
 // Path
-#define LOG_DIR "./logs/"
-#define PLUGINS_DIR "./plugins/"
 #define PLUGIN_DIR PLUGINS_DIR PLUGIN_NAME "/"
-
 #define PLUGIN_LOG_PATH LOG_DIR PLUGIN_NAME ".log"
 #define PLUGIN_CONFIG_PATH PLUGIN_DIR "config.json"
 #define PLUGIN_DATA_PATH PLUGIN_DIR "data.json"
 
+// Switch
 #define ENABLE_LOG_FILE false
+#define ENABLE_CONFIG true
 
-#if PLUGIN_VERSION_IS_BETA 
-inline void logConfig() {
-    logger.debug("beta version, log config:");
-    LOG_VAR(PLUGIN_NAME);
-    LOG_VAR(PLUGIN_AUTHOR);
-    LOG_VAR(PLUGIN_DISPLAY_NAME);
-    LOG_VAR(PLUGIN_DESCRIPTION);
-    LOG_VAR(PLUGIN_WEBSIDE);
-    LOG_VAR(PLUGIN_LICENCE);
-    LOG_VAR(PLUGIN_USAGE);
+namespace Config
+{
+static bool autoClean = true;
+static bool cancelAfterSleep = true;
+static bool cancelAfterRide = true;
+static bool autoSleep = true;
+static bool autoRideWhenJoin = true;
+static bool useNewProjectMode = false;
+static bool forProjectile = true;
+static bool forAttack = true;
+static bool forSleep = true;
+//static bool forMove = false;
+static bool forRide = true;
+static bool autoSwapAttack = true;
 
-    LOG_VAR(LOG_DIR);
-    LOG_VAR(PLUGINS_DIR);
-    LOG_VAR(PLUGIN_DIR);
-    LOG_VAR(PLUGIN_CONFIG_PATH);
-    LOG_VAR(PLUGIN_DATA_PATH);
 
-    LOG_VAR(PLUGIN_VERSION_STRING);
-}
+bool saveConfig();
+bool initConfig();
+} // namespace Config
 
-#endif // PLUGIN_VERSION_IS_BETA
-
-// config
-#include <third-party/Nlohmann/json.hpp>
-
-#define SerializeVaule(var) json[#var] = Config::var
-#define DeserializeVaule(var)\
-if (json.find(#var) != json.end())\
-    Config::var = json.value(#var, Config::var);\
-else{\
-    logger.warn("Missing Config {}, use default value {}", #var, Config::var);\
-    needUpdate = true;\
-}
-
-namespace Config {
-    static bool autoClean = true;
-    static bool cancelAfterSleep = true;
-    static bool cancelAfterRide = true;
-    static bool autoSleep = true;
-    static bool autoRideWhenJoin = true;
-    static bool useNewProjectMode = false;
-    static bool forProjectile = true;
-    static bool forAttack = true;
-    static bool forSleep = true;
-    //static bool forMove = false;
-    static bool forRide = true;
-    static bool autoSwapAttack = true;
-
-    inline std::string serialize() {
-        nlohmann::json json;
-        SerializeVaule(autoClean);
-        SerializeVaule(cancelAfterSleep);
-        SerializeVaule(cancelAfterRide);
-        SerializeVaule(autoSleep);
-        SerializeVaule(autoRideWhenJoin);
-        SerializeVaule(useNewProjectMode);
-        SerializeVaule(forProjectile);
-        SerializeVaule(forAttack);
-        SerializeVaule(forSleep);
-        //SerializeVaule(forMove);
-        SerializeVaule(forRide);
-        SerializeVaule(autoSwapAttack);
-        return json.dump(4);
-    }
-    inline bool deserialize(std::string jsonStr) {
-        auto json = nlohmann::json::parse(jsonStr, nullptr, true, true);
-        bool needUpdate=false;
-        DeserializeVaule(autoClean);
-        DeserializeVaule(cancelAfterSleep);
-        DeserializeVaule(cancelAfterRide);
-        DeserializeVaule(autoSleep);
-        DeserializeVaule(autoRideWhenJoin);
-        DeserializeVaule(useNewProjectMode);
-        DeserializeVaule(forProjectile);
-        DeserializeVaule(forAttack);
-        DeserializeVaule(forSleep);
-        //DeserializeVaule(forMove);
-        DeserializeVaule(forRide);
-        DeserializeVaule(autoSwapAttack);
-
-        if (needUpdate) {
-            auto jsonStr = serialize();
-            WriteAllFile(PLUGIN_CONFIG_PATH, jsonStr, false);
-        }
-        return true;
-    }
-    inline bool initConfig() {
-        auto jsonStr = ReadAllFile(PLUGIN_CONFIG_PATH);
-        if (jsonStr.has_value()) {
-            return deserialize(jsonStr.value());
-        }
-        return false;
-    };
-}
-
-#if !PLUGIN_VERSION_IS_BETA
-static_assert(PLUGIN_NAME != "Template");
-static_assert(PLUGIN_DISPLAY_NAME != "Template");
-static_assert(PLUGIN_DESCRIPTION != "Template");
+#if PLUGIN_VERSION_IS_BETA
+void logBetaInfo();
 #endif // !PLUGIN_VERSION_IS_BETA
+
+#if PLUGIN_VERSION_IS_BETA
+#define PLUGIN_VERSION_STRING MACRO_TO_STR(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR.PLUGIN_VERSION_REVISION beta)
+#else
+#define PLUGIN_VERSION_STRING MACRO_TO_STR(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR.PLUGIN_VERSION_REVISION)
+#endif // PLUGIN_VERSION_IS_BETA

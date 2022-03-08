@@ -39,6 +39,9 @@
     <ClCompile Include="FixEmptyRegion.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Template.rc">

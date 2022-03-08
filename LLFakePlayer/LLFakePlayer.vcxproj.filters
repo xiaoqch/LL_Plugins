@@ -55,9 +55,6 @@
     <ClInclude Include="..\Global\GlobalConfig.h">
       <Filter>Default</Filter>
     </ClInclude>
-    <ClInclude Include="..\Global\magic_enum.hpp">
-      <Filter>Default</Filter>
-    </ClInclude>
     <ClInclude Include="MyPackets.h">
       <Filter>Packet</Filter>
     </ClInclude>
@@ -87,6 +84,9 @@
     <ClCompile Include="MyPackets.cpp">
       <Filter>Packet</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LLFakePlayer.rc">
@@ -109,5 +109,13 @@
     <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib">
       <Filter>Lib</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="vftable_ServerPlayer.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="vftable_SimulatedPlayer.txt">
+      <Filter>资源文件</Filter>
+    </Text>
   </ItemGroup>
 </Project>

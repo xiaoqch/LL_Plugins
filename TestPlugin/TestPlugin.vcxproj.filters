@@ -54,6 +54,9 @@
     <ClCompile Include="TestPacket.cpp" />
     <ClCompile Include="TestFakeName.cpp" />
     <ClCompile Include="TestCommandReg.cpp" />
+    <ClCompile Include="Config.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestPlugin.rc">

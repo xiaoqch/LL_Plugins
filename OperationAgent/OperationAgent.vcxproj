@@ -68,7 +68,6 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -116,7 +115,6 @@ LibraryBuilder.exe -o ..\Lib\
       <ExceptionHandling>Async</ExceptionHandling>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,6 +157,7 @@ LibraryBuilder.exe -o ..\Lib\
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AgentManager.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">

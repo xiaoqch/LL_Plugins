@@ -19,8 +19,6 @@
 #include <MC/Dimension.hpp>
 #include <MC/ChunkSource.hpp>
 #include "MyPackets.h"
-//static_assert(sizeof(ItemStackRequestPacket) == 56);
-auto ignorePacketIds = {39, 40, 58, 111, 121, 123, 136, 174};
 
 namespace
 {
@@ -46,7 +44,7 @@ public:
 struct NetworkIdentifierWithSubId
 {
     NetworkIdentifier mNetworkId;
-    unsigned char mSubId;
+    unsigned char mSubId; // 160
     char filler161[7];
 
     inline ServerPlayer* getServerPlayer() const
@@ -55,10 +53,10 @@ struct NetworkIdentifierWithSubId
     }
 };
 
-namespace FakeHandler
+namespace FakeClient
 {
 template <typename T>
-void fakeSendPacket(Player* sp, T& packet)
+void send(Player* sp, T& packet)
 {
     packet.clientSubId = sp->getClientSubId();
     DEBUGW("FakeSend:({}): {}", sp->getNameTag(), packet.toDebugString());
@@ -93,7 +91,7 @@ void handle(SimulatedPlayer* sp, RespawnPacket* packet)
                 RespawnPacket res({0, 0, 0}, CLIENT_READY);
                 res.mRuntimeId = sp->getRuntimeID();
 
-                fakeSendPacket(sp, res);
+                send(sp, res);
 
                 ASSERT(!dAccess<bool>(sp, 3748));
             }
@@ -107,7 +105,7 @@ void handle(SimulatedPlayer* sp, RespawnPacket* packet)
                 ASSERT((int)res.mBlockFace == -1);
                 ASSERT(res.mActionType == PlayerActionType::Respawn);
 
-                fakeSendPacket(sp, res);
+                send(sp, res);
 
                 ASSERT(dAccess<bool>(sp, 3929));
                 ASSERT(!dAccess<bool>(sp, 553 * 4));
@@ -134,7 +132,7 @@ void handle(SimulatedPlayer* sp, ChangeDimensionPacket* packet)
     ASSERT(res.mActionType == PlayerActionType::DimensionChangeDone);
     ASSERT(res.mPosition == (BlockPos{0, 0, 0}));
     ASSERT(res.mRuntimeID == sp->getRuntimeID());
-    fakeSendPacket(sp, res);
+    send(sp, res);
 }
 
 void handle(SimulatedPlayer* sp, PlayStatusPacket* packet)
@@ -168,7 +166,7 @@ void handle(SimulatedPlayer* sp, ShowCreditsPacket* packet)
         ShowCreditsPacket res(sp->getRuntimeID(), ShowCreditsPacket::CreditsState::END_CREDITS);
         assert(res.mRuntimeId == sp->getRuntimeID());
         ASSERT(res.mState == ShowCreditsPacket::CreditsState::END_CREDITS);
-        fakeSendPacket(sp, res);
+        send(sp, res);
     },
                     10);
 }
@@ -204,26 +202,26 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
     switch (packet->getId())
     {
         case MinecraftPacketIds::ShowCredits:
-            FakeHandler::handle((SimulatedPlayer*)sp, (ShowCreditsPacket*)packet);
+            FakeClient::handle((SimulatedPlayer*)sp, (ShowCreditsPacket*)packet);
             break;
         case MinecraftPacketIds::ChangeDimension:
-            FakeHandler::handle((SimulatedPlayer*)sp, (ChangeDimensionPacket*)packet);
+            FakeClient::handle((SimulatedPlayer*)sp, (ChangeDimensionPacket*)packet);
             break;
         case MinecraftPacketIds::Respawn:
-            FakeHandler::handle((SimulatedPlayer*)sp, (RespawnPacket*)packet);
+            FakeClient::handle((SimulatedPlayer*)sp, (RespawnPacket*)packet);
             break;
         //case MinecraftPacketIds::StartGame:
         //    // Not be sent to simulated player, so listen to PlayStatusPacket instead
-        //    FakeHandler::handle((SimulatedPlayer*)sp, (StartGamePacket*)&packet);
+        //    FakeClient::handle((SimulatedPlayer*)sp, (StartGamePacket*)&packet);
         //    break;
         case MinecraftPacketIds::PlayStatus:
-            FakeHandler::handle((SimulatedPlayer*)sp, (PlayStatusPacket*)packet);
+            FakeClient::handle((SimulatedPlayer*)sp, (PlayStatusPacket*)packet);
             break;
         case MinecraftPacketIds::MovePlayer:
-            FakeHandler::handle((SimulatedPlayer*)sp, (MovePlayerPacket*)packet);
+            FakeClient::handle((SimulatedPlayer*)sp, (MovePlayerPacket*)packet);
             break;
         case MinecraftPacketIds::ModalFormRequest:
-            FakeHandler::handle((SimulatedPlayer*)sp, (ModalFormRequestPacket*)packet);
+            FakeClient::handle((SimulatedPlayer*)sp, (ModalFormRequestPacket*)packet);
             break;
 #ifndef DEBUG
         case MinecraftPacketIds::MoveActorDelta:
@@ -282,7 +280,7 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
             break;
     }
 }
-} // namespace FakeHandler
+} // namespace FakeClient
 
 // clientSubId is necessary to identify SimulatedPlayer because they have the same networkID
 TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacket@@E@Z",
@@ -294,7 +292,7 @@ TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacke
         {
             auto sp = Global<ServerNetworkHandler>->getServerPlayer(networkID, clientSubID);
             if (sp && sp->isSimulatedPlayer())
-                return FakeHandler::handlePacket((SimulatedPlayer*)sp, const_cast<Packet*>(&packet));
+                return FakeClient::handlePacket((SimulatedPlayer*)sp, const_cast<Packet*>(&packet));
         }
         catch (const std::exception&)
         {
@@ -303,7 +301,7 @@ TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacke
     }
     return original(this, networkID, packet, clientSubID);
 }
-
+bool processed = false;
 TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNetworkIdentifierWithSubId@@V?$allocator@UNetworkIdentifierWithSubId@@@std@@@std@@AEBVPacket@@@Z",
               LoopbackPacketSender, std::vector<NetworkIdentifierWithSubId> const& clients, class Packet& packet)
 {
@@ -311,7 +309,7 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
 //#ifdef DEBUG
 //    logger.info("[sendToClients] -> {} clients: {}({})", clients.size(), packet.getName(), packet.getId());
 //#endif // DEBUG
-
+    
     for (auto const& client : clients) {
         if (client.mNetworkId.isUnassigned()&& client.mNetworkId == FakePlayer::mNetworkID)
         {
@@ -320,7 +318,7 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
                 auto sp = client.getServerPlayer();
                 if (sp && sp->isSimulatedPlayer())
                 {
-                    return FakeHandler::handlePacket((SimulatedPlayer*)sp, &packet);
+                    FakeClient::handlePacket((SimulatedPlayer*)sp, &packet);
                 }
             }
             catch (const std::exception&)
@@ -329,7 +327,9 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
             }
         }
     }
+    processed = true;
     original(this, clients, packet);
+    processed = false;
 }
 
 
@@ -337,7 +337,7 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
               NetworkHandler, NetworkIdentifier& nid, class Packet& pkt, std::string const& data)
 {
     // fix simulated player sub id
-    if (nid == FakePlayer::mNetworkID)
+    if (!processed && nid == FakePlayer::mNetworkID)
     {
         //ASSERT(false);
         try
@@ -351,7 +351,7 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
             }
             if (sp && sp->isSimulatedPlayer())
             {
-                return FakeHandler::handlePacket((SimulatedPlayer*)sp, &pkt);
+                return FakeClient::handlePacket((SimulatedPlayer*)sp, &pkt);
             }
         }
         catch (const std::exception&)
@@ -376,19 +376,20 @@ TInstanceHook(void, "?tickWorld@Player@@UEAAXAEBUTick@@@Z",
     {
         // Force to call the implementation of ServerPlayer
         SymCallStatic("?_updateChunkPublisherView@ServerPlayer@@MEAAXAEBVVec3@@M@Z",
-                      void, ServerPlayer*, Vec3 const&, float);
-        ((ServerPlayer*)this, getPos(), 16.0f);
+                      void, ServerPlayer*, Vec3 const&, float)((ServerPlayer*)this, getPos(), 16.0f);
     }
 }
 
 // fix ChunkSource load mode
-TInstanceHook(std::shared_ptr<class ChunkViewSource>, "?_createChunkSource@SimulatedPlayer@@MEAA?AV?$shared_ptr@VChunkViewSource@@@std@@AEAVChunkSource@@@Z",
-              SimulatedPlayer, class ChunkSource& chunkSource)
+TInstanceHook(std::shared_ptr<class ChunkViewSource>&, "?_createChunkSource@SimulatedPlayer@@MEAA?AV?$shared_ptr@VChunkViewSource@@@std@@AEAVChunkSource@@@Z",
+              SimulatedPlayer, std::shared_ptr<class ChunkViewSource>& res, class ChunkSource& chunkSource)
 {
-    auto csPtr = original(this, chunkSource);
-    // ChunkSource::LoadMode : None(0) -> Deferred(1)
-    dAccess<int>(csPtr.get(), 56) = 1;
-    return csPtr;
+    //auto& csPtr = original(this, res, chunkSource);
+    //// ChunkSource::LoadMode : None(0) -> Deferred(1)
+    //dAccess<int>(csPtr.get(), 56) = 1;
+    //return csPtr;
+    return SymCallStatic("?_createChunkSource@Player@@MEAA?AV?$shared_ptr@VChunkViewSource@@@std@@AEAVChunkSource@@@Z",
+                         std::shared_ptr<class ChunkViewSource>&, SimulatedPlayer const&, std::shared_ptr<class ChunkViewSource>&, class ChunkSource&)(*this, res, chunkSource);
 }
 
 // fix item change

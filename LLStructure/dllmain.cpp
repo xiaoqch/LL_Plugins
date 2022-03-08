@@ -7,48 +7,52 @@ Logger logger(PLUGIN_NAME);
 void entry();
 
 BOOL APIENTRY DllMain(HMODULE hModule,
-    DWORD  ul_reason_for_call,
-    LPVOID lpReserved
-)
+                      DWORD ul_reason_for_call,
+                      LPVOID lpReserved)
 {
     switch (ul_reason_for_call)
     {
-    case DLL_PROCESS_ATTACH:
-        LL::registerPlugin(PLUGIN_DISPLAY_NAME, PLUGIN_DESCRIPTION,
-            LL::Version(
-                PLUGIN_VERSION_MAJOR,
-                PLUGIN_VERSION_MINOR,
-                PLUGIN_VERSION_REVISION,
-                PLUGIN_VERSION_IS_BETA ? LL::Version::Beta : LL::Version::Release
-            ), {
-                { "Git", PLUGIN_WEBSIDE },
-                { "License", PLUGIN_LICENCE },
-                { "Website", PLUGIN_WEBSIDE },
-                { "Target LL Version: ", TARGET_LITELOADER_VERSION },
-                { "Target BDS Version: ", TARGET_BDS_VERSION },
-            });
-        break;
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-        break;
+        case DLL_PROCESS_ATTACH:
+            LL::registerPlugin(PLUGIN_NAME, PLUGIN_DESCRIPTION,
+                               LL::Version(
+                                   PLUGIN_VERSION_MAJOR,
+                                   PLUGIN_VERSION_MINOR,
+                                   PLUGIN_VERSION_REVISION,
+                                   PLUGIN_VERSION_IS_BETA ? LL::Version::Beta : LL::Version::Release),
+                               {
+                                   {"Git", PLUGIN_WEBSIDE},
+                                   {"License", PLUGIN_LICENCE},
+                                   {"Website", PLUGIN_WEBSIDE},
+                                   {"Target LL Version: ", TARGET_LITELOADER_VERSION},
+                                   {"Target BDS Version: ", TARGET_BDS_VERSION},
+                               });
+            break;
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+        case DLL_PROCESS_DETACH:
+            break;
     }
     return TRUE;
 }
 
 extern "C" {
-    _declspec(dllexport) void onPostInit() {
-        std::ios::sync_with_stdio(false);
+_declspec(dllexport) void onPostInit()
+{
+    std::ios::sync_with_stdio(false);
 #ifdef DEBUG
-        logConfig();
-        logger.warn("This plugin is a beta version and may have bugs");
+    logBetaInfo();
+    logger.warn("This plugin is a beta version and may have bugs");
 #else
-        //Set global SEH-Exception handler
-        _set_se_translator(seh_exception::TranslateSEHtoCE);
+    //Set global SEH-Exception handler
+    _set_se_translator(seh_exception::TranslateSEHtoCE);
 #endif // DEBUG
-        entry();
-        logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
-        if (PLUGIN_USAGE)
-            logger.info("Usage: {}", PLUGIN_USAGE);
-    }
+    if constexpr (ENABLE_CONFIG)
+        Config::initConfig();
+    entry();
+    logger.info("{} Loaded, Version: {}, Author: {}", PLUGIN_DISPLAY_NAME, PLUGIN_VERSION_STRING, PLUGIN_AUTHOR);
+    if constexpr (PLUGIN_USAGE)
+        logger.info("Usage: \n{}", PLUGIN_USAGE);
+    if constexpr (ENABLE_LOG_FILE)
+        logger.setFile(PLUGIN_LOG_PATH, std::ios::app);
+}
 }

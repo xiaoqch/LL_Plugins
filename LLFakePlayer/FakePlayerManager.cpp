@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "FakePlayerManager.h"
 #include <KVDBAPI.h>
 #include <MC/StringTag.hpp>
@@ -10,6 +10,27 @@
 #include <MC/DBStorage.hpp>
 #include <Utils/CryptHelper.h>
 #include "SimulatedPlayerHelper.h"
+
+#ifdef DEBUG
+#include <MC/PrettySnbtFormat.hpp>
+#include <MC/ColorFormat.hpp>
+class PrettySnbtFormatConsole : public PrettySnbtFormat
+{
+public:
+    inline void setMaxLevel(unsigned int maxLevel)
+    {
+        mMaxLevel = maxLevel;
+    }
+};
+inline void debugLogNbt(CompoundTag const& tag)
+{
+    PrettySnbtFormat format = PrettySnbtFormat::getDefaultFormat(false);
+    //format.setValueColor<Tag::Type::Short>(ColorFormat::colorCodeToColorMap.at("§7"));
+    ((PrettySnbtFormatConsole&)format).setMaxLevel(2);
+    logger.info("Snbt: \n{}", tag.toPrettySNBT(format));
+}
+#endif // DEBUG
+
 
 // for import data from [FakePlayer](https://github.com/ddf8196/FakePlayer)
 mce::UUID JAVA_nameUUIDFromBytes(std::string const& name)
@@ -100,7 +121,6 @@ std::unique_ptr<CompoundTag> FakePlayer::serialize()
 }
 void logPlayerInfo(Player* player)
 {
-
     DEBUGW("FakePlayer: {}", player->getNameTag());
     DEBUGW("Dimension: {}, Position: ({})", (int)player->getDimensionId(), ((Vec3&)player->getStateVector()).toString());
     auto tag = player->getNbt();
@@ -163,7 +183,7 @@ bool FakePlayer::login()
     mLoggingInPlayer = nullptr;
     //FakePlayerManager::getManager().saveData(*this);
     mOnline = true;
-    logPlayerInfo(mPlayer);
+    debugLogNbt(*mPlayer->getNbt());
     return true;
 };
 
@@ -241,7 +261,8 @@ FakePlayerManager::FakePlayerManager(std::string const& dbPath)
 #ifdef DEBUG
     mDatabase->iter([](std::string_view key, std::string_view val) -> bool {
         DEBUGW(key);
-        std::cout << CompoundTag::fromBinaryNBT((void*)val.data(), val.size())->toSNBT(4) << std::endl;
+        auto tag = CompoundTag::fromBinaryNBT(std::string(val));
+        debugLogNbt(*tag);
         return true;
     });
 #endif // DEBUG
@@ -412,6 +433,7 @@ bool FakePlayerManager::remove(std::string const& name)
 
 SimulatedPlayer* FakePlayerManager::login(std::string const& name)
 {
+    //return SimulatedPlayer::create(name, BlockPos::ZERO, 0, Global<Minecraft>->getServerNetworkHandler());
     auto fakePlayer = tryGetFakePlayer(name);
     if (fakePlayer && fakePlayer->login())
         return fakePlayer->mPlayer;
@@ -507,7 +529,7 @@ THook(std::unique_ptr<CompoundTag>&, "?loadServerPlayerData@LevelStorage@@QEAA?A
         if (rtn)
         {
             logger.error("Nbt for SimulatedPlayer is not empty");
-            logger.error(rtn->toSNBT());
+            logger.error(rtn->toSNBT(0));
         }
         if (FakePlayer::mLoggingIn && FakePlayer::mLoggingInPlayer)
         {

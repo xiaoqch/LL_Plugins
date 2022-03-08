@@ -1,4 +1,4 @@
-
+#pragma once
 template <__int64 hash>
 inline void* _dlsym_static(const char* sym) {
     static void* ptr = dlsym_real(sym);
