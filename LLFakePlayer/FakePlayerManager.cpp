@@ -183,7 +183,9 @@ bool FakePlayer::login()
     mLoggingInPlayer = nullptr;
     //FakePlayerManager::getManager().saveData(*this);
     mOnline = true;
+#ifdef DEBUG
     debugLogNbt(*mPlayer->getNbt());
+#endif // DEBUG
     return true;
 };
 
