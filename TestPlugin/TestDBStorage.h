@@ -19,14 +19,14 @@ public:
     inline static void addPlayer(std::string const& name) {
         if (std::find(playerList.begin(), playerList.end(), name)==playerList.end()) {
             playerList.push_back(name);
-            Global<CommandRegistry>->setSoftEnumValues("PlayerList", playerList);
+            //Global<CommandRegistry>->("PlayerList", playerList);
         }
     };
     inline static void removePlayer(std::string const& name) {
         auto iter = std::find(playerList.begin(), playerList.end(), name);
         if (iter != playerList.end()) {
             playerList.erase(iter);
-            Global<CommandRegistry>->setSoftEnumValues("PlayerList", playerList);
+            //Global<CommandRegistry>->setSoftEnumValues("PlayerList", playerList);
         }
     };
     inline static void updatePlayerList()
@@ -36,7 +36,7 @@ public:
             RemovePlayerCommand::playerList.push_back(std::string(name));
             return true;
             });
-        Global<CommandRegistry>->setSoftEnumValues("PlayerList", playerList);
+        //Global<CommandRegistry>->setSoftEnumValues("PlayerList", playerList);j
     }
 };
 
@@ -56,4 +56,13 @@ public:
     static void setup(CommandRegistry& registry);
 };
 
+namespace TestDBStorage
+{
+void test();
+}
+#else
+namespace TestDBStorage
+{
+inline void test(){};
+}
 #endif // ENABLE_TEST_DBSTORAGE

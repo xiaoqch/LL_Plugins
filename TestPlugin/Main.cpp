@@ -554,6 +554,7 @@ void entry() {
         testMCAPI();
         TestNbt::test();
         TestCommandReg::test();
+        TestDBStorage::test();
         EnumGenerator::gen();
         //verifyHashUnique();
         return true;
@@ -585,9 +586,3 @@ void entry() {
 //    original(this, mc, a2, a3, a4);
 //    isEdu = false;
 //}
-#include <MC/FurnaceContainerScreenValidator.hpp>
-TInstanceHook(void, "?commitResults@FurnaceContainerScreenValidator@@UEAAXAEBVContainerScreenContext@@@Z",
-              FurnaceContainerScreenValidator, class ContainerScreenContext const& screen)
-{
-    original(this, screen);
-}

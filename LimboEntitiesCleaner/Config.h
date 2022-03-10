@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #include "../Global/GlobalConfig.h"
 
 // Plugin Info
-#define PLUGIN_NAME "TestPlugin"
+#define PLUGIN_NAME "LimboEntitiesCleaner"
 #define PLUGIN_AUTHOR "xiaoqch"
-#define PLUGIN_DISPLAY_NAME "Test Plugin"
-#define PLUGIN_DESCRIPTION "Test Plugin"
+#define PLUGIN_DISPLAY_NAME "Limbo Entities Cleaner Plugin"
+#define PLUGIN_DESCRIPTION "Tool to clean up Limbo entities"
 #define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
 #define PLUGIN_LICENCE "GPLv3"
 #define PLUGIN_USAGE false
@@ -29,21 +29,11 @@
 
 // Switch
 #define ENABLE_LOG_FILE false
-#define ENABLE_CONFIG false
-
-//#define ENABLE_TEST_AI
-#define ENABLE_TEST_DBSTORAGE
-//#define ENABLE_TEST_FAKENAME
-//#define ENABLE_TEST_NBT
-//#define ENABLE_TEST_COMMAND_REG
-//#define ENABLE_TEST_PACKET
-//#define ENABLE_TEST_RECIPES
-//#define ENABLE_TEST_ENUM
-//#define ENABLE_TEST_DLSYM
+#define ENABLE_CONFIG true
 
 namespace Config
 {
-//inline bool test = true;
+static size_t CountThreshold = 500;
 
 bool saveConfig();
 bool initConfig();

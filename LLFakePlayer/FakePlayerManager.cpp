@@ -10,6 +10,7 @@
 #include <MC/DBStorage.hpp>
 #include <Utils/CryptHelper.h>
 #include "SimulatedPlayerHelper.h"
+#include <LoggerAPI.h>
 
 #ifdef DEBUG
 #include <MC/PrettySnbtFormat.hpp>
@@ -29,6 +30,8 @@ inline void debugLogNbt(CompoundTag const& tag)
     ((PrettySnbtFormatConsole&)format).setMaxLevel(2);
     logger.info("Snbt: \n{}", tag.toPrettySNBT(format));
 }
+#else
+#define debugLogNbt (void)0;
 #endif // DEBUG
 
 
@@ -67,6 +70,7 @@ FakePlayer* FakePlayer::mLoggingInPlayer = nullptr;
 NetworkIdentifier FakePlayer::mNetworkID(RakNet::UNASSIGNED_RAKNET_GUID);
 unsigned char FakePlayer::mMaxClientSubID = -1;
 
+#pragma region FakePlayer
 
 FakePlayer::FakePlayer(std::string const& realName, mce::UUID uuid, time_t lastOnlineTime, bool autoLogin, FakePlayerManager* manager)
     : mRealName(realName)
@@ -89,25 +93,25 @@ FakePlayer::~FakePlayer()
 
 std::shared_ptr<FakePlayer> FakePlayer::deserialize(CompoundTag const& tag, FakePlayerManager* manager)
 {
-    auto nameTag = const_cast<StringTag*>(tag.getStringTag("realName"));
-    if (!nameTag)
-        return {};
-    auto& name = nameTag->value();
-    auto uuidTag = const_cast<StringTag*>(tag.getStringTag("uuid"));
-    if (!nameTag)
-        return {};
-    auto uuid = mce::UUID::fromString(uuidTag->value());
-
-    auto timeTag = const_cast<Int64Tag*>(tag.getInt64Tag("lastOnlineTime"));
-    time_t lastOnlineTime = 0;
-    if (timeTag)
-        lastOnlineTime = timeTag->value();
-
-    auto autoLoginTag = const_cast<ByteTag*>(tag.getByteTag("autoLogin"));
-    auto autoLogin = false;
-    if (timeTag)
-        autoLogin = autoLoginTag->value();
-    return std::make_shared<FakePlayer>(name, uuid, lastOnlineTime, autoLogin, manager);
+    try
+    {
+        std::string name = *tag.getStringTag("realName");
+        std::string suuid = *tag.getStringTag("uuid");
+        auto uuid = mce::UUID::fromString(suuid);
+        time_t lastOnlineTime = *tag.getInt64Tag("lastOnlineTime");
+        bool autoLogin = *tag.getByteTag("autoLogin");
+        if (name.empty() || !uuid)
+        {
+            logger.info("FakePlayer Data Error, name: {}, uuid: {}", name, suuid);
+            return {};
+        }
+        return std::make_shared<FakePlayer>(name, uuid, lastOnlineTime, autoLogin, manager);
+    }
+    catch (...)
+    {
+        logger.error("Error in " __FUNCTION__);
+    }
+    return {};
 }
 
 std::unique_ptr<CompoundTag> FakePlayer::serialize()
@@ -253,6 +257,10 @@ std::unique_ptr<CompoundTag> FakePlayer::getOnlinePlayerTag()
     return CompoundTag::fromPlayer(mPlayer);
 }
 
+#pragma endregion
+
+#pragma region FakePlayerManager
+
 FakePlayerManager::FakePlayerManager(std::string const& dbPath)
 {
     DEBUGL("FakePlayerManager::FakePlayerManager({})", dbPath);
@@ -289,8 +297,8 @@ bool FakePlayerManager::saveAllData(bool onlineOnly)
 
 bool FakePlayerManager::saveData(mce::UUID uuid)
 {
-    auto uuidStr = uuid.asString();
-    auto playerIter = mFakePlayerMap.find(uuidStr);
+    auto suuid = uuid.asString();
+    auto playerIter = mFakePlayerMap.find(suuid);
     if (playerIter != mFakePlayerMap.end())
         return saveData(*playerIter->second);
     return false;
@@ -308,12 +316,11 @@ bool FakePlayerManager::saveData(FakePlayer& fakePlayer)
 }
 bool FakePlayerManager::saveData(SimulatedPlayer* simulatedPlayer)
 {
-    auto uuidStr = simulatedPlayer->getUuid();
-    auto playerIter = mFakePlayerMap.find(uuidStr);
+    auto suuid = simulatedPlayer->getUuid();
+    auto playerIter = mFakePlayerMap.find(suuid);
     if (playerIter != mFakePlayerMap.end())
         return saveData(*playerIter->second);
 }
-
 
 void FakePlayerManager::initSortedNames()
 {
@@ -335,7 +342,7 @@ void FakePlayerManager::initSortedNames()
 bool FakePlayerManager::importData_DDF(std::string const& name)
 {
     auto uuid = JAVA_nameUUIDFromBytes(name);
-    auto uuidStr = uuid.asString();
+    auto suuid = uuid.asString();
     auto dbStorage = (DBStorage*)&Global<Level>->getLevelStorage();
     auto tag = dbStorage->getCompoundTag("player_" + uuid.asString(), (DBHelpers::Category)7);
     if (!tag)
@@ -379,22 +386,22 @@ void FakePlayerManager::loadData()
         return true;
     });
 }
+
 FakePlayerManager& FakePlayerManager::getManager()
 {
     static FakePlayerManager manager(PLUGIN_DATA_PATH);
     return manager;
 }
 
-
 FakePlayer* FakePlayerManager::create(std::string const& name)
 {
     if (std::find(sortedNames.begin(), sortedNames.end(), name) != sortedNames.end())
         return nullptr;
     auto uuid = mce::UUID::seedFromString(name);
-    auto uuidStr = uuid.asString();
+    auto suuid = uuid.asString();
     auto player = std::make_shared<FakePlayer>(name, uuid, time(0), false);
     mFakePlayerMapByName.try_emplace(name, player);
-    mFakePlayerMap.try_emplace(uuidStr, player);
+    mFakePlayerMap.try_emplace(suuid, player);
     sortedNames.push_back(name);
     player->login();
     auto ptr = player.get();
@@ -421,12 +428,12 @@ bool FakePlayerManager::remove(std::string const& name)
     auto fakePlayer = tryGetFakePlayer(name);
     if (fakePlayer)
     {
-        auto uuidStr = fakePlayer->getUUIDString();
+        auto suuid = fakePlayer->getUUIDString();
         auto serverId = fakePlayer->getServerId();
-        mFakePlayerMap.erase(uuidStr);
+        mFakePlayerMap.erase(suuid);
         mFakePlayerMapByName.erase(name);
         sortedNames.erase(std::find(sortedNames.begin(), sortedNames.end(), name));
-        mDatabase->del(uuidStr);
+        mDatabase->del(suuid);
         mDatabase->del(serverId);
         return true;
     }
@@ -463,10 +470,7 @@ bool FakePlayerManager::logout(SimulatedPlayer& simulatedPlayer)
     return false;
 }
 
-// TInstanceHook(BlockPos&, "?getDefaultSpawn@Level@@UEBAAEBVBlockPos@@XZ",
-//     Level, BlockPos& rtn) {
-//
-// }
+#pragma endregion
 
 #include <MC/Certificate.hpp>
 TInstanceHook(SimulatedPlayer*, "??0SimulatedPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEAVEntityContext@@@Z",
