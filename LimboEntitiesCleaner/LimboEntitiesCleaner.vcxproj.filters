@@ -44,7 +44,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc">
+    <ResourceCompile Include="LimboEntitiesCleaner.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

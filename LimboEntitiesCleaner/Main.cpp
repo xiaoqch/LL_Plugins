@@ -54,6 +54,9 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
                     }
                     if (removeList.size() > 0)
                     {
+                        auto backupFilePath = fmt::format("{}{}-{:%Y%m%d-%H%M%S}.nbt", PLUGIN_DIR, key, fmt::localtime(_time64(nullptr)));
+                        WriteAllFile(backupFilePath, data, true);
+                        logger.info("will overload {} data, backup data path: {}", key, backupFilePath);
                         Global<DBStorage>->saveData(key, tag->toBinaryNBT(), (DBHelpers::Category)0);
                     }
                 }
