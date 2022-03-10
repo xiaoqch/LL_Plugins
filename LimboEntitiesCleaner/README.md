@@ -20,7 +20,7 @@
 ```
 
 ## 安装及使用
-1. 前往 [MineBBS](https://www.minebbs.com/resources/authors/xiaoqch.21476/) 下载插件文件
+1. 前往 [MineBBS](#) 下载插件文件
 2. 将插件文件复制到 Minecraft Dedicated Server 目录下 plugins 文件夹中
 3. 开服
 
