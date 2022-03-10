@@ -17,7 +17,7 @@ struct voids {
 };
 #define DBLog(...)\
 ASSERT((int)category != 3);\
-if((int)category!=4) /* chunk */ \
+if ((int)category != 4 && (int)category != 6) /* chunk */ \
     dbLogger.warn(__VA_ARGS__) 
 
 bool isChunkKey(std::string_view key, size_t offset = 0) {
@@ -116,6 +116,7 @@ void RemovePlayerCommand::execute(CommandOrigin const& origin, CommandOutput& ou
 
 void RemovePlayerCommand::setup(CommandRegistry& registry)
 {
+    return;
     registry.registerCommand("removeplayer", "Operation Agent", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
     registry.addSoftEnum("PlayerList", playerList);
     updatePlayerList();
@@ -179,6 +180,7 @@ void DBTestCommand::execute(CommandOrigin const& origin, CommandOutput& output) 
 
 void DBTestCommand::setup(CommandRegistry& registry)
 {
+    return;
     registry.registerCommand("dbtest", "Operation Agent", CommandPermissionLevel::Any, { (CommandFlagValue)0 }, { (CommandFlagValue)0x80 });
 
     registry.addEnum<Operation>("DBTest-Action", {
@@ -234,7 +236,9 @@ TInstanceHook(void, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@
 TInstanceHook(std::unique_ptr<CompoundTag>&, "?getCompoundTag@DBStorage@@UEAA?AV?$unique_ptr@VCompoundTag@@U?$default_delete@VCompoundTag@@@std@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@W4Category@DBHelpers@@@Z",
     DBStorage, std::unique_ptr<CompoundTag>& result, std::string const& key, DBHelpers::Category category) {
     DBLog("DBStorage::getCompoundTag({}, {})", getKeyString(std::string_view(key)), (int)category);
-    return original(this, result, key, category);
+    auto& rtn =  original(this, result, key, category);
+    dbLogger.info("{}: \n{}", key, rtn->toSNBT());
+    return rtn;
 }
 
 TInstanceHook(bool, "?hasKey@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@W4Category@DBHelpers@@@Z",
@@ -246,8 +250,9 @@ TInstanceHook(bool, "?hasKey@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl
 TInstanceHook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4Category@DBHelpers@@@Z",
     DBStorage,
     string_span key, std::string& data, DBHelpers::Category category) {
-    DBLog("DBStorage::loadData({}, data, {})", getKeyString(key), (int)category);
-    return original(this, key, data, category);
+    auto rtn = original(this, key, data, category);
+    DBLog("DBStorage::loadData({}, data: {} bytes, {})", getKeyString(key), data.size(), (int)category);
+    return rtn;
 }
 //TClasslessInstanceHook(class MapItemSavedData*, "?getMapSavedData@Level@@UEAAPEAVMapItemSavedData@@UActorUniqueID@@@Z",
 //    struct ActorUniqueID auid) {
@@ -266,7 +271,7 @@ TInstanceHook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@g
 TInstanceHook(std::shared_ptr<Bedrock::Threading::IAsyncResult<void>>&, "?saveData@DBStorage@@UEAA?AV?$shared_ptr@V?$IAsyncResult@X@Threading@Bedrock@@@std@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@$$QEAV43@W4Category@DBHelpers@@@Z",
     DBStorage, std::shared_ptr<Bedrock::Threading::IAsyncResult<void>>& result,
     std::string const& key, std::string&& data, DBHelpers::Category category) {
-        DBLog("DBStorage::saveData({}, data, {})", getKeyString(std::string_view(key)), (int)category);
+    DBLog("DBStorage::saveData({}, data: {} bytes, {})", getKeyString(std::string_view(key)), data.size(), (int)category);
     return original(this, result, key, std::move(data), category);
 }
 
@@ -325,5 +330,17 @@ TInstanceHook(std::shared_ptr<Bedrock::Threading::IAsyncResult<void>>&, "?saveDa
 //    TestTimeLog(ServerInstance, _this);
 //}
 
+#include <ScheduleAPI.h>
+void TestDBStorage::test()
+{
+    //Schedule::delay(
+    //    []() {
+    //        std::string data;
+    //        if (Global<DBStorage>->loadData("Overworld", data, (DBHelpers::Category)0))
+    //            WriteAllFile("Overworld.nbt", data, true);
+    //        dbLogger.warn("Overworld Data Exported");
+    //    },
+    //    20);
+}
 
 #endif // ENABLE_TEST_DBSTORAGE

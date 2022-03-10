@@ -4,14 +4,17 @@
 #include <MC/ServerNetworkHandler.hpp>
 #include <MC/StackResultStorageEntity.hpp>
 #include <MC/OwnerStorageEntity.hpp>
-
+namespace SimulatedPlayerHelper
+{
+SimulatedPlayer* create(std::string const& name);
+}
 template <>
 class OwnerPtrT<struct EntityRefTraits>
 {
     char filler[24];
 
 public:
-    LIAPI ~OwnerPtrT();
+    MCAPI ~OwnerPtrT();
     //inline ~OwnerPtrT()
     //{
     //    void (OwnerPtrT::*rv)() const;
@@ -25,7 +28,6 @@ public:
         *((void**)&rv) = dlsym("??0OwnerStorageEntity@@IEAA@$$QEAV0@@Z");
         (this->*rv)(std::move(right));
     }
-
     inline OwnerPtrT& operator=(OwnerPtrT&& right) noexcept
     {
         void (OwnerPtrT::*rv)(OwnerPtrT && right);
@@ -35,14 +37,22 @@ public:
 
     inline SimulatedPlayer* tryGetSimulatedPlayer(bool b = false)
     {
-        auto& ownerRef = ((StackResultStorageEntity*)this)->getStackRef();
-        auto player = SimulatedPlayer::tryGetFromEntity(ownerRef, b);
-        if (player && player->isSimulatedPlayer())
+        auto& context = dAccess<StackResultStorageEntity, 0>(this).getStackRef();
+        auto player = SimulatedPlayer::tryGetFromEntity(context, b);
+        if (player)
         {
-            return (SimulatedPlayer*)player;
+            return player;
         }
         return nullptr;
     }
+
+    inline bool hasValue() const
+    {
+        if (!this) 
+            return false;
+        return dAccess<bool, 16>(this);
+    }
+    //inline bool isValid()
 };
 
 inline void addUser(Level* level, class OwnerPtrT<struct EntityRefTraits> a0)

@@ -421,34 +421,37 @@ void regCmd()
     static bool reg = false;
     if (reg)
         return;
-    PacketCommand::setup(*Global<CommandRegistry>);
-    auto cmd = DynamicCommand::createCommand("fpc", "fake player controller");
-    cmd->setEnum("ActionMove", {"move"});
+    Schedule::nextTick([]() {
+        PacketCommand::setup(*Global<CommandRegistry>);
+        auto cmd = DynamicCommand::createCommand("fpc", "fake player controller");
+        cmd->setEnum("ActionMove", {"move"});
 
-    cmd->mandatory("player", ParamType::Player);
-    cmd->mandatory("action", ParamType::Enum, "ActionMove", AutoExpandOption);
-    cmd->mandatory("dir", ParamType::Vec3);
+        cmd->mandatory("player", ParamType::Player);
+        cmd->mandatory("action", ParamType::Enum, "ActionMove", AutoExpandOption);
+        cmd->mandatory("dir", ParamType::Vec3);
 
-    cmd->addOverload("ActionMove", "dir");
+        cmd->addOverload("ActionMove", "dir");
 
-    cmd->setCallback([](DynamicCommand const& cmd, CommandOrigin const& origin, CommandOutput& output, std::unordered_map<std::string, Result>& results) {
-        auto players = results["player"].get<std::vector<Player*>>();
-        switch (do_hash(results["direction"].getRaw<std::string>().c_str()))
-        {
-            case do_hash("move"):
-                for (auto& player : players)
-                {
-                    if (player->isSimulatedPlayer()) {
-                        ((SimulatedPlayer*)player)->simulateWorldMove(results["dir"].get<Vec3>(), 1.0f);
-                        output.success(fmt::format("Move {}", player->getName()));
+        cmd->setCallback([](DynamicCommand const& cmd, CommandOrigin const& origin, CommandOutput& output, std::unordered_map<std::string, Result>& results) {
+            auto players = results["player"].get<std::vector<Player*>>();
+            switch (do_hash(results["direction"].getRaw<std::string>().c_str()))
+            {
+                case do_hash("move"):
+                    for (auto& player : players)
+                    {
+                        if (player->isSimulatedPlayer())
+                        {
+                            ((SimulatedPlayer*)player)->simulateWorldMove(results["dir"].get<Vec3>(), 1.0f);
+                            output.success(fmt::format("Move {}", player->getName()));
+                        }
                     }
-                }
-                break;
-            default:
-                break;
-        }
-    });
-    DynamicCommand::setup(std::move(cmd));
+                    break;
+                default:
+                    break;
+            }
+        });
+        DynamicCommand::setup(std::move(cmd)); 
+        });
     reg = !reg;
     return ;
 }
