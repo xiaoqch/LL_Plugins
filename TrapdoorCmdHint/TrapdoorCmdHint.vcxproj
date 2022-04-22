@@ -46,12 +46,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <ExternalIncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(SolutionDir)\LiteLoaderSDK\Header\third-party\;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(SolutionDir)\LiteLoaderSDK\Header\third-party\;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -68,6 +70,8 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -115,6 +119,8 @@ LibraryBuilder.exe -o ..\Lib\
       <ExceptionHandling>Async</ExceptionHandling>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,7 +177,6 @@ LibraryBuilder.exe -o ..\Lib\
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib" />
-    <Library Include="..\LiteLoaderSDK\Lib\Chakra.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib" />
   </ItemGroup>

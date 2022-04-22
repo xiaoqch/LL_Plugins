@@ -28,7 +28,7 @@
 #define PLUGIN_DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
 // Switch
-#define ENABLE_LOG_FILE false
+#define ENABLE_LOG_FILE true
 #define ENABLE_CONFIG true
 
 namespace Config

@@ -28,11 +28,11 @@
 #define PLUGIN_DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
 // Switch
-#define ENABLE_LOG_FILE false
+#define ENABLE_LOG_FILE true
 #define ENABLE_CONFIG false
 
 //#define ENABLE_TEST_AI
-#define ENABLE_TEST_DBSTORAGE
+//#define ENABLE_TEST_DBSTORAGE
 //#define ENABLE_TEST_FAKENAME
 //#define ENABLE_TEST_NBT
 //#define ENABLE_TEST_COMMAND_REG
@@ -40,6 +40,16 @@
 //#define ENABLE_TEST_RECIPES
 //#define ENABLE_TEST_ENUM
 //#define ENABLE_TEST_DLSYM
+
+
+//#define HOOK_CLASS_SimulatedPlayer
+//#define HOOK_CLASS_Actor
+//#define HOOK_CLASS_Mob
+//#define HOOK_CLASS_Player
+//#define HOOK_CLASS_ServerPlayer
+
+//#define HOOK_CLASS_DBStorage
+//#define HOOK_CLASS_LevelStorage
 
 namespace Config
 {

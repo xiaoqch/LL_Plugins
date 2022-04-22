@@ -15,12 +15,12 @@ class OwnerPtrT<struct EntityRefTraits>
 
 public:
     MCAPI ~OwnerPtrT();
-    //inline ~OwnerPtrT()
+    // inline ~OwnerPtrT()
     //{
-    //    void (OwnerPtrT::*rv)() const;
-    //    *((void**)&rv) = dlsym("??1?$OwnerPtrT@UEntityRefTraits@@@@QEAA@XZ");
-    //    (this->*rv)();
-    //}
+    //     void (OwnerPtrT::*rv)() const;
+    //     *((void**)&rv) = dlsym("??1?$OwnerPtrT@UEntityRefTraits@@@@QEAA@XZ");
+    //     (this->*rv)();
+    // }
 
     inline OwnerPtrT(OwnerPtrT&& right) noexcept
     {
@@ -48,11 +48,11 @@ public:
 
     inline bool hasValue() const
     {
-        if (!this) 
+        if (!this)
             return false;
         return dAccess<bool, 16>(this);
     }
-    //inline bool isValid()
+    // inline bool isValid()
 };
 
 inline void addUser(Level* level, class OwnerPtrT<struct EntityRefTraits> a0)
@@ -72,15 +72,15 @@ inline SimulatedPlayer* create(std::string const& name)
 
     if (player /* && player->isSimulatedPlayer() */)
     {
-        //dAccess<AutomaticID<Dimension, int>>(player, 57) = dimId;
+        // dAccess<AutomaticID<Dimension, int>>(player, 57) = dimId;
         player->postLoad(/* isNewPlayer */ false);
         Level& level = player->getLevel();
         addUser(&level, std::move(ownerPtr));
-        //auto pos = bpos.bottomCenter();
-        //pos.y = pos.y + 1.62001;
-        //player->setPos(pos);
-        //player->setRespawnReady(pos);
-        //player->setSpawnBlockRespawnPosition(bpos, dimId);
+        // auto pos = bpos.bottomCenter();
+        // pos.y = pos.y + 1.62001;
+        // player->setPos(pos);
+        // player->setRespawnReady(pos);
+        // player->setSpawnBlockRespawnPosition(bpos, dimId);
         player->setLocalPlayerAsInitialized();
     }
     return player;

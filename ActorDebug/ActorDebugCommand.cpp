@@ -68,11 +68,16 @@ inline void switchPlayer(class CommandOutput& output, Player* player)
     else
         output.success(fmt::format("ActorDebug is disabled for {}", player->getNameTag()));
 }
-
+inline bool switchActivation()
+{
+    Config::globalActive = !Config::globalActive;
+    Config::saveConfig();
+    return Config::globalActive;
+}
 
 inline void switchGlobal(class CommandOutput& output)
 {
-    if (Config::switchActivation())
+    if (switchActivation())
         output.success("ActorDebug is enabled globally");
     else
         output.success("ActorDebug is disabled globally");

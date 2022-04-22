@@ -36,7 +36,7 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="FixEmptyRegion.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp">
@@ -44,7 +44,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc">
+    <ResourceCompile Include="ThreadNaming.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -53,9 +53,6 @@
       <Filter>Lib</Filter>
     </Library>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib">
-      <Filter>Lib</Filter>
-    </Library>
-    <Library Include="..\LiteLoaderSDK\Lib\Chakra.lib">
       <Filter>Lib</Filter>
     </Library>
     <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib">

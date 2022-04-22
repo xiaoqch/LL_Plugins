@@ -13,8 +13,8 @@ void modifyVftbl()
     RestoreVFunc(14);
     RestoreVFunc(292);
     RestoreVFunc(10);
-    //RestoreVFunc(339);
-    //RestoreVFunc(438);
+    // RestoreVFunc(339);
+    // RestoreVFunc(438);
     RestoreVFunc(439);
     RestoreVFunc(440);
     RestoreVFunc(443);
@@ -45,8 +45,8 @@ void entry()
         return true;
     });
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev) -> bool {
-        //modifyVftbl();
-        //FakePlayerManager::getManager();
+        // modifyVftbl();
+        // FakePlayerManager::getManager();
         return true;
     });
 #endif // DEBUG

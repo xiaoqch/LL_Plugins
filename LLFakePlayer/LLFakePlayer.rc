@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 0,0,1,0
+ PRODUCTVERSION 0,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -67,14 +67,14 @@ BEGIN
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "CompanyName", "Xiaoqch"
-            VALUE "FileDescription", "Fake Player For LiteLoader"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "CompanyName", "xiaoqch"
+            VALUE "FileDescription", "Fake Player Plugin For LiteLoader"
+            VALUE "FileVersion", "0.0.1.0"
             VALUE "InternalName", "LLFakePlayer.dll"
             VALUE "LegalCopyright", "Copyright (C) 2021"
             VALUE "OriginalFilename", "LLFakePlayer.dll"
-            VALUE "ProductName", "Fake Player For LiteLoader"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductName", "Fake Player Plugin For LiteLoader"
+            VALUE "ProductVersion", "0.0.1.0"
         END
     END
     BLOCK "VarFileInfo"

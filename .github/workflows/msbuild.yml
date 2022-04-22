@@ -5,6 +5,7 @@ on: [push]
 env:
   # Path to the solution file relative to the root of the project.
   SOLUTION_FILE_PATH: ./LL_Plugins.sln
+  BDS_VERSION: 1.18.30.04
 
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
@@ -25,7 +26,7 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         mkdir LiteLoaderSDK/Tools/bedrock_server
-        curl -L -o LiteLoaderSDK/Tools/bedrock_server/bedrock_server.zip https://minecraft.azureedge.net/bin-win/bedrock-server-1.18.11.01.zip
+        curl -L -o LiteLoaderSDK/Tools/bedrock_server/bedrock_server.zip https://minecraft.azureedge.net/bin-win/bedrock-server-${{ env.BDS_VERSION }}.zip
         unzip -q LiteLoaderSDK/Tools/bedrock_server/bedrock_server.zip -d LiteLoaderSDK/Tools/bedrock_server/
       shell: bash
       

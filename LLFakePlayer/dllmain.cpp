@@ -43,7 +43,7 @@ _declspec(dllexport) void onPostInit()
     logBetaInfo();
     logger.warn("This plugin is a beta version and may have bugs");
 #else
-    //Set global SEH-Exception handler
+    // Set global SEH-Exception handler
     _set_se_translator(seh_exception::TranslateSEHtoCE);
 #endif // DEBUG
     if constexpr (ENABLE_CONFIG)
@@ -53,6 +53,6 @@ _declspec(dllexport) void onPostInit()
     if constexpr (PLUGIN_USAGE)
         logger.info("Usage: \n{}", PLUGIN_USAGE);
     if constexpr (ENABLE_LOG_FILE)
-        logger.setFile(PLUGIN_LOG_PATH, std::ios::app);
+        Logger::setDefaultFile(PLUGIN_LOG_PATH, std::ios::app);
 }
 }
