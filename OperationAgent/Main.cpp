@@ -59,7 +59,7 @@ void sendTextOrLog(Actor* actor, std::string text) {
 
 // ===== onSpawnProjectile =====
 THook(Actor*, "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUActorDefinitionIdentifier@@PEAV2@AEBVVec3@@3@Z",
-    void* _this, BlockSource* bs, ActorDefinitionIdentifier* adi, Actor* spawner, Vec3* pos, Vec3* direct) {
+    void* _this, BlockSource* bs, ActorDefinitionIdentifier* adi, Actor* spawner, const Vec3* pos, Vec3* direct) {
     if (!Config::forProjectile) {
         return original(_this, bs, adi, spawner, pos, direct);
     }
@@ -67,7 +67,7 @@ THook(Actor*, "?spawnProjectile@Spawner@@QEAAPEAVActor@@AEAVBlockSource@@AEBUAct
         auto master = AgentManager::tryGetMaster(spawner);
         if (master != nullptr) {
             sendTextOrLog(spawner, "代理" + getActorDescription(master) + "投掷");
-            auto mpos = (Vec3*)&master->getStateVector();
+            auto mpos = &master->getPosition();
             return original(_this, bs, adi, master, mpos, direct);
         }
         return original(_this, bs, adi, spawner, pos, direct);
@@ -107,7 +107,7 @@ THook(bool, "?startRiding@Mob@@UEAA_NAEAVActor@@@Z", Mob* _this, Actor* actor) {
         auto& manager = AgentManager::getManager();
         string msg = "代理" + getActorDescription(master) + "骑乘";
         if (master->isPlayer()) {
-            master->teleport(actor->getPos(), actor->getDimensionId());
+            master->teleport(actor->getPosition(), actor->getDimensionId());
             manager.setRideData((Player*)master, actor);
         }
         if (Config::cancelAfterRide) {

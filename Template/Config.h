@@ -2,7 +2,7 @@
 #include "../Global/GlobalConfig.h"
 
 // Plugin Info
-#define PLUGIN_NAME "Template"
+#define PLUGIN_NAME "Template1"
 #define PLUGIN_AUTHOR "xiaoqch"
 #define PLUGIN_DISPLAY_NAME "Template"
 #define PLUGIN_DESCRIPTION "LiteLoader Plugin Template"

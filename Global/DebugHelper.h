@@ -32,6 +32,13 @@ inline void _WASSERT(
 #define DEBUGL(...) logger.info(__VA_ARGS__)
 #define DEBUGW(...) logger.warn(__VA_ARGS__)
 #define LOG_VAR(var) logger.info("{} = {}", #var, var);
+
+template <size_t size = 1000, typename T = void******>
+struct voids
+{
+    T filler[size];
+};
+
 #else
 #define TestFuncTime(func, ...) ((void)0)
 #define ASSERT(var) ((void)0)

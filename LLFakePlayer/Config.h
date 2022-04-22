@@ -37,12 +37,13 @@ llfakeplayer gui - Show fake player manage gui
 #define PLUGIN_DATA_PATH PLUGIN_DIR "leveldb/"
 
 // Switch
-#define ENABLE_LOG_FILE false
-#define ENABLE_CONFIG false
+#define ENABLE_LOG_FILE true
+#define ENABLE_CONFIG true
 
 namespace Config
 {
-//inline bool test = true;
+static std::string CommandAlias = "fp";
+static unsigned int ChunkRadius = 9;
 
 bool saveConfig();
 bool initConfig();

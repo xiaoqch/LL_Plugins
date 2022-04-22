@@ -58,6 +58,9 @@
     <ClInclude Include="MyPackets.h">
       <Filter>Packet</Filter>
     </ClInclude>
+    <ClInclude Include="ColorHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -72,7 +75,7 @@
     <ClCompile Include="FakePlayerCommand.cpp">
       <Filter>Command</Filter>
     </ClCompile>
-    <ClCompile Include="FakePacketHandler.cpp">
+    <ClCompile Include="PacketHelper.cpp">
       <Filter>Packet</Filter>
     </ClCompile>
     <ClCompile Include="FakePlayerManager.cpp">
@@ -86,6 +89,9 @@
     </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorHelper.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

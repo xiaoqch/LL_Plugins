@@ -33,7 +33,7 @@
 
 namespace Config
 {
-//inline bool test = true;
+// inline bool test = true;
 
 bool saveConfig();
 bool initConfig();

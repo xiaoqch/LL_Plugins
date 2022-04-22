@@ -23,7 +23,7 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
             std::string data;
             if (Global<DBStorage>->hasKey(key, (DBHelpers::Category)0) && Global<DBStorage>->loadData(key, data, (DBHelpers::Category)0))
             {
-                if (data.size() < Config::CountThreshold*512)
+                if (data.size() < Config::CountThreshold * 512)
                     continue;
                 auto tag = CompoundTag::fromBinaryNBT(data);
                 auto cmp = tag->getCompoundTag("data");

@@ -965,7 +965,7 @@ void refreshActorFakeName(Actor* actor)
     SetActorDataPacket packet;
     packet.mRuntimeId = actor->getRuntimeID();
     packet.mDataItems.emplace_back(DataItem2<std::string>((DataItemKey)4, actor->getNameTag()).clone());
-    auto pos = actor->getPos();
+    auto pos = actor->getPosition();
     auto& dim = actor->getDimension();
     dim.sendPacketForEntity(*actor, packet, nullptr);
     //Global<LoopbackPacketSender>->sendBroadcast(packet);

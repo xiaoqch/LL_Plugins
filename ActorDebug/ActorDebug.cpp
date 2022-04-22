@@ -353,7 +353,7 @@ public:
     MCAPI SetActorDataPacket(class ActorRuntimeID, class SynchedActorData&, bool);
     MCAPI SetActorDataPacket();
 };
-static_assert(sizeof(SetActorDataPacket) == 88);
+
 static_assert(offsetof(SetActorDataPacket, mDataItems) == 64);
 
 #pragma endregion
@@ -567,7 +567,8 @@ public:
     }
 };
 static_assert(offsetof(AddItemActorPacket, mActorData) == 72);
-static_assert(sizeof(AddItemActorPacket) == 256);
+static_assert(sizeof(ItemStackNetIdVariant) == 24);
+static_assert(sizeof(AddItemActorPacket) == 280);
 
 #pragma endregion
 
@@ -692,6 +693,7 @@ public:
     Abilities mAbilities;                              //232
     std::string mDeviceId;                             //568
     enum BuildPlatform mBuildPlatform;                 //600
+    char pad_604[4];                                   //604
     NetworkItemStackDescriptor mCarriedItem;           //608
     SynchedActorData* mActorData;                      //736
 public:
@@ -739,12 +741,14 @@ public:
         bs.writeUnsignedInt(mBuildPlatform);
     }
 };
-static_assert(sizeof(AddPlayerPacket) == 744);
+constexpr auto a = offsetof(AddPlayerPacket, mCarriedItem);
+static_assert(sizeof(AddPlayerPacket) == 768);
 static_assert(offsetof(AddPlayerPacket, mDataItems) == 208);
 static_assert(offsetof(AddPlayerPacket, mAbilities) == 232);
 static_assert(offsetof(AddPlayerPacket, mDeviceId) == 568);
+static_assert(offsetof(AddPlayerPacket, mBuildPlatform) == 600);
 static_assert(offsetof(AddPlayerPacket, mCarriedItem) == 608);
-static_assert(offsetof(AddPlayerPacket, mActorData) == 736);
+static_assert(offsetof(AddPlayerPacket, mActorData) == 760);
 
 #pragma endregion
 
@@ -1736,7 +1740,7 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
 #endif // DEBUG
 
 // ============= Update Fake Name =============
-TInstanceHook(bool, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo@@@Z",
+TInstanceHook(float, "?change@HealthAttributeDelegate@@UEAAMMMAEBVAttributeBuff@@@Z",
               HealthAttributeDelegate, float before, float after, struct AttributeBuffInfo* info)
 {
     auto rtn = original(this, before, after, info);
@@ -1744,6 +1748,12 @@ TInstanceHook(bool, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo
     {
         if (before - after > 0.1)
             refreshActorFakeName(dAccess<Mob*>(this, 32));
+    }
+    else if (!uniqueIds.empty())
+    {
+        for (auto& uid : uniqueIds) {
+            refreshActorFakeName(dAccess<Mob*>(this, 32), Level::getPlayer(uid));
+        }
     }
     return rtn;
 }

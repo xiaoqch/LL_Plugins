@@ -13,6 +13,7 @@ class FakePlayerCommand : public Command
         Remove,
         Login,
         Logout,
+        Swap,
         GUI,
         Import,
     } operation;
@@ -32,8 +33,12 @@ public:
 class TickingCommand : public Command
 {
     CommandSelector<Player> selector;
-    bool selector_isSet;
+    CommandPosition commandPos;
+    int dimensionId;
     int range;
+    bool selector_isSet;
+    bool commandPos_isSet;
+    bool dimensionId_isSet;
     bool range_isSet;
 
     virtual void execute(class CommandOrigin const& origin, class CommandOutput& output) const override;

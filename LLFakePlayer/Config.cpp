@@ -52,7 +52,8 @@ std::string serialize()
 {
     nlohmann::json json;
 
-    //SerializeVaule(commandAlias);
+    SerializeVaule(CommandAlias);
+    SerializeVaule(ChunkRadius);
 
     return json.dump(4);
 }
@@ -62,7 +63,8 @@ bool deserialize(std::string const& jsonStr)
     auto json = nlohmann::json::parse(jsonStr, nullptr, false, true);
     bool needUpdate = false;
 
-    //DeserializeVaule(commandAlias);
+    DeserializeVaule(CommandAlias);
+    DeserializeVaule(ChunkRadius);
 
     return !needUpdate;
 }
@@ -112,20 +114,5 @@ void logBetaInfo()
         LOG_VAR(PLUGIN_LOG_PATH);
     if (ENABLE_CONFIG)
         LOG_VAR(PLUGIN_CONFIG_PATH);
-
-    //LOG_VAR(PLUGIN_AUTHOR);
-    //LOG_VAR(PLUGIN_DISPLAY_NAME);
-    //LOG_VAR(PLUGIN_DESCRIPTION);
-    //LOG_VAR(PLUGIN_WEBSIDE);
-    //LOG_VAR(PLUGIN_LICENCE);
-    //LOG_VAR(PLUGIN_USAGE);
-
-    //LOG_VAR(LOG_DIR);
-    //LOG_VAR(PLUGINS_DIR);
-    //LOG_VAR(PLUGIN_DIR);
-    //LOG_VAR(PLUGIN_LOG_PATH);
-    //LOG_VAR(PLUGIN_DATA_PATH);
-
-    //LOG_VAR(PLUGIN_VERSION_STRING);
 }
 #endif // PLUGIN_VERSION_IS_BETA

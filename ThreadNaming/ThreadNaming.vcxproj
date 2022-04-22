@@ -13,8 +13,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{83464102-fd9a-426e-b990-1f44877c08d8}</ProjectGuid>
-    <RootNamespace>FixEmptyRegion</RootNamespace>
+    <ProjectGuid>{9e346b66-c518-4c82-bd5c-dbcf16eedc02}</ProjectGuid>
+    <RootNamespace>ThreadNaming</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -155,7 +155,7 @@ LibraryBuilder.exe -o ..\Lib\
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="FixEmptyRegion.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -166,12 +166,11 @@ LibraryBuilder.exe -o ..\Lib\
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc" />
+    <ResourceCompile Include="ThreadNaming.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib" />
-    <Library Include="..\LiteLoaderSDK\Lib\Chakra.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib" />
   </ItemGroup>

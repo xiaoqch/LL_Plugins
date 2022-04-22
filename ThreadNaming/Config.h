@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #include "../Global/GlobalConfig.h"
 
 // Plugin Info
-#define PLUGIN_NAME "FixEmptyRegion"
+#define PLUGIN_NAME "ThreadNaming"
 #define PLUGIN_AUTHOR "xiaoqch"
-#define PLUGIN_DISPLAY_NAME "FixEmptyRegion"
-#define PLUGIN_DESCRIPTION "FixEmptyRegion"
+#define PLUGIN_DISPLAY_NAME "ThreadNaming"
+#define PLUGIN_DESCRIPTION "LiteLoader Plugin"
 #define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
 #define PLUGIN_LICENCE "GPLv3"
 #define PLUGIN_USAGE false
@@ -33,7 +33,7 @@
 
 namespace Config
 {
-//inline bool test = true;
+//static bool test = true;
 
 bool saveConfig();
 bool initConfig();

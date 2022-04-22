@@ -18,6 +18,7 @@
 #include <MC/BlockSource.hpp>
 #include <MC/Dimension.hpp>
 #include <MC/ChunkSource.hpp>
+#include <MC/ItemStack.hpp>
 #include "MyPackets.h"
 
 namespace
@@ -28,7 +29,7 @@ inline class Player* getPlayer(class mce::UUID const& a0)
     *((void**)&rv) = dlsym("?getPlayer@Level@@UEBAPEAVPlayer@@AEBVUUID@mce@@@Z");
     return (Global<Level>->*rv)(std::forward<class mce::UUID const&>(a0));
 }
-}
+} // namespace
 
 #include <MC/VanillaDimensions.hpp>
 #include <MC/NetworkIdentifier.hpp>
@@ -52,6 +53,7 @@ struct NetworkIdentifierWithSubId
         return Global<ServerNetworkHandler>->getServerPlayer(mNetworkId, mSubId);
     }
 };
+static_assert(sizeof(NetworkIdentifierWithSubId) == 168);
 
 namespace FakeClient
 {
@@ -59,46 +61,46 @@ template <typename T>
 void send(Player* sp, T& packet)
 {
     packet.clientSubId = sp->getClientSubId();
-    DEBUGW("FakeSend:({}): {}", sp->getNameTag(), packet.toDebugString());
+    DEBUGW("({})::send - {}", sp->getNameTag(), packet.toDebugString());
     Global<ServerNetworkHandler>->handle(*sp->getNetworkIdentifier(), packet);
 }
 
-//Received: RespawnPacket(position=(-40.5, 68.62001, 173.5), state=SERVER_SEARCHING, runtimeEntityId=0)
-//Received: EventPacket(uniqueEntityId=-94489280503, usePlayerId=1, eventData=null)
-//Received: UpdateAttributesPacket(runtimeEntityId=1, attributes=[AttributeData(name=minecraft:health, minimum=0.0, maximum=20.0, value=0.0, defaultValue=20.0)], tick=0)
-//Received: RespawnPacket(position=(-40.5, 68.62001, 173.5), state=SERVER_SEARCHING, runtimeEntityId=0)
-//Received: RespawnPacket(position=(-44.0, 32767.0, 176.0), state=SERVER_SEARCHING, runtimeEntityId=0)
-//Send: RespawnPacket(position=(0.0, 0.0, 0.0), state=CLIENT_READY, runtimeEntityId=1)
-//Send: RespawnPacket(position=(0.0, 0.0, 0.0), state=CLIENT_READY, runtimeEntityId=1)
-//Received: RespawnPacket(position=(-41.5, 72.62001, 180.5), state=SERVER_READY, runtimeEntityId=0)
-//Send: PlayerActionPacket(runtimeEntityId=1, action=RESPAWN, blockPosition=(0, 0, 0), face=-1)
-//Received: SetHealthPacket(health=20)
-//Received: UpdateAttributesPacket(runtimeEntityId=1, attributes=[AttributeData(name=minecraft:health, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.hunger, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.exhaustion, minimum=0.0, maximum=4.0, value=0.0, defaultValue=0.0), AttributeData(name=minecraft:player.saturation, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.level, minimum=0.0, maximum=24791.0, value=0.0, defaultValue=0.0), AttributeData(name=minecraft:player.experience, minimum=0.0, maximum=1.0, value=0.0, defaultValue=0.0)], tick=0)
+// Received: RespawnPacket(position=(-40.5, 68.62001, 173.5), state=SERVER_SEARCHING, runtimeEntityId=0)
+// Received: EventPacket(uniqueEntityId=-94489280503, usePlayerId=1, eventData=null)
+// Received: UpdateAttributesPacket(runtimeEntityId=1, attributes=[AttributeData(name=minecraft:health, minimum=0.0, maximum=20.0, value=0.0, defaultValue=20.0)], tick=0)
+// Received: RespawnPacket(position=(-40.5, 68.62001, 173.5), state=SERVER_SEARCHING, runtimeEntityId=0)
+// Received: RespawnPacket(position=(-44.0, 32767.0, 176.0), state=SERVER_SEARCHING, runtimeEntityId=0)
+// Send: RespawnPacket(position=(0.0, 0.0, 0.0), state=CLIENT_READY, runtimeEntityId=1)
+// Send: RespawnPacket(position=(0.0, 0.0, 0.0), state=CLIENT_READY, runtimeEntityId=1)
+// Received: RespawnPacket(position=(-41.5, 72.62001, 180.5), state=SERVER_READY, runtimeEntityId=0)
+// Send: PlayerActionPacket(runtimeEntityId=1, action=RESPAWN, blockPosition=(0, 0, 0), face=-1)
+// Received: SetHealthPacket(health=20)
+// Received: UpdateAttributesPacket(runtimeEntityId=1, attributes=[AttributeData(name=minecraft:health, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.hunger, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.exhaustion, minimum=0.0, maximum=4.0, value=0.0, defaultValue=0.0), AttributeData(name=minecraft:player.saturation, minimum=0.0, maximum=20.0, value=20.0, defaultValue=20.0), AttributeData(name=minecraft:player.level, minimum=0.0, maximum=24791.0, value=0.0, defaultValue=0.0), AttributeData(name=minecraft:player.experience, minimum=0.0, maximum=1.0, value=0.0, defaultValue=0.0)], tick=0)
 
 // ================== Fix Respawn ==================
 void handle(SimulatedPlayer* sp, RespawnPacket* packet)
 {
-    DEBUGW("FakeHandle:({}): {}", sp->getNameTag(), packet->toDebugString());
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
     auto state = packet->mRespawnState;
     auto& uniqueId = sp->getUniqueID();
 
     Schedule::delay(
         [state, uniqueId]() {
             auto sp = Level::getPlayer(uniqueId);
-            if (state == SERVER_SEARCHING)
+            if (state == PlayerRespawnState::SERVER_SEARCHING)
             {
-                //sp->setBlockRespawnUntilClientMessage(false);
-                RespawnPacket res({0, 0, 0}, CLIENT_READY);
+                // sp->setBlockRespawnUntilClientMessage(false);
+                RespawnPacket res({0, 0, 0}, PlayerRespawnState::CLIENT_READY);
                 res.mRuntimeId = sp->getRuntimeID();
 
                 send(sp, res);
 
-                ASSERT(!dAccess<bool>(sp, 3748));
+                ASSERT(!dAccess<bool>(sp, 3724)); // BlockRespawnUntilClientMessage
             }
             else
             {
-                //static_assert(offsetof(PlayerActionPacket, position) == 48);
-                //static_assert(offsetof(PlayerActionPacket, runtimeId) == 72);
+                // static_assert(offsetof(PlayerActionPacket, position) == 48);
+                // static_assert(offsetof(PlayerActionPacket, runtimeId) == 72);
                 PlayerActionPacket res(PlayerActionType::Respawn, {0, 0, 0}, -1, sp->getRuntimeID());
                 ASSERT(res.mRuntimeID.id == sp->getRuntimeID().id);
                 ASSERT(res.mPosition == BlockPos::ZERO);
@@ -124,7 +126,7 @@ void handle(SimulatedPlayer* sp, RespawnPacket* packet)
 // ================== Fix Change Dimension ==================
 void handle(SimulatedPlayer* sp, ChangeDimensionPacket* packet)
 {
-    DEBUGW("FakeHandle:({}): {}", sp->getNameTag(), packet->toDebugString());
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
     auto& uniqueId = sp->getUniqueID();
     auto pos = packet->mPosition;
 
@@ -137,14 +139,14 @@ void handle(SimulatedPlayer* sp, ChangeDimensionPacket* packet)
 
 void handle(SimulatedPlayer* sp, PlayStatusPacket* packet)
 {
-    DEBUGW("FakeHandle:({}): {}", sp->getNameTag(), packet->toDebugString());
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
     auto status = packet->status;
     // ================== Fix Change Dimension ==================
     // ChunkRadius should be greater than or equal to 7 to ensure that there are enough chunks (5*5) to change dimension
     sp->setChunkRadius(9);
 
     // ================== Fix Region ==================
-    //if (!&sp->getDimension() || sp->getDimensionId() != sp->getDimension().getDimensionId()) {
+    // if (!&sp->getDimension() || sp->getDimensionId() != sp->getDimension().getDimensionId()) {
     //    sp->suspendRegion();
     //    sp->_fireWillChangeDimension();
     //    sp->destroyRegion();
@@ -156,12 +158,12 @@ void handle(SimulatedPlayer* sp, PlayStatusPacket* packet)
 
 void handle(SimulatedPlayer* sp, ShowCreditsPacket* packet)
 {
-    DEBUGW("FakeHandle({}): {}", sp->getNameTag(), packet->toDebugString());
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
     auto& uniqueId = sp->getUniqueID();
 
     Schedule::delay([sp]() {
         // TODO: uniqueId 失效
-        //auto sp = (SimulatedPlayer*)Global<Level>->fetchEntity(uniqueId, true);
+        // auto sp = (SimulatedPlayer*)Global<Level>->fetchEntity(uniqueId, true);
         ASSERT(sp->isSimulatedPlayer());
         ShowCreditsPacket res(sp->getRuntimeID(), ShowCreditsPacket::CreditsState::END_CREDITS);
         assert(res.mRuntimeId == sp->getRuntimeID());
@@ -173,28 +175,48 @@ void handle(SimulatedPlayer* sp, ShowCreditsPacket* packet)
 
 void handle(SimulatedPlayer* sp, ModalFormRequestPacket* packet)
 {
-    //DEBUGW("FakeHandle:({}): {}", sp->getNameTag(),  packet->toDebugString());
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
     auto& uniqueId = sp->getUniqueID();
     auto formId = packet->mFormId;
     Schedule::delay(
         [uniqueId, formId]() {
-        auto sp = Level::getPlayer(uniqueId);
-        auto res = MinecraftPackets::createPacket(MinecraftPacketIds::ModalFormResponse);
-        ((ModalFormResponsePacket*)res.get())->mFormId = formId;
-        ((ModalFormResponsePacket*)res.get())->mData = "null";
-        res->clientSubId = sp->getClientSubId();
-        Global<ServerNetworkHandler>->handle(*sp->getNetworkIdentifier(), *(ModalFormResponsePacket*)res.get());
-    },
-                    20);
+            auto sp = Level::getPlayer(uniqueId);
+            auto res = MinecraftPackets::createPacket(MinecraftPacketIds::ModalFormResponse);
+            ((ModalFormResponsePacket*)res.get())->mFormId = formId;
+            ((ModalFormResponsePacket*)res.get())->mData = "null";
+            res->clientSubId = sp->getClientSubId();
+            send(sp, *(ModalFormResponsePacket*)res.get());
+        },
+        20);
 }
 
 void handle(SimulatedPlayer* sp, MovePlayerPacket* packet)
 {
-    //DEBUGW("FakeHandle({}): {}", sp->getNameTag(), packet->toDebugString());
-    //auto& uniqueId = sp->getUniqueID();
-    //auto taskid = Schedule::delay([uniqueId]() {
-    //    auto sp = Level::getPlayer(uniqueId);
-    //    }, 20).getTaskId();
+    // DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
+    //  auto& uniqueId = sp->getUniqueID();
+    //  auto taskid = Schedule::delay([uniqueId]() {
+    //      auto sp = Level::getPlayer(uniqueId);
+    //      }, 20).getTaskId();
+}
+
+void handle(SimulatedPlayer* sp, InventorySlotPacket* packet)
+{
+#ifdef DEBUG
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
+    auto ctn = sp->getContainerManager().lock();
+    if (ctn)
+        sp->refreshContainer(*ctn);
+#endif // DEBUG
+}
+
+void handle(SimulatedPlayer* sp, MobEquipmentPacket* packet)
+{
+#ifdef DEBUG
+    DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
+    // if (packet->mRuntimeId == sp->getRuntimeID()) {
+    //     sp->sendInventory(true);
+    // }
+#endif // DEBUG
 }
 
 void handlePacket(SimulatedPlayer* sp, Packet* packet)
@@ -210,10 +232,10 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
         case MinecraftPacketIds::Respawn:
             FakeClient::handle((SimulatedPlayer*)sp, (RespawnPacket*)packet);
             break;
-        //case MinecraftPacketIds::StartGame:
-        //    // Not be sent to simulated player, so listen to PlayStatusPacket instead
-        //    FakeClient::handle((SimulatedPlayer*)sp, (StartGamePacket*)&packet);
-        //    break;
+        // case MinecraftPacketIds::StartGame:
+        //     // Not be sent to simulated player, so listen to PlayStatusPacket instead
+        //     FakeClient::handle((SimulatedPlayer*)sp, (StartGamePacket*)&packet);
+        //     break;
         case MinecraftPacketIds::PlayStatus:
             FakeClient::handle((SimulatedPlayer*)sp, (PlayStatusPacket*)packet);
             break;
@@ -223,15 +245,21 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
         case MinecraftPacketIds::ModalFormRequest:
             FakeClient::handle((SimulatedPlayer*)sp, (ModalFormRequestPacket*)packet);
             break;
-#ifndef DEBUG
+        case MinecraftPacketIds::InventorySlot:
+            FakeClient::handle((SimulatedPlayer*)sp, (InventorySlotPacket*)packet);
+            break;
+        case MinecraftPacketIds::MobEquipment:
+            FakeClient::handle((SimulatedPlayer*)sp, (MobEquipmentPacket*)packet);
+            break;
+#ifdef DEBUG
         case MinecraftPacketIds::MoveActorDelta:
         case MinecraftPacketIds::LevelChunk:
         case MinecraftPacketIds::LevelSoundEvent:
         case MinecraftPacketIds::SetActorData:
         case MinecraftPacketIds::LevelEventGeneric:
-        //case MinecraftPacketIds::SetActorMotion:
+        // case MinecraftPacketIds::SetActorMotion:
         case (MinecraftPacketIds)40:
-        //case MinecraftPacketIds::MovePlayer:
+        // case MinecraftPacketIds::MovePlayer:
         case MinecraftPacketIds::ClientCacheMissResponse:
         case MinecraftPacketIds::SubChunk:
         case MinecraftPacketIds::UpdateAttributes:
@@ -246,7 +274,7 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
         case MinecraftPacketIds::Event:
         case MinecraftPacketIds::InventoryTransaction:
             break;
-        //case MinecraftPacketIds::UpdateAttributes:
+            // case MinecraftPacketIds::UpdateAttributes:
             {
                 BinaryStream bs;
                 packet->write(bs);
@@ -261,7 +289,7 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
                 for (int i = 0; i < count; ++i)
                 {
                     logger.warn("[{}, {}, {}, {}, {}]",
-                        bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
+                                bs.getString(), bs.getFloat(), bs.getFloat(), bs.getFloat(), bs.getFloat());
                 }
                 logger.warn("tick: {}", bs.getUnsignedVarInt64());
                 logger.warn("getUnreadLength: {}", bs.getUnreadLength());
@@ -273,7 +301,7 @@ void handlePacket(SimulatedPlayer* sp, Packet* packet)
             int a = 1;
         }
         default:
-            DEBUGW("[Send] ->  {}: {}({}) {}", sp->getNameTag(), packet->getName(), packet->getId(), packet->clientSubId);
+            DEBUGW("({})::handle - {}", sp->getNameTag(), packet->toDebugString());
 #else
         default:
 #endif // DEBUG
@@ -293,6 +321,24 @@ TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacke
             auto sp = Global<ServerNetworkHandler>->getServerPlayer(networkID, clientSubID);
             if (sp && sp->isSimulatedPlayer())
                 return FakeClient::handlePacket((SimulatedPlayer*)sp, const_cast<Packet*>(&packet));
+            if (packet.getId() == MinecraftPacketIds::InventorySlot)
+            {
+                auto pkt = (InventorySlotPacket*)&packet;
+                Schedule::nextTick(
+                    [clientSubID, ctn = pkt->mContainerId, slot = pkt->mSlot, item = ItemStack::fromDescriptor(pkt->mDescriptor, *Level::getBlockPalette(), true)]() {
+                        auto sp = Global<ServerNetworkHandler>->getServerPlayer(FakePlayer::mNetworkID, clientSubID);
+                        if (sp && sp->isSimulatedPlayer())
+                        {
+                            InventorySlotPacket packet(ctn, slot, item);
+                            return FakeClient::handlePacket((SimulatedPlayer*)sp, &packet);
+                        }
+                        else
+                        {
+                            __debugbreak();
+                        }
+                    });
+            }
+            return;
         }
         catch (const std::exception&)
         {
@@ -306,12 +352,13 @@ TInstanceHook(void, "?sendToClients@LoopbackPacketSender@@UEAAXAEBV?$vector@UNet
               LoopbackPacketSender, std::vector<NetworkIdentifierWithSubId> const& clients, class Packet& packet)
 {
     // fix simulated player sub id
-//#ifdef DEBUG
-//    logger.info("[sendToClients] -> {} clients: {}({})", clients.size(), packet.getName(), packet.getId());
-//#endif // DEBUG
-    
-    for (auto const& client : clients) {
-        if (client.mNetworkId.isUnassigned()&& client.mNetworkId == FakePlayer::mNetworkID)
+    //#ifdef DEBUG
+    //    logger.info("[sendToClients] -> {} clients: {}({})", clients.size(), packet.getName(), packet.getId());
+    //#endif // DEBUG
+
+    for (auto const& client : clients)
+    {
+        if (client.mNetworkId.isUnassigned() && client.mNetworkId == FakePlayer::mNetworkID)
         {
             try
             {
@@ -339,7 +386,7 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
     // fix simulated player sub id
     if (!processed && nid == FakePlayer::mNetworkID)
     {
-        //ASSERT(false);
+        // ASSERT(false);
         try
         {
             auto subId = dAccess<unsigned char>(&nid, 160);
@@ -365,8 +412,8 @@ TInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@
 
 // ================= Fix SimulatedPlayer =================
 
-//fix _updateChunkPublisherView
-// _updateChunkPublisherView will be called after Player::tick in ServerPlayer::tick
+// fix _updateChunkPublisherView
+//  _updateChunkPublisherView will be called after Player::tick in ServerPlayer::tick
 TInstanceHook(void, "?tickWorld@Player@@UEAAXAEBUTick@@@Z",
               Player, struct Tick const& tick)
 {
@@ -379,15 +426,39 @@ TInstanceHook(void, "?tickWorld@Player@@UEAAXAEBUTick@@@Z",
                       void, ServerPlayer*, Vec3 const&, float)((ServerPlayer*)this, getPos(), 16.0f);
     }
 }
+TClasslessInstanceHook(void, "?sendActorCarriedItemChanged@ActorEventCoordinator@@QEAAXAEAVActor@@AEBVItemInstance@@1W4HandSlot@@@Z",
+                       class Actor& actor, class ItemInstance const& oldItem, class ItemInstance const& newItem, enum HandSlot slot)
+{
+    original(this, actor, oldItem, newItem, slot);
+
+    if (*(void**)&actor == dlsym_static("??_7SimulatedPlayer@@6B@"))
+    {
+        // Force to call the implementation of ServerPlayer
+        MobEquipmentPacket pkt(actor.getRuntimeID(), newItem, (int)slot, (int)slot, ContainerID::Inventory);
+        FakeClient::send((SimulatedPlayer*)&actor, pkt);
+    }
+}
+TClasslessInstanceHook(void, "?sendActorEquippedArmor@ActorEventCoordinator@@QEAAXAEAVActor@@AEBVItemInstance@@W4ArmorSlot@@@Z",
+                       class Actor& actor, class ItemInstance const& item, enum ArmorSlot slot)
+{
+    original(this, actor, item, slot);
+
+    if (*(void**)&actor == dlsym_static("??_7SimulatedPlayer@@6B@"))
+    {
+        // Force to call the implementation of ServerPlayer
+        MobEquipmentPacket pkt(actor.getRuntimeID(), item, (int)slot, (int)slot, ContainerID::Armor);
+        FakeClient::send((SimulatedPlayer*)&actor, pkt);
+    }
+}
 
 // fix ChunkSource load mode
 TInstanceHook(std::shared_ptr<class ChunkViewSource>&, "?_createChunkSource@SimulatedPlayer@@MEAA?AV?$shared_ptr@VChunkViewSource@@@std@@AEAVChunkSource@@@Z",
               SimulatedPlayer, std::shared_ptr<class ChunkViewSource>& res, class ChunkSource& chunkSource)
 {
-    //auto& csPtr = original(this, res, chunkSource);
+    // auto& csPtr = original(this, res, chunkSource);
     //// ChunkSource::LoadMode : None(0) -> Deferred(1)
-    //dAccess<int>(csPtr.get(), 56) = 1;
-    //return csPtr;
+    // dAccess<int>(csPtr.get(), 56) = 1;
+    // return csPtr;
     return SymCallStatic("?_createChunkSource@Player@@MEAA?AV?$shared_ptr@VChunkViewSource@@@std@@AEAVChunkSource@@@Z",
                          std::shared_ptr<class ChunkViewSource>&, SimulatedPlayer const&, std::shared_ptr<class ChunkViewSource>&, class ChunkSource&)(*this, res, chunkSource);
 }
@@ -420,10 +491,6 @@ std::string getPlayerStateString(Player* player)
     str += fmt::format("\nmLocalPlayerInitialized: {}", dAccess<bool>(player, 8954));
     return str;
 }
-struct voids
-{
-    void**** filler[1000];
-};
 TInstanceHook(ServerPlayer*, "??0ServerPlayer@@QEAA@AEAVLevel@@AEAVPacketSender@@AEAVNetworkHandler@@AEAVActiveTransfersManager@Server@ClientBlobCache@@W4GameType@@AEBVNetworkIdentifier@@EV?$function@$$A6AXAEAVServerPlayer@@@Z@std@@VUUID@mce@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$unique_ptr@VCertificate@@U?$default_delete@VCertificate@@@std@@@std@@H_NAEAVEntityContext@@@Z",
               ServerPlayer, class Level& level, class PacketSender& sender, class NetworkHandler& handler,
               class ActiveTransfersManager& blobCache, enum GameType gameType,
@@ -462,46 +529,32 @@ inline class ChunkSource& getChunkSource(BlockSource& bs)
 }
 static bool Listen_hasChunksAt = false;
 static_assert(offsetof(ChangeDimensionRequest, mRespawn) == 25);
+
+std::pair<std::string, int> genTickingInfo(BlockSource const& region, BlockPos const& bpos, int range);
+
 TInstanceHook(bool, "?_playerChangeDimension@Level@@AEAA_NPEAVPlayer@@AEAVChangeDimensionRequest@@@Z",
               Level, Player* player, class ChangeDimensionRequest& request)
 {
     auto rtn = original(this, player, request);
     if (!player)
         return rtn;
-    auto bpos = player->getBlockPos();
-    int distance = 32 * 2; // IDA Level::_playerChangeDimension line 339 before return
-    auto max_cx = (bpos.x + distance) >> 4;
-    auto min_cx = (bpos.x - distance) >> 4;
-    auto max_cz = (bpos.z + distance) >> 4;
-    auto min_cz = (bpos.z - distance) >> 4;
-    auto chunksCount = 0;
-    auto needChunksCount = (max_cx - min_cx + 1) * (max_cz - min_cz + 1);
 
-    string loadInfo = "";
+    auto bpos = player->getBlockPos();
+    int range = 32 * 2 >> 4; // IDA Level::_playerChangeDimension line 339 before return
+    int chunk_x = bpos.x >> 4;
+    int chunk_z = bpos.z >> 4;
+    auto max_cx = chunk_x + range;
+    auto min_cx = chunk_x - range;
+    auto max_cz = chunk_z + range;
+    auto min_cz = chunk_z - range;
+    auto totalChunksCount = (max_cx - min_cx + 1) * (max_cz - min_cz + 1);
+
     auto& region = player->getRegion();
     auto& cs = getChunkSource(region);
-    //auto& cs = region.getChunkSource();
 
-    for (auto cx = min_cx; cx <= max_cx; ++cx)
-    {
-        loadInfo += "\n";
-        for (auto cz = min_cz; cz <= max_cz; ++cz)
-        {
-            auto chunk = region.getChunk({cx, cz});
-            loadInfo += chunk ? "1" : "0";
-            if (chunk)
-                ++chunksCount;
-            else
-            {
-                //auto dimension = (Dimension*)&region.getDimensionConst();
-                //auto actionList = dimension->getChunkLoadActionList().get();
-                //actionList->addChunkLoadedRequest();
-                cs.getOrLoadChunk({cx, cz}, (ChunkSource::LoadMode)1, true);
-            }
-        }
-    }
-    DEBUGL("cx range:[{}:{}], cz range:[{}:{}], Info: {}", min_cx, max_cx, min_cz, max_cz, loadInfo);
-    DEBUGL("Loaded Chunk: needs: {}, loaded:{} ", needChunksCount, chunksCount);
+    auto loadInfo = genTickingInfo(region, bpos, range);
+    DEBUGL("Dimension: {}, cx range:[{}:{}], cz range:[{}:{}], Info: {}", region.getDimensionId(), min_cx, max_cx, min_cz, max_cz, loadInfo.first);
+    DEBUGL("Loaded Chunk: total: {}, loaded:{} ", totalChunksCount, loadInfo.second);
     return rtn;
 }
 
@@ -515,15 +568,15 @@ TInstanceHook(void, "?requestPlayerChangeDimension@Level@@UEAAXAEAVPlayer@@V?$un
 }
 
 
-//fix load chunk
+// fix load chunk
 TInstanceHook(void, "?prepareRegion@ServerPlayer@@UEAAXAEAVChunkSource@@@Z",
               ServerPlayer, class ChunkSource& cs)
 {
-    //if (isSimulatedPlayer() && (!&getDimension())) {
-    //    auto dim = Global<Level>->createDimension(truthDimensionId);
-    //    if (dim)
-    //        return original(this, dim->getChunkSource());
-    //}
+    // if (isSimulatedPlayer() && (!&getDimension())) {
+    //     auto dim = Global<Level>->createDimension(truthDimensionId);
+    //     if (dim)
+    //         return original(this, dim->getChunkSource());
+    // }
     DEBUGL("ServerPlayer({})::prepareRegion(ChunkSource(dimid: {}))", this->getNameTag(), (int)cs.getDimension().getDimensionId());
 
     original(this, cs);
@@ -569,8 +622,8 @@ TInstanceHook(void, "?_updateChunkPublisherView@ServerPlayer@@MEAAXAEBVVec3@@M@Z
               ServerPlayer, Vec3 const& pos, float unkf)
 {
     static __int64 logTick = 0;
-    //if (++logTick % 20 == 0)
-    //    DEBUGL("Player({})::_updateChunkPublisherView(({}), {})", this->getNameTag(), pos.toString(), unkf);
+    // if (++logTick % 20 == 0)
+    //     DEBUGL("Player({})::_updateChunkPublisherView(({}), {})", this->getNameTag(), pos.toString(), unkf);
     return original(this, pos, unkf);
 }
 
