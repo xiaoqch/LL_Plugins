@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -51,8 +52,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_REVISION, 0
+ PRODUCTVERSION PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_REVISION, 0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -67,14 +68,14 @@ BEGIN
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "CompanyName", "Xiaoqch"
-            VALUE "FileDescription", "Test Plugin For LiteLoader"
-            VALUE "FileVersion", "1.0.0.0"
-            VALUE "InternalName", "TestPlugin.dll"
+            VALUE "CompanyName", PLUGIN_AUTHOR
+            VALUE "FileDescription", PLUGIN_DESCRIPTION
+            VALUE "FileVersion", PLUGIN_VERSION_STRING
+            VALUE "InternalName", PLUGIN_NAME ".dll"
             VALUE "LegalCopyright", "Copyright (C) 2021"
-            VALUE "OriginalFilename", "TestPlugin.dll"
-            VALUE "ProductName", "Test Plugin For LiteLoader"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "OriginalFilename", PLUGIN_NAME ".dll"
+            VALUE "ProductName", PLUGIN_NAME
+            VALUE "ProductVersion", PLUGIN_VERSION_STRING
         END
     END
     BLOCK "VarFileInfo"

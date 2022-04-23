@@ -160,6 +160,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="OperationAgentCommand.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AgentManager.cpp" />
@@ -177,7 +178,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClCompile Include="OperationAgentCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc" />
+    <ResourceCompile Include="OperationAgent.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />

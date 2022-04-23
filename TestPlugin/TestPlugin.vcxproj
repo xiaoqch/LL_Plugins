@@ -167,6 +167,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="TestFakeName.h" />
     <ClInclude Include="TestNbt.h" />
     <ClInclude Include="TestRegRecipe.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />

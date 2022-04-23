@@ -31,6 +31,9 @@
     <ClInclude Include="pch.h">
       <Filter>Default</Filter>
     </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -50,7 +53,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc">
+    <ResourceCompile Include="AbilityPro.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -159,6 +159,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TrapdoorCommands.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
@@ -179,6 +180,9 @@ LibraryBuilder.exe -o ..\Lib\
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TrapdoorCmdHint.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

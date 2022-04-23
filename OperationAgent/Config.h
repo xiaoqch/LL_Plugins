@@ -1,14 +1,6 @@
 #pragma once
 #include "../Global/GlobalConfig.h"
-
-// Plugin Info
-#define PLUGIN_NAME "OperationAgent"
-#define PLUGIN_AUTHOR "xiaoqch"
-#define PLUGIN_DISPLAY_NAME "Operation Agent"
-#define PLUGIN_DESCRIPTION "Operation Agent"
-#define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
-#define PLUGIN_LICENCE "GPLv3"
-#define PLUGIN_USAGE false
+#include "version.h"
 
 const std::string HELP_TEXT_FOR_PLAYER = "\
 [操作代理] 帮助\n\
@@ -26,12 +18,6 @@ opagent list - 列出当前代理\n\
 opagent clear [操作实体] - 清除代理\n\
 opagent clearall - 清除所有\n\
 ";
-
-// Version
-#define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 2
-#define PLUGIN_VERSION_REVISION 1
-#define PLUGIN_VERSION_IS_BETA false
 
 #ifdef DEBUG
 #undef PLUGIN_VERSION_IS_BETA
@@ -71,9 +57,3 @@ bool initConfig();
 #if PLUGIN_VERSION_IS_BETA
 void logBetaInfo();
 #endif // !PLUGIN_VERSION_IS_BETA
-
-#if PLUGIN_VERSION_IS_BETA
-#define PLUGIN_VERSION_STRING MACRO_TO_STR(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR.PLUGIN_VERSION_REVISION beta)
-#else
-#define PLUGIN_VERSION_STRING MACRO_TO_STR(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR.PLUGIN_VERSION_REVISION)
-#endif // PLUGIN_VERSION_IS_BETA

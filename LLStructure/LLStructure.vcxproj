@@ -159,6 +159,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="LLStructureCommand.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />

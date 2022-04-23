@@ -158,6 +158,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ActorDebugCommand.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
@@ -174,7 +175,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClCompile Include="ActorDebugCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc" />
+    <ResourceCompile Include="ActorDebug.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />

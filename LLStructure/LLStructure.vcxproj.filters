@@ -34,6 +34,9 @@
     <ClInclude Include="pch.h">
       <Filter>Default</Filter>
     </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
