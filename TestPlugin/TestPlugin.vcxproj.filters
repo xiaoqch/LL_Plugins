@@ -55,6 +55,9 @@
     <ClInclude Include="TestRegRecipe.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

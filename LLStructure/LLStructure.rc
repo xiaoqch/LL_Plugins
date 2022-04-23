@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -51,8 +52,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_REVISION, 0
+ PRODUCTVERSION PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_REVISION, 0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -60,21 +61,21 @@ VS_VERSION_INFO VERSIONINFO
  FILEFLAGS 0x0L
 #endif
  FILEOS 0x40004L
- FILETYPE 0x0L
+ FILETYPE 0x2L
  FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "CompanyName", "Xiaoqch"
-            VALUE "FileDescription", "BDS Structure Helper For LiteLoader"
-            VALUE "FileVersion", "1.0.0.1"
-            VALUE "InternalName", "LLStructure"
+            VALUE "CompanyName", PLUGIN_AUTHOR
+            VALUE "FileDescription", PLUGIN_DESCRIPTION
+            VALUE "FileVersion", PLUGIN_VERSION_STRING
+            VALUE "InternalName", PLUGIN_NAME ".dll"
             VALUE "LegalCopyright", "Copyright (C) 2021"
-            VALUE "OriginalFilename", "LLStructure.dll"
-            VALUE "ProductName", "LLStructure"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "OriginalFilename", PLUGIN_NAME ".dll"
+            VALUE "ProductName", PLUGIN_NAME
+            VALUE "ProductVersion", PLUGIN_VERSION_STRING
         END
     END
     BLOCK "VarFileInfo"

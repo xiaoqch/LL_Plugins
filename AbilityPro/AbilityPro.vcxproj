@@ -152,6 +152,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="AbilityProCommand.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
@@ -168,7 +169,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClCompile Include="AbilityProCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc" />
+    <ResourceCompile Include="AbilityPro.rc" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />
