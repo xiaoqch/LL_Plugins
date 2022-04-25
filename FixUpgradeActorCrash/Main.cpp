@@ -17,7 +17,7 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
 {
     auto rtn = original(this, a1, a2, a3, a4, a5);
     static DBHelpers::Category category = (DBHelpers::Category)4;
-    std::string backupDir = fmt::format("{}{:%Y%m%d-%H%M%S}", PLUGIN_DIR, fmt::localtime(_time64(nullptr)));
+    std::string backupDir = fmt::format("{}{:%Y%m%d-%H%M%S}/", PLUGIN_DIR, fmt::localtime(_time64(nullptr)));
     bool first = true;
     Global<DBStorage>->forEachKeyWithPrefix("actorprefix", category, [&backupDir,&first](gsl::cstring_span<-1> suffix, gsl::cstring_span<-1> data) {
         if (data.size() > Config::SizeThreshold)
