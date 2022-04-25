@@ -11,10 +11,17 @@ void entry()
 #include <MC/Level.hpp>
 #include <MC/DBStorage.hpp>
 #include <MC/CompoundTag.hpp>
+#include <MC/Util.hpp>
 TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVLevelSettings@@PEAVLevelData@@AEBVExperiments@@PEBV23@@Z",
               Level, std::string const& a1, class LevelSettings const& a2, class LevelData* a3, class Experiments const& a4, std::string const* a5)
 {
     auto rtn = original(this, a1, a2, a3, a4, a5);
+    //Global<DBStorage>->forEachKeyWithPrefix("", (DBHelpers::Category)0, [](gsl::cstring_span<-1> key, gsl::cstring_span<-1> data) {
+    //    std::string fkey = std::string(key.data(), key.size());
+    //    if (!Util::isValidUTF8(fkey))
+    //        fkey = Util::toHex(fkey);
+    //    logger.info("key: {}, size: {}", fkey, data.size());
+    //});
     std::vector<std::string> keys = {"Overworld", "Nether", "TheEnd"};
     for (auto& key : keys)
     {
@@ -69,3 +76,26 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
     }
     return rtn;
 }
+
+TInstanceHook(void, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@$$CBD$0?0@gsl@@W4Category@DBHelpers@@AEBV?$function@$$A6AXV?$basic_string_span@$$CBD$0?0@gsl@@0@Z@std@@@Z", 
+    DBStorage, gsl::cstring_span<-1>& prefix, enum DBHelpers::Category category, class std::function<void(gsl::cstring_span<-1>, gsl::cstring_span<-1>)> const& callback)
+{
+    //logger.info("prefix: {}, category: {}", prefix.data(), (int)category);
+    return original(this, prefix, category, callback);
+}
+
+#include <MC/DBStorage.hpp>
+//TInstanceHook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4Category@DBHelpers@@@Z",
+//              DBStorage,
+//              gsl::string_span<-1> key, std::string& data, DBHelpers::Category category)
+//{
+//    auto rtn = original(this, key, data, category);
+//    if (key.size()>11 && key.subspan(0,11) == "actorprefix")
+//    {
+//        std::string keyhex = std::string(key.data(), key.size()).substr(11);
+//        logger.error("actorprefix-{}, size: {}", Util::toHex(keyhex), data.size());
+//        auto tag = CompoundTag::fromBinaryNBT(data);
+//        std::string data = tag->toSNBT(4);
+//    }
+//    return rtn;
+//}

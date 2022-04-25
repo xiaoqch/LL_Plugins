@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Global/GlobalConfig.h"
 #include "version.h"
 
@@ -15,31 +15,12 @@
 
 // Switch
 #define ENABLE_LOG_FILE true
-#define ENABLE_CONFIG false
-
-//#define ENABLE_TEST_AI
-#define ENABLE_TEST_DBSTORAGE
-//#define ENABLE_TEST_FAKENAME
-//#define ENABLE_TEST_NBT
-//#define ENABLE_TEST_COMMAND_REG
-//#define ENABLE_TEST_PACKET
-//#define ENABLE_TEST_RECIPES
-//#define ENABLE_TEST_ENUM
-//#define ENABLE_TEST_DLSYM
-
-
-//#define HOOK_CLASS_SimulatedPlayer
-//#define HOOK_CLASS_Actor
-//#define HOOK_CLASS_Mob
-//#define HOOK_CLASS_Player
-//#define HOOK_CLASS_ServerPlayer
-
-//#define HOOK_CLASS_DBStorage
-//#define HOOK_CLASS_LevelStorage
+#define ENABLE_CONFIG true
 
 namespace Config
 {
-//inline bool test = true;
+//static bool test = true;
+static size_t SizeThreshold = 1000000;
 
 bool saveConfig();
 bool initConfig();

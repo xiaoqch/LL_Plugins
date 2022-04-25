@@ -100,6 +100,8 @@ THook(void, "?initializeLogger@ItemTransactionLogger@@YAX_N@Z",
 THook(void, "?log@ItemTransactionLogger@@YAXV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
       std::string const str)
 {
+    if (str._Starts_with("ActorEventCoordinator"))
+        return;
     itemLogger.info(str);
 }
 
