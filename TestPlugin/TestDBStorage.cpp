@@ -12,13 +12,8 @@ using cstring_span = gsl::cstring_span<-1>;
 
 Logger dbLogger("DBStorage");
 
-struct voids
-{
-    void**** filler[100];
-};
 #define DBLog(...)                                            \
     ASSERT((int)category != 3);                               \
-    if ((int)category != 4 && (int)category != 6) /* chunk */ \
     dbLogger.warn(__VA_ARGS__)
 
 bool isChunkKey(std::string_view key, size_t offset = 0)
