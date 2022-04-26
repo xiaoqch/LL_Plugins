@@ -10,7 +10,7 @@
 // Version
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_REVISION 2
+#define PLUGIN_VERSION_REVISION 3
 #define PLUGIN_VERSION_IS_BETA false
 
 // Transfer macro to string
