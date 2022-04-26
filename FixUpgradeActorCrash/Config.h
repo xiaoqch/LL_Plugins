@@ -20,7 +20,7 @@
 namespace Config
 {
 //static bool test = true;
-inline size_t SizeThreshold = 10000000;
+inline size_t SizeThreshold = 100000000;
 inline size_t WarnSizeThreshold = 100000;
 
 bool saveConfig();
