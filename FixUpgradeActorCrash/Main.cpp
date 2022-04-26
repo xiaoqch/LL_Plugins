@@ -12,6 +12,8 @@ void entry()
 
 #include <MC/Util.hpp>
 #include <MC/DBStorage.hpp>
+#ifdef DEBUG
+
 TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVLevelSettings@@PEAVLevelData@@AEBVExperiments@@PEBV23@@Z",
               Level, std::string const& a1, class LevelSettings const& a2, class LevelData* a3, class Experiments const& a4, std::string const* a5)
 {
@@ -40,9 +42,10 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
     return rtn;
 }
 #include <MC/DBStorage.hpp>
- TInstanceHook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4Category@DBHelpers@@@Z",
-               DBStorage,
-               gsl::string_span<-1> key, std::string& data, DBHelpers::Category category)
+
+TInstanceHook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4Category@DBHelpers@@@Z",
+              DBStorage,
+              gsl::string_span<-1> key, std::string& data, DBHelpers::Category category)
 {
     auto rtn = original(this, key, data, category);
     if (data.size() > Config::WarnSizeThreshold)
@@ -51,4 +54,20 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
         logger.warn("Large Data: Key: {}, Data Size: {}, Category: {}", Util::toHex(keyhex), data.size(), (int)category);
     }
     return rtn;
- }
+}
+
+#endif // DEBUG
+
+
+TClasslessInstanceHook(std::vector<std::string>&, "?_deserializeChunkActorStorageKeys@DBChunkStorage@@AEAA?AV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@AEAVIDataInput@@@Z",
+              std::vector<std::string>& res, class IDataInput& dataOutput)
+{
+    auto& rtn = original(this, res, dataOutput);
+    auto data = std::set<std::string>(res.begin(), res.end());
+    if (data.size() != res.size())
+    {
+        logger.warn("Fix duplicate loading of entities, keys {} -> {}", res.size(), data.size());
+        res = std::vector<std::string>(data.begin(), data.end());
+    }
+    return rtn;
+}
