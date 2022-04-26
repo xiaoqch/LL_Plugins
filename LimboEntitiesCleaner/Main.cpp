@@ -84,18 +84,4 @@ TInstanceHook(void, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@
     return original(this, prefix, category, callback);
 }
 
-#include <MC/DBStorage.hpp>
-//TInstanceHook(bool, "?loadData@DBStorage@@UEBA_NV?$basic_string_span@$$CBD$0?0@gsl@@AEAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4Category@DBHelpers@@@Z",
-//              DBStorage,
-//              gsl::string_span<-1> key, std::string& data, DBHelpers::Category category)
-//{
-//    auto rtn = original(this, key, data, category);
-//    if (key.size()>11 && key.subspan(0,11) == "actorprefix")
-//    {
-//        std::string keyhex = std::string(key.data(), key.size()).substr(11);
-//        logger.error("actorprefix-{}, size: {}", Util::toHex(keyhex), data.size());
-//        auto tag = CompoundTag::fromBinaryNBT(data);
-//        std::string data = tag->toSNBT(4);
-//    }
-//    return rtn;
-//}
+

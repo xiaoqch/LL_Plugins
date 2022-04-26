@@ -53,6 +53,7 @@ std::string serialize()
     nlohmann::json json;
 
     SerializeVaule(SizeThreshold);
+    SerializeVaule(WarnSizeThreshold);
 
     return json.dump(4);
 }
@@ -63,6 +64,7 @@ bool deserialize(std::string const& jsonStr)
     bool needUpdate = false;
 
     DeserializeVaule(SizeThreshold);
+    DeserializeVaule(WarnSizeThreshold);
 
     return !needUpdate;
 }
