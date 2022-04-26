@@ -15,7 +15,7 @@
 
 // Switch
 #define ENABLE_LOG_FILE true
-#define ENABLE_CONFIG true
+#define ENABLE_CONFIG false
 
 namespace Config
 {
