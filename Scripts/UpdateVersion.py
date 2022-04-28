@@ -24,7 +24,9 @@ def update_project(project_dir, bds_version):
     # project_dir = /home/user/Projects/ProjectName
     project_name = os.path.basename(project_dir)
     user_file_path = os.path.join(project_dir, f"{project_name}.vcxproj.user")
-    with open(os.path.join(project_dir, user_file_path), 'r', encoding='utf-8') as file:
+    if not os.path.exists(user_file_path):
+        return
+    with open(user_file_path, 'r', encoding='utf-8') as file:
         # change LocalDebuggerWorkingDirectory
         content = file.read()
         # <LocalDebuggerWorkingDirectory>D:\bds\bedrock-server-1.18.11.01\</LocalDebuggerWorkingDirectory>
@@ -33,7 +35,7 @@ def update_project(project_dir, bds_version):
         dst = r'<LocalDebuggerWorkingDirectory>\g<path>{bds_version}\\</LocalDebuggerWorkingDirectory>'.format(bds_version=bds_version)
         content = re.sub(pattern, dst, content)
         # write back
-    with open(os.path.join(project_dir, user_file_path), 'w', encoding='utf-8') as file:
+    with open(user_file_path, 'w', encoding='utf-8') as file:
         file.write(content)
     print(f"{user_file_path} updated")
     return
@@ -148,14 +150,13 @@ def update_actions(bds_version):
 if __name__ == '__main__':
     # bds_version = input("BDS version: ")
     # ll_version = input("LiteLoader version: ")
-    bds_version = "1.18.30.04"
+    bds_version = "1.18.31.04"
     ll_version = "2.2.0"
     global_path = 'Global\GlobalConfig.h'
     sdk_dir = 'LiteLoaderSDK'
 
     current_bds_version, current_ll_version = get_version(global_path)
     bds_dir = find_bds_dir(bds_version)
-
     if current_bds_version == bds_version and current_ll_version == ll_version:
         print("Version is up to date")
     elif current_ll_version != ll_version:
