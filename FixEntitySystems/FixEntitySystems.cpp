@@ -283,7 +283,7 @@ TClasslessInstanceHook(bool, "?_shouldBreakDoor@BreakDoorAnnotationComponent@@AE
 }
 
 //Actor::fetchNearbyActorsSorted
-TInstanceHook(class std::vector<struct DistanceSortedActor>&, "?fetchNearbyActorsSorted@Actor@@QEAA?AV?$vector@UDistanceSortedActor@@V?$allocator@UDistanceSortedActor@@@std@@@std@@AEBVVec3@@W4ActorType@@@Z",
+TInstanceHook(class std::vector<struct DistanceSortedActor>&, "11111?fetchNearbyActorsSorted@Actor@@QEAA?AV?$vector@UDistanceSortedActor@@V?$allocator@UDistanceSortedActor@@@std@@@std@@AEBVVec3@@W4ActorType@@@Z",
               Actor, class std::vector<struct DistanceSortedActor>& res, class Vec3 const& pos, enum ActorType type)
 {
     if (this == nullptr || !this->isRegionValid())
