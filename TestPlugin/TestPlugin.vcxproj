@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <ExternalIncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(SolutionDir)\LiteLoaderSDK\Header\third-party\;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -164,6 +164,7 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="resource.h" />
     <ClInclude Include="TestCommandReg.h" />
     <ClInclude Include="TestDBStorage.h" />
+    <ClInclude Include="TestDlsym.h" />
     <ClInclude Include="TestFakeName.h" />
     <ClInclude Include="TestNbt.h" />
     <ClInclude Include="TestRegRecipe.h" />
@@ -192,6 +193,7 @@ LibraryBuilder.exe -o ..\Lib\
     </ClCompile>
     <ClCompile Include="TestCommandReg.cpp" />
     <ClCompile Include="TestDBStorage.cpp" />
+    <ClCompile Include="TestDlsym.cpp" />
     <ClCompile Include="TestFakeName.cpp" />
     <ClCompile Include="TestNbt.cpp" />
     <ClCompile Include="TestPacket.cpp" />

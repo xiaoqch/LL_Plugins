@@ -24,6 +24,13 @@ void randomReload(int delay)
 }
 void entry()
 {
+    Event::PlayerJumpEvent::subscribe_ref([](Event::PlayerJumpEvent& ev) {
+        logger.info("Player::Jump");
+        auto& bs = ev.mPlayer->getRegion();
+        auto pos = ev.mPlayer->getBlockPosCurrentlyStandingOn(nullptr);
+        TestFuncTime(Level::breakBlockNaturally, &bs, pos);
+        return true;
+        });
 }
 
 //TClasslessInstanceHook(void, "?startAnnouncingServer@RakNetServerLocator@@UEAAXAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0W4GameType@@HH_N@Z",
