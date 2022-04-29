@@ -25,7 +25,7 @@
 //#define ENABLE_TEST_PACKET
 //#define ENABLE_TEST_RECIPES
 //#define ENABLE_TEST_ENUM
-//#define ENABLE_TEST_DLSYM
+#define ENABLE_TEST_DLSYM
 
 
 //#define HOOK_CLASS_SimulatedPlayer

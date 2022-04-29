@@ -58,6 +58,9 @@
     <ClInclude Include="version.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="TestDlsym.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -116,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="HookActor.cpp">
       <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDlsym.cpp">
+      <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
