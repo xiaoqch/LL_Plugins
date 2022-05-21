@@ -36,7 +36,7 @@ TInstanceHook(bool, "?getInteraction@LeashableComponent@@QEAA_NAEAVActor@@AEAVPl
 //    if (target.isSimulatedPlayer()) {
 //        logger.warn("Player({})::interact({}, ({}))", getNameTag(), target.getNameTag(), pos.toString());
 //        if (getSelectedItem().getTypeName() == "minecraft:lead") {
-//            static auto leashableComponent = (LeashableComponent*)dlsym_real("?instance@?1???$_singleEmptyTypeInstance@VLeashableComponent@@X@EntityContextBase@@KAAEAVLeashableComponent@@XZ@4V2@A");
+//            static auto leashableComponent = (LeashableComponent*)dlsym("?instance@?1???$_singleEmptyTypeInstance@VLeashableComponent@@X@EntityContextBase@@KAAEAVLeashableComponent@@XZ@4V2@A");
 //            leashableComponent->leash(target, *this);
 //        }
 //    }
@@ -196,18 +196,18 @@ TInstanceHook(bool, "?_hurt@Player@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
 
 
 #define tryGetComponent(T, actor)\
-((class T*(*)(Actor*))dlsym_real("??$tryGetComponent@V"#T"@@@Actor@@QEAAPEAV"#T"@@XZ"))(actor)
+((class T*(*)(Actor*))dlsym("??$tryGetComponent@V"#T"@@@Actor@@QEAAPEAV"#T"@@XZ"))(actor)
 
 //template <class T>
 //inline T* tryGetComponent2(Actor* actor) {
 //    auto typeName = "";
 //    auto symbol = fmt::format("??$tryGetComponent@V{}@@@Actor@@QEAAPEAV{}@@XZ", typeName, typeName);
-//    return ((class T* (*)(Actor*))dlsym_real(symbol.c_str()))(actor);
+//    return ((class T* (*)(Actor*))dlsym(symbol.c_str()))(actor);
 //}
 #define _getContext(actor) dAccess<EntityContextBase*>(actor, 8)
 // Error!
 #define getOrAddComponent(T, actor)\
-(_getContext(actor)->isValid()?((class T*(*)(EntityContextBase*))dlsym_real("??$getOrAddComponent@V"#T"@@@EntityContextBase@@QEAAAEAV"#T"@@XZ"))(_getContext(actor)):nullptr)
+(_getContext(actor)->isValid()?((class T*(*)(EntityContextBase*))dlsym("??$getOrAddComponent@V"#T"@@@EntityContextBase@@QEAAAEAV"#T"@@XZ"))(_getContext(actor)):nullptr)
 
 // Actor::tryGetComponent<GoalSelectorComponent>(__int64 a1)
 // GoalSelectorComponent::addGoal(__int64 a1, int a2, Goal **a3)

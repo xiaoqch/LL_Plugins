@@ -2,8 +2,8 @@
 #include <LoggerAPI.h>
 #include <third-party/magic_enum/magic_enum.hpp>
 // Global Info
-#define TARGET_BDS_VERSION "1.18.31.04"
-#define TARGET_LITELOADER_VERSION "2.2.0"
+#define TARGET_BDS_VERSION "1.18.33.02"
+#define TARGET_LITELOADER_VERSION "2.2.5"
 #define GITHUB_LINK "https://github.com/xiaoqch/LL_Plugins/"
 
 // Path

@@ -202,14 +202,14 @@ enum ActorType : int
     mTripodCamera = 0x00013E,
 };
 #define TryGetComponent(T, actor) \
-    ((class T * (*)(Actor*)) dlsym_real("??$tryGetComponent@V" #T "@@@Actor@@QEAAPEAV" #T "@@XZ"))(actor)
+    ((class T * (*)(Actor*)) dlsym("??$tryGetComponent@V" #T "@@@Actor@@QEAAPEAV" #T "@@XZ"))(actor)
 #include <MC/ProjectileComponent.hpp>
 template <class T>
 T& tryGetComponent(Actor* actor)
 {
     static auto name = typeid(T).name() + 6;
     static std::string sym = std::string("??$tryGetComponent@V") + name + "@@@Actor@@QEAAPEAV" + name + "@@XZ";
-    static auto func = (T & (*)(Actor*)) dlsym_real(sym.c_str());
+    static auto func = (T & (*)(Actor*)) dlsym(sym.c_str());
     return func(actor);
 }
 struct ActorMapping
@@ -228,7 +228,7 @@ public:
 
 void printActorCategory()
 {
-    auto& entityTypeMap = *(std::unordered_map<enum ActorType, struct ActorMapping>*)dlsym_real("?ENTITY_TYPE_MAP@@3V?$unordered_map@W4ActorType@@UActorMapping@@U?$hash@W4ActorType@@@std@@U?$equal_to@W4ActorType@@@4@V?$allocator@U?$pair@$$CBW4ActorType@@UActorMapping@@@std@@@4@@std@@A");
+    auto& entityTypeMap = *(std::unordered_map<enum ActorType, struct ActorMapping>*)dlsym("?ENTITY_TYPE_MAP@@3V?$unordered_map@W4ActorType@@UActorMapping@@U?$hash@W4ActorType@@@std@@U?$equal_to@W4ActorType@@@4@V?$allocator@U?$pair@$$CBW4ActorType@@UActorMapping@@@std@@@4@@std@@A");
     logger.info("enum ActorType : int {");
     for (auto& [type, mapping] : entityTypeMap)
     {
@@ -336,47 +336,47 @@ public:
         mValue = value;
         if constexpr (std::is_same<T, signed char>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@C@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@C@@6B@");
             mDataType = DataItemType::BYTE;
         }
         else if constexpr (std::is_same<T, short>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@F@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@F@@6B@");
             mDataType = DataItemType::SHORT;
         }
         else if constexpr (std::is_same<T, int>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@M@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@M@@6B@");
             mDataType = DataItemType::INT;
         }
         else if constexpr (std::is_same<T, float>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@M@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@M@@6B@");
             mDataType = DataItemType::FLOAT;
         }
         else if constexpr (std::is_same<T, std::string>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@@6B@");
             mDataType = DataItemType::STRING;
         }
         else if constexpr (std::is_same<T, CompoundTag>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@VCompoundTag@@@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@VCompoundTag@@@@6B@");
             mDataType = DataItemType::NBT;
         }
         else if constexpr (std::is_same<T, BlockPos>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@VBlockPos@@@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@VBlockPos@@@@6B@");
             mDataType = DataItemType::POS;
         }
         else if constexpr (std::is_same<T, __int64>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@_J@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@_J@@6B@");
             mDataType = DataItemType::LONG;
         }
         else if constexpr (std::is_same<T, Vec3>::value)
         {
-            *(void**)this = dlsym_real("??_7?$DataItem2@VVec3@@@@6B@");
+            *(void**)this = dlsym("??_7?$DataItem2@VVec3@@@@6B@");
             mDataType = DataItemType::VEC3;
         }
         else

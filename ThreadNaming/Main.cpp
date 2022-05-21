@@ -66,6 +66,7 @@ TClasslessInstanceHook(bool, "??$inner_enqueue@$0A@AEBV?$basic_string@DU?$char_t
 
 //static_assert(sizeof(EduUriResourcePacket) == 0x70, "size of EduUriResourcePacket should be 112");
 
+#if false
 bool errorPacket = false;
 
 TInstanceHook(enum StreamReadResult, "?_read@EduUriResourcePacket@@EEAA?AW4StreamReadResult@@AEAVReadOnlyBinaryStream@@@Z",
@@ -100,4 +101,4 @@ TInstanceHook(bool, "?_sortAndPacketizeEvents@NetworkHandler@@AEAA_NAEAVConnecti
     }
     return rtn;
 }
-
+#endif

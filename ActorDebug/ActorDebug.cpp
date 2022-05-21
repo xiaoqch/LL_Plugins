@@ -230,7 +230,7 @@ void testDataItem()
 #include <MC/I18n.hpp>
 void printActorCategory()
 {
-    auto& entityTypeMap = *(std::unordered_map<enum class ActorType2, struct ActorMapping>*)dlsym_real("?ENTITY_TYPE_MAP@@3V?$unordered_map@W4ActorType@@UActorMapping@@U?$hash@W4ActorType@@@std@@U?$equal_to@W4ActorType@@@4@V?$allocator@U?$pair@$$CBW4ActorType@@UActorMapping@@@std@@@4@@std@@A");
+    auto& entityTypeMap = *(std::unordered_map<enum class ActorType2, struct ActorMapping>*)dlsym("?ENTITY_TYPE_MAP@@3V?$unordered_map@W4ActorType@@UActorMapping@@U?$hash@W4ActorType@@@std@@U?$equal_to@W4ActorType@@@4@V?$allocator@U?$pair@$$CBW4ActorType@@UActorMapping@@@std@@@4@@std@@A");
     std::map<enum class ActorType2, struct ActorMapping> sortedMap;
     std::transform(entityTypeMap.begin(), entityTypeMap.end(), std::inserter(sortedMap, sortedMap.begin()),
                    [](std::pair<enum class ActorType2, struct ActorMapping> a) { return std::pair<enum class ActorType2, struct ActorMapping>(a.first, a.second); });
@@ -689,7 +689,7 @@ public:
     float mPitch;                                      //192
     float mYaw;                                        //196
     float mHeadYaw;                                    //200
-    std::vector<std::unique_ptr<DataItem>> mDataItems; //208, only for read
+    std::vector<std::unique_ptr<DataItem>> mDataItems; //208, only for deserialize
     Abilities mAbilities;                              //232
     std::string mDeviceId;                             //568
     enum BuildPlatform mBuildPlatform;                 //600

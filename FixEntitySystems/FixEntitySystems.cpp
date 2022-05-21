@@ -68,7 +68,7 @@ void entry()
     std::filesystem::create_directories(PLUGIN_DIR);
 #ifdef DEBUG
     //logActorInfo((Actor*)114514, "Test");
-    logger.error("Actor::`vftable' Rva: {}", (uintptr_t)dlsym_real("??_7Actor@@6B@") - (uintptr_t)GetModuleHandle(NULL));
+    logger.error("Actor::`vftable' Rva: {}", (uintptr_t)dlsym("??_7Actor@@6B@") - (uintptr_t)GetModuleHandle(NULL));
     PrintCurrentStackTraceback(&logger);
 #endif // DEBUG
 }

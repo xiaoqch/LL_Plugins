@@ -13,8 +13,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPlugin", "TestPlugin\Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OperationAgent", "OperationAgent\OperationAgent.vcxproj", "{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrapdoorCmdHint", "TrapdoorCmdHint\TrapdoorCmdHint.vcxproj", "{D0607E1F-1C2E-46E2-9A18-911199995423}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActorDebug", "ActorDebug\ActorDebug.vcxproj", "{21331F16-2EF4-4E9F-A7EA-111183E71156}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LimboEntitiesCleaner", "LimboEntitiesCleaner\LimboEntitiesCleaner.vcxproj", "{F940788B-80C8-47A1-BED6-04271E8D9ADC}"
@@ -27,7 +25,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadNaming", "ThreadNamin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestRemoteCall", "TestRemoteCall\TestRemoteCall.vcxproj", "{A7D5827F-C8BF-4E3B-8793-6115AA76A6BB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FixUpgradeActorCrash", "FixUpgradeActorCrash\FixUpgradeActorCrash.vcxproj", "{A7FA6134-593B-4344-8711-0BE88BB62743}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EndGatewayHelper", "EndGatewayHelper\EndGatewayHelper.vcxproj", "{71A2993D-B9BE-4818-82B2-E556409B2D6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +53,6 @@ Global
 		{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}.Debug|x64.Build.0 = Debug|x64
 		{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}.Release|x64.ActiveCfg = Release|x64
 		{0DB5CB60-2D9A-43D1-8F4A-71666922B00B}.Release|x64.Build.0 = Release|x64
-		{D0607E1F-1C2E-46E2-9A18-911199995423}.Debug|x64.ActiveCfg = Debug|x64
-		{D0607E1F-1C2E-46E2-9A18-911199995423}.Debug|x64.Build.0 = Debug|x64
-		{D0607E1F-1C2E-46E2-9A18-911199995423}.Release|x64.ActiveCfg = Release|x64
-		{D0607E1F-1C2E-46E2-9A18-911199995423}.Release|x64.Build.0 = Release|x64
 		{21331F16-2EF4-4E9F-A7EA-111183E71156}.Debug|x64.ActiveCfg = Debug|x64
 		{21331F16-2EF4-4E9F-A7EA-111183E71156}.Debug|x64.Build.0 = Debug|x64
 		{21331F16-2EF4-4E9F-A7EA-111183E71156}.Release|x64.ActiveCfg = Release|x64
@@ -83,10 +77,10 @@ Global
 		{A7D5827F-C8BF-4E3B-8793-6115AA76A6BB}.Debug|x64.Build.0 = Debug|x64
 		{A7D5827F-C8BF-4E3B-8793-6115AA76A6BB}.Release|x64.ActiveCfg = Release|x64
 		{A7D5827F-C8BF-4E3B-8793-6115AA76A6BB}.Release|x64.Build.0 = Release|x64
-		{A7FA6134-593B-4344-8711-0BE88BB62743}.Debug|x64.ActiveCfg = Debug|x64
-		{A7FA6134-593B-4344-8711-0BE88BB62743}.Debug|x64.Build.0 = Debug|x64
-		{A7FA6134-593B-4344-8711-0BE88BB62743}.Release|x64.ActiveCfg = Release|x64
-		{A7FA6134-593B-4344-8711-0BE88BB62743}.Release|x64.Build.0 = Release|x64
+		{71A2993D-B9BE-4818-82B2-E556409B2D6B}.Debug|x64.ActiveCfg = Debug|x64
+		{71A2993D-B9BE-4818-82B2-E556409B2D6B}.Debug|x64.Build.0 = Debug|x64
+		{71A2993D-B9BE-4818-82B2-E556409B2D6B}.Release|x64.ActiveCfg = Release|x64
+		{71A2993D-B9BE-4818-82B2-E556409B2D6B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
