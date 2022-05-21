@@ -150,23 +150,29 @@ def update_actions(bds_version):
 if __name__ == '__main__':
     # bds_version = input("BDS version: ")
     # ll_version = input("LiteLoader version: ")
-    bds_version = "1.18.31.04"
-    ll_version = "2.2.0"
+    bds_version = "1.18.33.02"
+    ll_version = "2.2.5"
     global_path = 'Global\GlobalConfig.h'
     sdk_dir = 'LiteLoaderSDK'
 
     current_bds_version, current_ll_version = get_version(global_path)
     bds_dir = find_bds_dir(bds_version)
+    
+    
+    
+    
+    
     if current_bds_version == bds_version and current_ll_version == ll_version:
         print("Version is up to date")
-    elif current_ll_version != ll_version:
-        print(f"LiteLoader version is not up to date, current: {current_ll_version}, target: {ll_version}")
-        update_global(bds_version, ll_version, global_path)
-        # fetch_sdk()
-    elif current_bds_version != bds_version:
-        print(f"BDS version is not up to date, current: {current_bds_version}, target: {bds_version}")
-        update_global(bds_version, ll_version, global_path)
-        update_actions(bds_version)
-        update_projects(bds_version)
-        update_bds_lib(sdk_dir, bds_dir)
+    else:
+        if current_ll_version != ll_version:
+            print(f"LiteLoader version is not up to date, current: {current_ll_version}, target: {ll_version}")
+            update_global(bds_version, ll_version, global_path)
+            # fetch_sdk()
+        if current_bds_version != bds_version:
+            print(f"BDS version is not up to date, current: {current_bds_version}, target: {bds_version}")
+            update_global(bds_version, ll_version, global_path)
+            update_actions(bds_version)
+            update_projects(bds_version)
+            update_bds_lib(sdk_dir, bds_dir)
     print("Done")

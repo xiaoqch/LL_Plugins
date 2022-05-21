@@ -1,24 +1,53 @@
 ﻿#include "pch.h"
 #include "TestRegRecipe.h"
 #include <EventAPI.h>
+#include <ScheduleAPI.h>
 #include "TestDBStorage.h"
 #include "TestCommandReg.h"
 #include "EnumGenerator.h"
 #include "TestNbt.h"
 #include "TestDlsym.h"
+#include <MC/ChunkViewSource.hpp>
+#include <MC/Level.hpp>
+#include <MC/BlockSource.hpp>
+#include <MC/WorldGenerator.hpp>
+#include <MC/LevelChunk.hpp>
+#include <MC/Dimension.hpp>
+#include <MC/VanillaBlockTypes.hpp>
+#include <MC/EndGatewayBlock.hpp>
+#include <MC/EndGatewayFeature.hpp>
+#include <MC/EndIslandFeature.hpp>
+#include <MC/BlockActor.hpp>
+#include <MC/Block.hpp>
+#include <MC/ServerPlayer.hpp>
+#include <MC/ItemStack.hpp>
+#include <MC/VanillaBlocks.hpp>
+#include <MC/CompoundTag.hpp>
+#include <MC/GameMode.hpp>
+#include <MC/Random.hpp>
 
 //#include <MC/ItemDescriptor.hpp>
+void genBlockActorType()
+{
+    auto& m = *(std::map<enum BlockActorType, class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>, struct std::less<enum BlockActorType>, class std::allocator<struct std::pair<enum BlockActorType const, class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>>>>*)dlsym("?mClassIdMap@BlockActor@@0V?$map@W4BlockActorType@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@U?$less@W4BlockActorType@@@3@V?$allocator@U?$pair@$$CBW4BlockActorType@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@@3@@std@@B");
+    for (auto& [k, v] : m)
+        logger.warn("{} = 0x{:02X}", v, (int)k);
+    auto& m2 = *(std::map<class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>, enum BlockActorType, struct std::less<class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>>>, class std::allocator<struct std::pair<class std::basic_string<char, struct std::char_traits<char>, class std::allocator<char>> const, enum BlockActorType>>>*)dlsym("?mIdClassMap@BlockActor@@0V?$map@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4BlockActorType@@U?$less@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@W4BlockActorType@@@std@@@2@@std@@B");
+    for (auto& [k, v] : m2)
+        logger.warn("{} = 0x{:02X}", k, (int)v);
+}
 void entry()
 {
-    logger.consoleLevel = logger.warn.level;
-    logger.fileLevel = logger.info.level;
+    //Schedule::nextTick(genBlockActorType);
+    logger.consoleLevel = logger.info.level;
+    logger.fileLevel = logger.warn.level;
     // ItemDescriptor i1;
     // ItemDescriptor i2;
     // i1 = i2;
+    Schedule::delay([]() { testMCAPI(); }, 200);
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev) -> bool {
         testRegRecipe();
         testStaticDlsym();
-        testMCAPI();
         TestNbt::test();
         TestCommandReg::test();
         TestDBStorage::test();
@@ -132,7 +161,7 @@ private:
     MCAPI static std::string const TAG;
 
 public:
-inline static class std::array<char const*, 18>& ABILITY_NAMES_ = Abilities::ABILITY_NAMES;
+    inline static class std::array<char const*, 18>& ABILITY_NAMES_ = Abilities::ABILITY_NAMES;
 };
 
 inline class Abilities* getPlayerAbilities(struct ActorUniqueID const& a0)
@@ -160,14 +189,14 @@ enum class AdventureFlag : int
 enum class ActionPermission : int
 {
     Mine = 1,
-	DoorsAndSwitches = 2,
-	OpenContainers = 4,
-	AttackPlayers = 8,
-	AttackMobs = 16,
-	Operator = 32,
-	Teleport = 64,
-	Build = 128,
-	Default = 256,
+    DoorsAndSwitches = 2,
+    OpenContainers = 4,
+    AttackPlayers = 8,
+    AttackMobs = 16,
+    Operator = 32,
+    Teleport = 64,
+    Build = 128,
+    Default = 256,
 };
 
 enum class PermissionLevel : int
@@ -236,16 +265,16 @@ public:
     MCAPI AddPlayerPacket(class Player&);
     MCAPI AddPlayerPacket();
 };
-//TClasslessInstanceHook(void, "?sendToClient@LoopbackPacketSender@@UEAAXAEBVNetworkIdentifier@@AEBVPacket@@E@Z", 
-//    NetworkIdentifier const& nid, Packet const& pkt, unsigned char subId)
+// TClasslessInstanceHook(void, "?sendToClient@LoopbackPacketSender@@UEAAXAEBVNetworkIdentifier@@AEBVPacket@@E@Z",
+//     NetworkIdentifier const& nid, Packet const& pkt, unsigned char subId)
 //{
-//    if (pkt.getId() == MinecraftPacketIds::AdventureSettings) {
-//        auto& packet = (AdventureSettingsPacket&)pkt;
-//        logger.error("noclip: {}", (bool)((int)packet.mFlag & (int)AdventureFlag::FlagNoClip));
-//        __debugbreak();
-//    }
-//    original(this, nid, pkt, subId);
-//}
+//     if (pkt.getId() == MinecraftPacketIds::AdventureSettings) {
+//         auto& packet = (AdventureSettingsPacket&)pkt;
+//         logger.error("noclip: {}", (bool)((int)packet.mFlag & (int)AdventureFlag::FlagNoClip));
+//         __debugbreak();
+//     }
+//     original(this, nid, pkt, subId);
+// }
 
 enum AbilitiesIndex : unsigned short
 {
@@ -269,7 +298,7 @@ enum AbilitiesIndex : unsigned short
     NoClip,
 };
 TClasslessInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIdentifier@@AEBVPacket@@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
-              NetworkIdentifier& nid, class Packet& pkt, std::string const& data)
+                       NetworkIdentifier& nid, class Packet& pkt, std::string const& data)
 {
 
     if (pkt.getId() == MinecraftPacketIds::AdventureSettings)
@@ -285,7 +314,7 @@ TClasslessInstanceHook(void, "?_sendInternal@NetworkHandler@@AEAAXAEBVNetworkIde
 TInstanceHook(void, "?write@AdventureSettingsPacket@@UEBAXAEAVBinaryStream@@@Z",
               AdventureSettingsPacket, class BinaryStream& bs)
 {
-    //this->mFlag = this->mFlag | (int)AdventureFlag::FlagNoClip;
+    // this->mFlag = this->mFlag | (int)AdventureFlag::FlagNoClip;
     original(this, bs);
 }
 
@@ -321,11 +350,13 @@ class AbilityProCommand : public Command
     {
         auto players = mPlayer.results(origin);
         std::string names = "";
-        for (auto player : players) {
+        for (auto player : players)
+        {
             names += ", " + player->getName();
             setPlayerAbility(*player, mIndex, mSwitch);
         }
-        if (names.empty()) {
+        if (names.empty())
+        {
             output.error("%command.generic.noTarget");
         }
         else
@@ -340,26 +371,26 @@ public:
     {
         registry.registerCommand("abilitypro", "Abilities Pro", CommandPermissionLevel::GameMasters, {CommandFlagValue::None}, {(CommandFlagValue)0x80});
         registry.addEnum<AbilitiesIndex>("AbilityPro", {
-            {"build", AbilitiesIndex::Build},
-            {"mine", AbilitiesIndex::Mine},
-            {"doorandswitches", AbilitiesIndex::DoorAndSwitches},
-            {"opencontainers", AbilitiesIndex::OpenContainers},
-            {"attackplayers", AbilitiesIndex::AttackPlayers},
-            {"attackmobs", AbilitiesIndex::AttackMobs},
-            {"op", AbilitiesIndex::Op},
-            {"teleport", AbilitiesIndex::Teleport},
-            {"invulnerable", AbilitiesIndex::Invulnerable},
-            {"flying", AbilitiesIndex::Flying},
-            {"mayfly", AbilitiesIndex::MayFly},
-            {"instabuild", AbilitiesIndex::InstaBuild},
-            {"lightning", AbilitiesIndex::Lightning},
-            //{"FlySpeed", AbilitiesIndex::FlySpeed},
-            //{"WalkSpeed", AbilitiesIndex::WalkSpeed},
-            {"mute", AbilitiesIndex::Mute},
-            {"worldbuilder", AbilitiesIndex::WorldBuilder},
-            {"noclip", AbilitiesIndex::NoClip},
-            });
-        
+                                                           {"build", AbilitiesIndex::Build},
+                                                           {"mine", AbilitiesIndex::Mine},
+                                                           {"doorandswitches", AbilitiesIndex::DoorAndSwitches},
+                                                           {"opencontainers", AbilitiesIndex::OpenContainers},
+                                                           {"attackplayers", AbilitiesIndex::AttackPlayers},
+                                                           {"attackmobs", AbilitiesIndex::AttackMobs},
+                                                           {"op", AbilitiesIndex::Op},
+                                                           {"teleport", AbilitiesIndex::Teleport},
+                                                           {"invulnerable", AbilitiesIndex::Invulnerable},
+                                                           {"flying", AbilitiesIndex::Flying},
+                                                           {"mayfly", AbilitiesIndex::MayFly},
+                                                           {"instabuild", AbilitiesIndex::InstaBuild},
+                                                           {"lightning", AbilitiesIndex::Lightning},
+                                                           //{"FlySpeed", AbilitiesIndex::FlySpeed},
+                                                           //{"WalkSpeed", AbilitiesIndex::WalkSpeed},
+                                                           {"mute", AbilitiesIndex::Mute},
+                                                           {"worldbuilder", AbilitiesIndex::WorldBuilder},
+                                                           {"noclip", AbilitiesIndex::NoClip},
+                                                       });
+
         auto playerParam = makeMandatory<AbilityProCommand>(&AbilityProCommand::mPlayer, "target");
         auto indexParam = makeMandatory<CommandParameterDataType::ENUM, AbilityProCommand>(&AbilityProCommand::mIndex, "ability", "AbilityPro");
         auto valueParam = makeMandatory<AbilityProCommand>(&AbilityProCommand::mSwitch, "value");
@@ -374,7 +405,8 @@ bool inited = ([]() -> bool {
         return true;
     });
     return true;
-    })();
+})();
 
 
 #endif // ABILITYPRO
+

@@ -6,7 +6,7 @@ void entry()
 {
 #ifdef PRINT_ENUM
     Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent const& ev) {
-        auto unk = (__int64)dlsym_real("?gAssertTelemetryRegistered@DebugUtils@@3_NA");
+        auto unk = (__int64)dlsym("?gAssertTelemetryRegistered@DebugUtils@@3_NA");
         auto gAreaFilterMap = (std::map<std::string, unsigned int>*)(unk + 8);
         for (auto& [name, area] : *gAreaFilterMap)
         {
@@ -173,7 +173,7 @@ THook(void, "?log_va@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule
       enum BedrockLog::LogCategory category, class std::bitset<3> bset, enum BedrockLog::LogRule rule,
       FakeLogAreaID areaID, FakeLogPriority priority, char const* funcName, int messageId, char const* format, va_list args)
 {
-    auto unk = dlsym_real("?gBreakpadSetupFailed@DebugUtils@@3_NA");
+    auto unk = dlsym("?gBreakpadSetupFailed@DebugUtils@@3_NA");
     char buf[1024];
     auto size = vsprintf_s(buf, format, args);
     if (size >= 1 && buf[size - 1] == '\n')

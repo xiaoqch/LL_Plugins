@@ -73,7 +73,7 @@ std::string getKeyString(string_span const& key)
 inline class Player* getPlayer(class mce::UUID const& a0)
 {
     class Player* (Level::*rv)(class mce::UUID const&);
-    *((void**)&rv) = dlsym_real("?getPlayer@Level@@UEBAPEAVPlayer@@AEBVUUID@mce@@@Z");
+    *((void**)&rv) = dlsym("?getPlayer@Level@@UEBAPEAVPlayer@@AEBVUUID@mce@@@Z");
     return (Global<Level>->*rv)(std::forward<class mce::UUID const&>(a0));
 }
 bool TestDBStorage::deletePlayerData(mce::UUID uuid)
