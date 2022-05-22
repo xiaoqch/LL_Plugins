@@ -83,7 +83,7 @@ jobs:
     - name: upload files
       uses: actions/upload-artifact@v2
       with:
-        name: LL_Plugins
+        name: LL_Plugins-actions-${{ github.run_number }}
         path: ${{ github.workspace }}/Output/
 
     - name: Archive
