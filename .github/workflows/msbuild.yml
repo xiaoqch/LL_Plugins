@@ -14,7 +14,7 @@ env:
   Platform: X64
 
 jobs:
-  pre-process:
+  build:
     runs-on: windows-2022
 
     steps:
@@ -47,7 +47,7 @@ jobs:
     - name: PreBuild
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        python Scripts/prebuild_precess.py --build_version ${{ github.run_number }}
+        python Scripts/prebuild_process.py --build_version ${{ github.run_number }}
       shell: bash
       
     - name: Add MSBuild to PATH
@@ -79,7 +79,7 @@ jobs:
     - name: Classify Plugins
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        python Scripts/prepare_plugins.py -r "Output"
+        python Scripts/postbuild_process.py -r "Output"
       shell: bash
 
     - name: upload files
@@ -110,4 +110,4 @@ jobs:
         body_path: ${{ github.workspace }}/CHANGELOG.txt
         files: ${{ github.workspace }}/Output/LL_Plugins-${{ steps.rel.outputs.tag }}.zip
       env:
-          GITHUB_REPOSITORY: xiaoqch/LL_Plugins 
+          GITHUB_REPOSITORY: ${{env.GITHUB_ACTION_REPOSITORY}} 
