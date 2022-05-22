@@ -14,7 +14,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(简体，中国) resources
+// resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -69,13 +69,13 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "CompanyName", PLUGIN_AUTHOR
-            VALUE "FileDescription", PLUGIN_DESCRIPTION
-            VALUE "FileVersion", PLUGIN_VERSION_STRING
+            VALUE "FileDescription", PLUGIN_INTRODUCTION
+            VALUE "FileVersion", PLUGIN_FILE_VERSION_STRING
             VALUE "InternalName", PLUGIN_NAME ".dll"
             VALUE "LegalCopyright", "Copyright (C) 2021"
             VALUE "OriginalFilename", PLUGIN_NAME ".dll"
             VALUE "ProductName", PLUGIN_NAME
-            VALUE "ProductVersion", PLUGIN_VERSION_STRING
+            VALUE "ProductVersion", PLUGIN_FILE_VERSION_STRING
         END
     END
     BLOCK "VarFileInfo"
@@ -84,7 +84,7 @@ BEGIN
     END
 END
 
-#endif    // 中文(简体，中国) resources
+#endif    // resources
 /////////////////////////////////////////////////////////////////////////////
 
 

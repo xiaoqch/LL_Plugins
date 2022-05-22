@@ -7,10 +7,10 @@ def get_project_version(version_path):
         # #define PLUGIN_VERSION_MINOR 0
         # #define PLUGIN_VERSION_REVISION 1
         # #define PLUGIN_VERSION_IS_BETA true
-        major_pattern = r'#define PLUGIN_VERSION_MAJOR (?P<major>\d+)'
-        minor_pattern = r'#define PLUGIN_VERSION_MINOR (?P<minor>\d+)'
-        revision_pattern = r'#define PLUGIN_VERSION_REVISION (?P<revision>\d+)'
-        beta_pattern = r'#define PLUGIN_VERSION_IS_BETA (?P<beta>\w+)'
+        major_pattern = r'#define +PLUGIN_VERSION_MAJOR +(?P<major>\d+)'
+        minor_pattern = r'#define +PLUGIN_VERSION_MINOR +(?P<minor>\d+)'
+        revision_pattern = r'#define +PLUGIN_VERSION_REVISION +(?P<revision>\d+)'
+        beta_pattern = r'#define +PLUGIN_VERSION_IS_BETA +(?P<beta>\w+)'
         content = file.read()
         major = re.search(major_pattern, content).group('major')
         minor = re.search(minor_pattern, content).group('minor')
@@ -63,20 +63,20 @@ def update_global(bds_version, ll_version, global_path):
         # #define TARGET_BDS_VERSION "1.18.11.01"
         # #define TARGET_LITELOADER_VERSION "2.1.3"
         content = file.read()
-        bds_pattern = r'#define TARGET_BDS_VERSION "(?P<bds_version>.*?)"'
-        ll_pattern = r'#define TARGET_LITELOADER_VERSION "(?P<ll_version>.*?)"'
-        bds_dst = r'#define TARGET_BDS_VERSION "{bds_version}"'.format(bds_version=bds_version)
-        ll_dst = r'#define TARGET_LITELOADER_VERSION "{ll_version}"'.format(ll_version=ll_version)
-        content = re.sub(bds_pattern, bds_dst, content)
-        content = re.sub(ll_pattern, ll_dst, content)
+        bds_pattern = r'(?P<define>#define +TARGET_BDS_VERSION +)"(?P<bds_version>.*?)"'
+        ll_pattern = r'(?P<define>#define +TARGET_LITELOADER_VERSION +)"(?P<ll_version>.*?)"'
+        dst = r'\g<define>{bds_version}'.format(bds_version=bds_version)
+        content = re.sub(bds_pattern, dst, content)
+        dst = r'\g<define>{ll_version}'.format(ll_version=ll_version)
+        content = re.sub(ll_pattern, dst, content)
     with open(global_path, 'w', encoding='utf-8') as file:
         file.write(content)
     print(f"{global_path} updated")
 
 def get_version(global_path):
     with open(global_path, 'r', encoding='utf-8') as file:
-        bds_pattern = r'#define TARGET_BDS_VERSION "(?P<bds_version>.*?)"'
-        ll_pattern = r'#define TARGET_LITELOADER_VERSION "(?P<ll_version>.*?)"'
+        bds_pattern = r'#define TARGET_BDS_VERSION +"(?P<bds_version>.*?)"'
+        ll_pattern = r'#define TARGET_LITELOADER_VERSION +"(?P<ll_version>.*?)"'
         content = file.read()
         bds_version = re.search(bds_pattern, content).group('bds_version')
         ll_version = re.search(ll_pattern, content).group('ll_version')

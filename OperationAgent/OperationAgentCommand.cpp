@@ -113,7 +113,7 @@ void OperationAgentCommand::execute(class CommandOrigin const& origin, class Com
             output.error("当前没有已设置代理");
         break;
     case OperationAgentCommand::Operation::Version:
-        output.success(PLUGIN_VERSION_STRING);
+        output.success(TO_VERSION_STRING(PLUGIN_VERSION_MAJOR.PLUGIN_VERSION_MINOR));
         break;
     case OperationAgentCommand::Operation::Reload:
         if (Config::initConfig()) {
