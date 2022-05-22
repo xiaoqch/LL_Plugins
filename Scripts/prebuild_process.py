@@ -14,7 +14,8 @@ if __name__ == '__main__':
     parser.add_argument('-s', "--sloution_dir", help="The solution directory", required=False, default='.')
     args = parser.parse_args()
     update_solution_build_version(args.sloution_dir, args.build_version)
-    with open("./release_list.json", 'r') as file:
+    release_list_path = os.path.join(args.sloution_dir, "Scripts", "release_list.json")
+    with open(release_list_path, 'r') as file:
         release_list = json.load(file)
     for plugin_name in release_list:
         plugin_dir = os.path.join(args.sloution_dir, plugin_name)
