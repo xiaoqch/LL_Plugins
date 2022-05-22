@@ -105,7 +105,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       with:
         token: ${{ secrets.ACTIONS_TOKEN }}
-        body_path: ${{ github.workspace }}/CHANGELOG.txt
+        body_path: ${{ github.workspace }}/CHANGELOG.md
         files: ${{ github.workspace }}/Output/LL_Plugins-${{ steps.rel.outputs.tag }}.zip
       env:
           GITHUB_REPOSITORY: ${{env.GITHUB_ACTION_REPOSITORY}} 
