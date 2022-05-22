@@ -1,3 +1,4 @@
+from ast import parse
 import project_helper
 import argparse
 import json
@@ -12,8 +13,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', "--build_version", help="The build version", required=True)
     parser.add_argument('-s', "--sloution_dir", help="The solution directory", required=False, default='.')
+    parser.add_argument('-r', "--release", help="The release version", required=False, default='false')
     args = parser.parse_args()
     update_solution_build_version(args.sloution_dir, args.build_version)
+    if not args.release.lower() == 'true':
+        exit(0)
     release_list_path = os.path.join(args.sloution_dir, "Scripts", "release_list.json")
     with open(release_list_path, 'r') as file:
         release_list = json.load(file)
