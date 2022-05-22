@@ -36,21 +36,19 @@ jobs:
         cd LiteLoaderSDK/Tools
         LibraryBuilder.exe -o ../Lib ./bedrock_server
       shell: cmd
-      
-#     - name: Cache Libs
-#       uses: actions/cache@v2.1.7
-#       with:
-#         # A list of files, directories, and wildcard patterns to cache and restore
-#         path: LiteLoaderSDK/Tools/bedrock_server/
-#         # An explicit key for restoring and saving the cache
-#         key: https://minecraft.azureedge.net/bin-win/bedrock-server-1.18.2.03.zip
-#         # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
-#         #restore-keys:  optional
-#         # The chunk size used to split up large files during upload, in bytes
-#         #upload-chunk-size:  optional
 
     
+    
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.10.4 
 
+    - name: PreBuild
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: |
+        python Scripts/prebuild_precess.py --build_version ${{ github.run_number }}
+      shell: bash
       
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
@@ -77,16 +75,11 @@ jobs:
     #     rm output/Template.dll
     #     rm output/Lib/Template.pdb
     #   shell: bash
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: 3.10.4 
 
     - name: Classify Plugins
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        python Scripts\prepare_plugins.py -r "Output"
+        python Scripts/prepare_plugins.py -r "Output"
       shell: bash
 
     - name: upload files
@@ -115,6 +108,6 @@ jobs:
       with:
         token: ${{ secrets.ACTIONS_TOKEN }}
         body_path: ${{ github.workspace }}/CHANGELOG.txt
-        files: ${{ github.workspace }}\Output\LL_Plugins-${{ steps.rel.outputs.tag }}.zip
+        files: ${{ github.workspace }}/Output/LL_Plugins-${{ steps.rel.outputs.tag }}.zip
       env:
           GITHUB_REPOSITORY: xiaoqch/LL_Plugins 

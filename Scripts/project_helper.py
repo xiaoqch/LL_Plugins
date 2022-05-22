@@ -31,17 +31,17 @@ def get_project_version(project_dir):
         # #define PLUGIN_VERSION_MAJOR 0
         # #define PLUGIN_VERSION_MINOR 0
         # #define PLUGIN_VERSION_REVISION 1
-        # #define PLUGIN_VERSION_IS_BETA true
-        major_pattern = r'#define PLUGIN_VERSION_MAJOR (?P<major>\d+)'
-        minor_pattern = r'#define PLUGIN_VERSION_MINOR (?P<minor>\d+)'
-        revision_pattern = r'#define PLUGIN_VERSION_REVISION (?P<revision>\d+)'
-        beta_pattern = r'#define PLUGIN_VERSION_IS_BETA (?P<beta>\w+)'
+        # #define PLUGIN_VERSION_STATUS       PLUGIN_VERSION_DEV
+        major_pattern = r'#define +PLUGIN_VERSION_MAJOR +(?P<major>\d+)'
+        minor_pattern = r'#define +PLUGIN_VERSION_MINOR +(?P<minor>\d+)'
+        revision_pattern = r'#define +PLUGIN_VERSION_REVISION +(?P<revision>\d+)'
+        beta_pattern = r'#define +PLUGIN_VERSION_STATUS +PLUGIN_VERSION_(?P<status>\w+)'
         content = file.read()
         major = re.search(major_pattern, content).group('major')
         minor = re.search(minor_pattern, content).group('minor')
         revision = re.search(revision_pattern, content).group('revision')
-        beta = re.search(beta_pattern, content).group('beta')
-        return f"{major}.{minor}.{revision}{'b' if beta == 'true' else ''}"
+        status = re.search(beta_pattern, content).group('status')
+        return f"{major}.{minor}.{revision}{'b' if status != 'RELEASE' else ''}"
 
 def update_build_version(project_dir, build_version):
     version_path = os.path.join(project_dir, "version.h")
@@ -49,7 +49,19 @@ def update_build_version(project_dir, build_version):
         return
     with open(version_path, 'r', encoding='utf-8') as file:
         content = file.read()
-    content = re.sub(r'#define PLUGIN_VERSION_BUILD (?P<version>\d+)', f'#define PLUGIN_VERSION_BUILD {build_version}', content)
+    content = re.sub(r'(?P<define>#define +PLUGIN_VERSION_BUILD +)(?P<version>\d+)', f"\\g<define>{build_version}", content)
+    with open(version_path, 'w', encoding='utf-8') as file:
+        file.write(content)
+
+def update_version_status(project_dir, status):
+    # #define PLUGIN_VERSION_STATUS       PLUGIN_VERSION_DEV
+    status = status.upper()
+    version_path = os.path.join(project_dir, "version.h")
+    if not os.path.exists(version_path):
+        return
+    with open(version_path, 'r', encoding='utf-8') as file:
+        content = file.read()
+    content = re.sub(r'(?P<define>#define +PLUGIN_VERSION_STATUS +PLUGIN_VERSION_)(?P<status>\w+)', f"\\g<define>{status}", content)
     with open(version_path, 'w', encoding='utf-8') as file:
         file.write(content)
 
@@ -75,13 +87,7 @@ def add_build_version(project_dir):
     with open(version_path, 'w', encoding='utf-8') as file:
         file.write(content)
 
-def update_solution_version(sloution_dir, build_version):
-    project_dirs = list_project(sloution_dir)
-    for project_dir in project_dirs:
-        add_build_version(project_dir, build_version)
 
 if __name__ == '__main__':
-    update_solution_version('.', 1)
-    print(get_plugins("x64\Release"))
-    for project_dir in list_project('.'):
-        print(get_project_version(project_dir))
+    update_version_status("OperationAgent", "RELEASE")
+    pass

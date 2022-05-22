@@ -6,6 +6,9 @@
 #define TARGET_LITELOADER_VERSION "2.2.5"
 #define GITHUB_LINK "https://github.com/xiaoqch/LL_Plugins/"
 
+#define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
+#define PLUGIN_LICENCE "GPLv3"
+
 // Path
 #define LOG_DIR "./logs/"
 #define PLUGINS_DIR "./plugins/"
