@@ -1,4 +1,4 @@
 @echo off
 @cd ..
-@python Scripts\UpdateVersion.py
+@python Scripts\update_version.py
 @pause

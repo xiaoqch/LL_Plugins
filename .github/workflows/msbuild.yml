@@ -67,27 +67,38 @@ jobs:
         MSBuild.exe ${{env.SOLUTION_FILE_PATH}} -property:Configuration=${{env.BUILD_CONFIGURATION}}
       shell: bash
     
-    - name: copy dll and pdb files
+    # - name: copy dll and pdb files
+    #   working-directory: ${{env.GITHUB_WORKSPACE}}
+    #   run: |
+    #     mkdir output/
+    #     cp -f x64/Release/*.dll output/
+    #     mkdir output/lib/
+    #     cp -f x64/Release/*.pdb output/lib/
+    #     rm output/Template.dll
+    #     rm output/Lib/Template.pdb
+    #   shell: bash
+    
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.10.4 
+
+    - name: Classify Plugins
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        mkdir output/
-        cp -f x64/Release/*.dll output/
-        mkdir output/lib/
-        cp -f x64/Release/*.pdb output/lib/
-        rm output/Template.dll
-        rm output/Lib/Template.pdb
+        python Scripts\prepare_plugins.py -r "Output"
       shell: bash
-    
+
     - name: upload files
       uses: actions/upload-artifact@v2
       with:
         name: LL_Plugins
-        path: ${{ github.workspace }}/output/
+        path: ${{ github.workspace }}/Output/
 
     - name: Archive
       working-directory: ${{env.GITHUB_WORKSPACE}}
       if: startsWith(github.ref, 'refs/tags/v')
-      run: Compress-Archive -Path output/* output/LL_Plugins.zip
+      run: Compress-Archive -Path Output/* Output/LL_Plugins.zip
 
     - name: Prepare for creating Release
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -95,7 +106,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
         echo ::set-output name=tag::${GITHUB_REF#refs/tags/*}
-        mv output/LL_Plugins.zip output/LL_Plugins-${GITHUB_REF#refs/tags/*}.zip
+        mv Output/LL_Plugins.zip Output/LL_Plugins-${GITHUB_REF#refs/tags/*}.zip
       shell: bash
 
     - name: Create New Release
@@ -104,6 +115,6 @@ jobs:
       with:
         token: ${{ secrets.ACTIONS_TOKEN }}
         body_path: ${{ github.workspace }}/CHANGELOG.txt
-        files: ${{ github.workspace }}\output\LL_Plugins-${{ steps.rel.outputs.tag }}.zip
+        files: ${{ github.workspace }}\Output\LL_Plugins-${{ steps.rel.outputs.tag }}.zip
       env:
           GITHUB_REPOSITORY: xiaoqch/LL_Plugins 

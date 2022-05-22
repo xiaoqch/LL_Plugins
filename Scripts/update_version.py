@@ -157,9 +157,7 @@ if __name__ == '__main__':
 
     current_bds_version, current_ll_version = get_version(global_path)
     bds_dir = find_bds_dir(bds_version)
-    
-    
-    
+
     
     
     if current_bds_version == bds_version and current_ll_version == ll_version:
