@@ -42,10 +42,10 @@ _declspec(dllexport) void onPostInit()
 #if PLUGIN_VERSION_STATUS != PLUGIN_VERSION_RELEASE
     logger.warn("This plugin is a beta version and may have bugs");
 #else
-#endif // DEBUG
     if (LL::getServerProtocolVersion() != TARGET_PROTOCOL_VERSION)
         logger.error("BDS 协议版本 {} 与插件目标协议号版本 {} 不匹配，请安装对应版本的插件",
             LL::getServerProtocolVersion(), TARGET_PROTOCOL_VERSION);
+#endif // DEBUG
     if constexpr (ENABLE_CONFIG)
         Config::initConfig();
     entry();
