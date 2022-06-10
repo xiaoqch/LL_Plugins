@@ -21,23 +21,8 @@ class Player;
 class Mob;
 class Actor;
 
-inline class Player* getPlayer(struct ActorUniqueID a0) {
-    class Player* (Level::*rv)(struct ActorUniqueID);
-    *((void**)&rv) = dlsym("?getPlayer@Level@@UEBAPEAVPlayer@@UActorUniqueID@@@Z");
-    return (Global<Level>->*rv)(std::forward<struct ActorUniqueID>(a0));
-}
-inline class Mob* getMob(struct ActorUniqueID a0) {
-    class Mob* (Level::*rv)(struct ActorUniqueID);
-    *((void**)&rv) = dlsym("?getMob@Level@@UEBAPEAVMob@@UActorUniqueID@@@Z");
-    return (Global<Level>->*rv)(std::forward<struct ActorUniqueID>(a0));
-}
-inline class Actor* fetchEntity(struct ActorUniqueID a0, bool a1) {
-    class Actor* (Level::*rv)(struct ActorUniqueID, bool);
-    *((void**)&rv) = dlsym("?fetchEntity@Level@@UEBAPEAVActor@@UActorUniqueID@@_N@Z");
-    return (Global<Level>->*rv)(std::forward<struct ActorUniqueID>(a0), std::forward<bool>(a1));
-}
 inline class Actor* getActor(struct ActorUniqueID a0) {
-    return fetchEntity(a0, true);
+    return Global<Level>->fetchEntity(a0, true);
 }
 
 inline std::string getActorDescription(Actor* actor) {

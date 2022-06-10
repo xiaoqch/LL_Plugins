@@ -7,26 +7,6 @@
 //{
 //    char filler[24];
 //};
-//inline std::vector<class OwnerPtrT<struct EntityRefTraits>> const& getEntities()
-//{
-//    std::vector<class OwnerPtrT<struct EntityRefTraits>> const& (Level::*rv)();
-//    *((void**)&rv) = dlsym("?getEntities@Level@@UEBAAEBV?$vector@V?$OwnerPtrT@UEntityRefTraits@@@@V?$allocator@V?$OwnerPtrT@UEntityRefTraits@@@@@std@@@std@@XZ");
-//    return (Global<Level>->*rv)();
-//}
-
-inline std::vector<class Actor*> getRuntimeActorList()
-{
-    std::vector<class Actor*> (Level::*rv)();
-    *((void**)&rv) = dlsym("?getRuntimeActorList@Level@@UEBA?AV?$vector@PEAVActor@@V?$allocator@PEAVActor@@@std@@@std@@XZ");
-    return (Global<Level>->*rv)();
-}
-
-inline int getActivePlayerCount()
-{
-    int (Level::*rv)();
-    *((void**)&rv) = dlsym("?getActivePlayerCount@Level@@UEBAHXZ");
-    return (Global<Level>->*rv)();
-}
 
 std::string getActorFakeName(Actor* actor);
 
@@ -38,7 +18,7 @@ using namespace RegisterCommandHelper;
 
 inline void refreshAllFakeName()
 {
-    for (auto actor : getRuntimeActorList())
+    for (auto actor : Global<Level>->getRuntimeActorList())
     {
         if (!actor)
             continue;
@@ -58,7 +38,7 @@ inline void switchPlayer(class CommandOutput& output, Player* player)
         uniqueIds.push_back(uid);
     else
         uniqueIds.erase(iter);
-    for (auto actor : getRuntimeActorList())
+    for (auto actor : Global<Level>->getRuntimeActorList())
     {
         if (actor)
             refreshActorFakeName(actor, player);
@@ -90,7 +70,7 @@ void ActorDebugCommand::execute(class CommandOrigin const& origin, class Command
     if (mPlayer_isSet)
     {
         auto players = mPlayer.results(origin);
-        if (players.count() == getActivePlayerCount())
+        if (players.count() == Global<Level>->getActivePlayerCount())
             return switchGlobal(output);
         
         size_t count = 0;
@@ -111,7 +91,7 @@ void ActorDebugCommand::execute(class CommandOrigin const& origin, class Command
         auto player = Command::getPlayerFromOrigin(origin);
         if (!player)
             return output.error("Error in ActorDebug Command");
-        if (getActivePlayerCount() == 1)
+        if (Global<Level>->getActivePlayerCount() == 1)
             return switchGlobal(output);
         else
             return switchPlayer(output, player);

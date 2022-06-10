@@ -2,8 +2,9 @@
 #include <LoggerAPI.h>
 #include <third-party/magic_enum/magic_enum.hpp>
 // Global Info
-#define TARGET_BDS_VERSION "1.18.33.02"
-#define TARGET_LITELOADER_VERSION "2.2.5"
+#define TARGET_BDS_VERSION "1.19.1.01"
+#define TARGET_LITELOADER_VERSION "2.3.0"
+#define TARGET_PROTOCOL_VERSION 526
 #define GITHUB_LINK "https://github.com/xiaoqch/LL_Plugins/"
 
 #define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
@@ -19,7 +20,6 @@
 
 
 // Tools
-#include "DlsymStatic.h"
 #include "DebugHelper.h"
 
 // Global logger

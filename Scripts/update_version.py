@@ -65,9 +65,9 @@ def update_global(bds_version, ll_version, global_path):
         content = file.read()
         bds_pattern = r'(?P<define>#define +TARGET_BDS_VERSION +)"(?P<bds_version>.*?)"'
         ll_pattern = r'(?P<define>#define +TARGET_LITELOADER_VERSION +)"(?P<ll_version>.*?)"'
-        dst = r'\g<define>{bds_version}'.format(bds_version=bds_version)
+        dst = r'\g<define>"{bds_version}"'.format(bds_version=bds_version)
         content = re.sub(bds_pattern, dst, content)
-        dst = r'\g<define>{ll_version}'.format(ll_version=ll_version)
+        dst = r'\g<define>"{ll_version}"'.format(ll_version=ll_version)
         content = re.sub(ll_pattern, dst, content)
     with open(global_path, 'w', encoding='utf-8') as file:
         file.write(content)
@@ -150,14 +150,13 @@ def update_actions(bds_version):
 if __name__ == '__main__':
     # bds_version = input("BDS version: ")
     # ll_version = input("LiteLoader version: ")
-    bds_version = "1.18.33.02"
-    ll_version = "2.2.5"
+    bds_version = "1.19.1.01"
+    ll_version = "2.3.0"
     global_path = 'Global\GlobalConfig.h'
     sdk_dir = 'LiteLoaderSDK'
 
     current_bds_version, current_ll_version = get_version(global_path)
     bds_dir = find_bds_dir(bds_version)
-
     
     
     if current_bds_version == bds_version and current_ll_version == ll_version:

@@ -390,7 +390,7 @@ void testMCAPI()
 
 inline void static_query()
 {
-    ForEachSymbol(dlsym_static);
+    ForEachSymbol(dlsym);
 }
 inline void dlsym_query()
 {

@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <MC/Level.hpp>
 
-#define ADDR_HOOK
+//#define ADDR_HOOK
 //#define BATCH_HOOK
 
 #ifdef DEBUG
@@ -423,7 +423,7 @@ protected:
 inline std::string tryGetSystemName(void* vtbl_ptr)
 {
 #define ReturnIfSameVtbl(System)      \
-    if (vtbl_ptr == dlsym_static("??_7" #System "@@6BITickingSystem@@@") || vtbl_ptr == dlsym_static("??_7" #System "@@6B@")) \
+    if (vtbl_ptr == dlsym("??_7" #System "@@6BITickingSystem@@@") || vtbl_ptr == dlsym("??_7" #System "@@6B@")) \
         return #System;
     ForEachSystem(ReturnIfSameVtbl);
     auto rva = (uintptr_t)vtbl_ptr - (uintptr_t)GetModuleHandle(NULL);
