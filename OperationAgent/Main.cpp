@@ -10,12 +10,12 @@
 #include <filesystem>
 
 void entry() {
-    Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) {
+    Event::RegCmdEvent::subscribe_ref([](Event::RegCmdEvent& ev) {
         OperationAgentCommand::setup(*ev.mCommandRegistry);
         return true;
         });
     if (Config::autoRideWhenJoin) {
-        Event::PlayerJoinEvent::subscribe([](Event::PlayerJoinEvent const& ev)->bool {
+        Event::PlayerJoinEvent::subscribe_ref([](Event::PlayerJoinEvent& ev) -> bool {
             auto& manager = AgentManager::getManager();
             Player* player = ev.mPlayer;
             if (player == nullptr)

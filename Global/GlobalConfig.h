@@ -1,10 +1,9 @@
 #pragma once
-#include <LoggerAPI.h>
 #include <third-party/magic_enum/magic_enum.hpp>
 // Global Info
 #define TARGET_BDS_VERSION "1.19.1.01"
 #define TARGET_LITELOADER_VERSION "2.3.0"
-#define TARGET_PROTOCOL_VERSION 526
+#define TARGET_PROTOCOL_VERSION 527
 #define GITHUB_LINK "https://github.com/xiaoqch/LL_Plugins/"
 
 #define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME
@@ -23,4 +22,4 @@
 #include "DebugHelper.h"
 
 // Global logger
-extern Logger logger;
+extern class Logger logger;
