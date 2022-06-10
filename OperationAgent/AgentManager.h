@@ -47,44 +47,8 @@ private:
         DataType type;
         std::variant<ActorUniqueID, BlockPos> data;
         std::string remark;
-        inline nlohmann::json serialize() {
-            nlohmann::json json;
-            switch (type)
-            {
-            case AgentManager::DataType::Sleep:{
-                json["type"] = "Sleep";
-                auto& bedPos = std::get<BlockPos>(data);
-                json["bedPos"] = { bedPos.x, bedPos.y, bedPos.z };
-                break; 
-            }
-            case AgentManager::DataType::Ride: {
-                json["type"] = "Ride";
-                auto& uniqueID = std::get<ActorUniqueID>(data);
-                json["mounts"] = uniqueID.id;
-                break;
-            }
-            default:
-                break;
-            }
-            json["remark"] = remark;
-            return json;
-        }
-        inline static Data deserialize(nlohmann::json json) {
-            Data data;
-            auto typeStr = json.value<std::string>("type","Unknown");
-            if (typeStr == "Sleep") {
-                data.type = DataType::Sleep;
-                auto bedPos = json.value<std::vector<int>>("bedPos", { 0,0,0 });
-                data.data = BlockPos{ bedPos[0],bedPos[1],bedPos[2] };
-            }
-            else if (typeStr == "Ride") {
-                data.type = DataType::Ride;
-                auto uniqueID = json.value<int64_t>("mounts", -1);
-                data.data = ActorUniqueID{ uniqueID };
-            }
-            data.remark = json.value<std::string>("remark", "Unknown");
-            return data;
-        }
+        nlohmann::json serialize();
+        static Data deserialize(nlohmann::json json);
     };
     std::unordered_map<ActorUniqueID, Data> mData;
     std::unordered_map<ActorUniqueID, ActorUniqueID> mAgentMap;
