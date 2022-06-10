@@ -28,7 +28,7 @@ void entry() {
             auto& mountsUID = mountsUIDOpt.val();
             Schedule::delay([playerUID, mountsUID]() {
                 auto& manager = AgentManager::getManager();
-                Player* player = getPlayer(playerUID);
+                Player* player = Global<Level>->getPlayer(playerUID);
                 if (player == nullptr) {
                     return;
                 }

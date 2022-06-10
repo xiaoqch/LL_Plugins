@@ -53,17 +53,17 @@ bool AgentManager::hasMaster(Actor* actor)
 
 Player* AgentManager::getMaster(Player* agent)
 {
-    return getPlayer(getMasterUID(agent->getUniqueID()));
+    return Global<Level>->getPlayer(getMasterUID(agent->getUniqueID()));
 }
 
 Mob* AgentManager::getMaster(Mob* agent)
 {
-    return getMob(getMasterUID(agent->getUniqueID()));
+    return Global<Level>->getMob(getMasterUID(agent->getUniqueID()));
 }
 
 Actor* AgentManager::getMaster(Actor* agent)
 {
-    return fetchEntity(getMasterUID(agent->getUniqueID()), true);
+    return Global<Level>->fetchEntity(getMasterUID(agent->getUniqueID()), true);
 }
 
 void AgentManager::forEach(std::function<void(Actor* agent, Actor* master)> callback)

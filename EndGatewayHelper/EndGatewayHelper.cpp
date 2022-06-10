@@ -61,12 +61,6 @@ inline float distSqrToCenter(BlockPos const& bpos, Vec3 const& pos)
     return bpos.center().distanceToSqr(pos);
 }
 
-inline class ChunkSource& getChunkSource(class BlockSource& region)
-{
-    class ChunkSource& (BlockSource::*rv)();
-    *((void**)&rv) = dlsym("?getChunkSource@BlockSource@@UEAAAEAVChunkSource@@XZ");
-    return (region.*rv)();
-}
 
 class BlockPos findValidSpawnAround(class BlockSource& region, class BlockPos const& around, bool searchForEndStoneOnly, int searchRadius)
 {
@@ -208,17 +202,17 @@ inline std::string getTaskDescription(class std::tuple<enum EndDragonFight::Gate
 TInstanceHook(void, "?_spawnNewGatewayChunksTask@EndDragonFight@@AEAAXAEAV?$tuple@W4GatewayTask@EndDragonFight@@UGateWayGenerator@2@U32@@std@@@Z",
               EndDragonFight, class std::tuple<enum EndDragonFight::GatewayTask, struct EndDragonFight::GateWayGenerator, struct EndDragonFight::GateWayGenerator>& a0)
 {
-    //logger.info("EndDragonFight::_spawnNewGatewayChunksTask");
+    // logger.info("EndDragonFight::_spawnNewGatewayChunksTask");
     auto message = getTaskDescription(a0);
     logger.warn(ColorFormat::convertToColsole(std::string(message)));
-    Level::broadcastText(message,TextType::RAW);
+    Level::broadcastText(message, TextType::RAW);
     original(this, std::forward<decltype(a0)>(a0));
 }
 
 TInstanceHook(void, "?_verifyExitPositionsTask@EndDragonFight@@AEAAXAEAV?$tuple@W4GatewayTask@EndDragonFight@@UGateWayGenerator@2@U32@@std@@@Z",
               EndDragonFight, class std::tuple<enum EndDragonFight::GatewayTask, struct EndDragonFight::GateWayGenerator, struct EndDragonFight::GateWayGenerator>& a0)
 {
-    //logger.info("EndDragonFight::_verifyExitPositionsTask");
+    // logger.info("EndDragonFight::_verifyExitPositionsTask");
     auto message = getTaskDescription(a0);
     logger.warn(ColorFormat::convertToColsole(std::string(message)));
     Level::broadcastText(message, TextType::RAW);
@@ -259,13 +253,12 @@ TInstanceHook(void, "?load@EndGatewayBlockActor@@UEAAXAEAVLevel@@AEBVCompoundTag
 }
 
 
-
 THook(int, "?_getHighestSection@EndGatewayBlockActor@@CAHAEAVWorldGenerator@@AEAVBlockVolume@@AEBVBlockPos@@@Z",
       class WorldGenerator& a0, class BlockVolume& a1, class BlockPos const& a2)
 {
     auto rtn = original(std::forward<decltype(a0)>(a0), std::forward<decltype(a1)>(a1), std::forward<decltype(a2)>(a2));
     if (Config::Verbose)
-    logger.info("EndGatewayBlockActor::_getHighestSection({}) -> {}", a2.toString(), rtn);
+        logger.info("EndGatewayBlockActor::_getHighestSection({}) -> {}", a2.toString(), rtn);
     return rtn;
 }
 
@@ -279,7 +272,7 @@ THook(class BlockPos&, "?findExitPortal@EndGatewayBlockActor@@SA?AVBlockPos@@AEA
         __debugbreak();
 #endif // DEBUG
     if (Config::Verbose)
-    logger.info("EndGatewayBlockActor::findExitPortal({}) -> {}", a1.toString(), ret.toString());
+        logger.info("EndGatewayBlockActor::findExitPortal({}) -> {}", a1.toString(), ret.toString());
     return rtn;
 }
 THook(class BlockPos&, "?findTallestBlock@EndGatewayBlockActor@@SA?AVBlockPos@@AEAVBlockSource@@AEBV2@H_N@Z",
@@ -292,7 +285,7 @@ THook(class BlockPos&, "?findTallestBlock@EndGatewayBlockActor@@SA?AVBlockPos@@A
         __debugbreak();
 #endif // DEBUG
     if (Config::Verbose)
-    logger.info("EndGatewayBlockActor::findTallestBlock({}, {}, {}) -> {}", a1.toString(), a2, a3, rtn.toString());
+        logger.info("EndGatewayBlockActor::findTallestBlock({}, {}, {}) -> {}", a1.toString(), a2, a3, rtn.toString());
     return rtn;
 }
 
@@ -306,7 +299,7 @@ THook(class BlockPos&, "?findValidSpawnAround@EndGatewayBlockActor@@SA?AVBlockPo
         __debugbreak();
 #endif // DEBUG
     if (Config::Verbose)
-    logger.info("EndGatewayBlockActor::findValidSpawnAround({}, {}, {}) -> {}", a1.toString(), a2, a3, ret.toString());
+        logger.info("EndGatewayBlockActor::findValidSpawnAround({}, {}, {}) -> {}", a1.toString(), a2, a3, ret.toString());
     return rtn;
 }
 
@@ -314,14 +307,14 @@ TInstanceHook(void, "?_makeEndIslandFeature@EndDragonFight@@AEAAXAEAVBlockSource
               EndDragonFight, class BlockSource& a0, class BlockPos a1)
 {
     if (Config::Verbose)
-    logger.info("EndDragonFight::_makeEndIslandFeature({})", a1.toString());
+        logger.info("EndDragonFight::_makeEndIslandFeature({})", a1.toString());
     original(this, std::forward<decltype(a0)>(a0), std::forward<decltype(a1)>(a1));
 }
 
 TInstanceHook(void, "?_placeAndLinkNewGatewayPair@EndDragonFight@@AEAAXXZ",
               EndDragonFight)
 {
-    //if (Config::Verbose)
+    // if (Config::Verbose)
     logger.warn("EndDragonFight::_placeAndLinkNewGatewayPair - Entry: {} ,Exit: {}",
                 this->mEntryGenerator.mPosition.toString(), this->mExitGenerator.mPosition.toString());
     original(this);
@@ -399,7 +392,7 @@ TInstanceHook(class BlockPos&, "?getExitPosition@EndGatewayBlockActor@@QEBA?AVBl
               EndGatewayBlockActor, class BlockPos& ret)
 {
     auto& rtn = original(this, ret);
-    //logger.info("EndGatewayBlockActor({})::getExitPosition() -> {}", getPosition().toString(), rtn.toString());
+    // logger.info("EndGatewayBlockActor({})::getExitPosition() -> {}", getPosition().toString(), rtn.toString());
     return rtn;
 }
 
@@ -497,7 +490,7 @@ TInstanceHook(void, "?animateTick@EndGatewayBlock@@UEBAXAEAVBlockSource@@AEBVBlo
 TInstanceHook(bool, "?_placeBlock@Feature@@IEBA_NAEAVBlockSource@@AEBVBlockPos@@AEBVBlock@@@Z",
               Feature, class BlockSource& bs, class BlockPos const& pos, class Block const& block)
 {
-    // if (*(void**)this == dlsym_static("??_7EndIslandFeature@@6B@"))
+    // if (*(void**)this == dlsym("??_7EndIslandFeature@@6B@"))
     //     logger.info("Feature::_placeBlock({}, {})", pos.toString(), block.getName().getString());
     return original(this, std::forward<decltype(bs)>(bs), std::forward<decltype(pos)>(pos), std::forward<decltype(block)>(block));
 }
@@ -553,21 +546,21 @@ TInstanceHook(void, "?_createNewDragon@EndDragonFight@@AEAAXXZ",
 TInstanceHook(void, "?_initializeDragon@EndDragonFight@@AEAAXAEAVEnderDragon@@@Z",
               EndDragonFight, class EnderDragon& a0)
 {
-    //logger.info("EndDragonFight::_initializeDragon");
+    // logger.info("EndDragonFight::_initializeDragon");
     original(this, std::forward<decltype(a0)>(a0));
 }
 
 TInstanceHook(void, "?_setRespawnStage@EndDragonFight@@AEAAXW4RespawnAnimation@@@Z",
               EndDragonFight, enum RespawnAnimation a0)
 {
-    //logger.info("EndDragonFight::_setRespawnStage");
+    // logger.info("EndDragonFight::_setRespawnStage");
     original(this, std::forward<decltype(a0)>(a0));
 }
 
 TInstanceHook(void, "?_tickRespawnAnimation@EndDragonFight@@AEAAXAEBV?$vector@UActorUniqueID@@V?$allocator@UActorUniqueID@@@std@@@std@@H@Z",
               EndDragonFight, class std::vector<struct ActorUniqueID, class std::allocator<struct ActorUniqueID>> const& a0, int a1)
 {
-    //logger.info("EndDragonFight::_tickRespawnAnimation");
+    // logger.info("EndDragonFight::_tickRespawnAnimation");
     original(this, std::forward<decltype(a0)>(a0), std::forward<decltype(a1)>(a1));
 }
 
@@ -739,7 +732,6 @@ TClasslessInstanceHook(class HashedString const&,
 }
 
 
-
 inline void printBlocks()
 {
     I18n::chooseLanguage("zh_CN");
@@ -766,11 +758,11 @@ inline void printBlocks()
         bool SolidBlockingMaterial = material.isSolidBlocking();
         bool Solid = bl.isSolid();
         uint64_t BlockProperties = dAccess<uint64_t>(&bl, 168);
-        //bool Propetory = bl.get;
+        // bool Propetory = bl.get;
         auto line = fmt::format("{},{},{},{},{},{},0x{:X}\n",
                                 Name, Trans, (int)Type, SolidBlckingBlock, SolidBlockingMaterial, Solid, BlockProperties);
         blocks.push_back({(int)Type, line});
-        //blockCsv << line;
+        // blockCsv << line;
         return true;
     });
     std::sort(blocks.begin(), blocks.end(), [](auto& a, auto& b) {
@@ -780,7 +772,8 @@ inline void printBlocks()
     {
         blockCsv << block.second;
     }
-    for (auto& material : Material::getAll()) {
+    for (auto& material : Material::getAll())
+    {
         auto& Type = material->mType;
         auto& Flammable = material->mFlammable;
         auto& NeverBuildable = material->mNeverBuildable;
@@ -812,7 +805,7 @@ inline void printBlocks()
 
 void entry()
 {
-    //Schedule::nextTick(printBlocks);
+    // Schedule::nextTick(printBlocks);
     Event::RegCmdEvent::subscribe_ref([](Event::RegCmdEvent& ev) {
         EndGatewayCommand::setup(*ev.mCommandRegistry);
         return true;
@@ -874,14 +867,3 @@ TClasslessInstanceHook(bool, "?_hasChunk@DBChunkStorage@@AEAA_NAEBVDBChunkStorag
     return true;
 }
 #endif // VOID_WORLD
-
-TInstanceHook(void, "?tick@BlockActor@@UEAAXAEAVBlockSource@@@Z",
-              BlockActor, class BlockSource& region)
-{
-    static void* vftable = dlsym("??_7SignBlockActor@@6B@");
-    if (*(void**)this == vftable) {
-        //...
-        logger.info("SignBlockActor::tick");
-    }
-    original(this, region);
-}

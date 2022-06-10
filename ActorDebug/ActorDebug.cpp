@@ -326,12 +326,7 @@ private:
     MCAPI class DataItem& _get(unsigned short);
     MCAPI void _resizeToContain(unsigned short);
 };
-inline class Actor* getRuntimeEntity(class ActorRuntimeID a0, bool a1)
-{
-    class Actor* (Level::*rv)(class ActorRuntimeID, bool);
-    *((void**)&rv) = dlsym("?getRuntimeEntity@Level@@UEBAPEAVActor@@VActorRuntimeID@@_N@Z");
-    return (Global<Level>->*rv)(std::forward<class ActorRuntimeID>(a0), std::forward<bool>(a1));
-}
+
 
 #pragma region SetActorDataPacket
 
@@ -498,7 +493,7 @@ public:
         }
         //writeDataItems
         auto dataItems = mActorData->packAll();
-        auto actor = getRuntimeEntity(mRuntimeId, true);
+        auto actor = Global<Level>->getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
         dataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
         dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
@@ -557,7 +552,7 @@ public:
         bs.writeType(mPos);
         bs.writeType(mVelocity);
         auto dataItems = mActorData->packAll();
-        auto actor = getRuntimeEntity(mRuntimeId, true);
+        auto actor = Global<Level>->getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
         dataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
         dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
@@ -620,7 +615,7 @@ class Abilities
 {
     std::unique_ptr<class PermissionsHandler> mPermissions;
     std::array<Ability, 18> mAbilities;
-    std::array<Ability, 8> mCustomAbilityCache;
+    std::array<Ability, 18> mCustomAbilityCache;
     int unk320;
     int unk324;
     int unk328;
@@ -654,7 +649,7 @@ private:
     MCAPI static class std::array<char const*, 18> ABILITY_NAMES;
     MCAPI static std::string const TAG;
 };
-static_assert(sizeof(Abilities) == 336);
+//static_assert(sizeof(Abilities) == 336);
 struct AdventureSettings
 {
     char filler[26];
@@ -691,11 +686,11 @@ public:
     float mHeadYaw;                                    //200
     std::vector<std::unique_ptr<DataItem>> mDataItems; //208, only for deserialize
     Abilities mAbilities;                              //232
-    std::string mDeviceId;                             //568
-    enum BuildPlatform mBuildPlatform;                 //600
+    std::string mDeviceId;                             //688
+    enum BuildPlatform mBuildPlatform;                 //720
     char pad_604[4];                                   //604
-    NetworkItemStackDescriptor mCarriedItem;           //608
-    SynchedActorData* mActorData;                      //736
+    NetworkItemStackDescriptor mCarriedItem;           //728
+    SynchedActorData* mActorData;                      //880
 public:
     /*0*/ virtual ~AddPlayerPacket();
     /*1*/ virtual enum MinecraftPacketIds getId() const;
@@ -709,7 +704,7 @@ public:
     {
         bs.writeUnsignedInt64(*(unsigned __int64*)&mUuid);
         bs.writeUnsignedInt64(*((unsigned __int64*)&mUuid + 1));
-        bs.writeString(getActorFakeName(getRuntimeEntity(mRuntimeId, true)));
+        bs.writeString(getActorFakeName(Global<Level>->getRuntimeEntity(mRuntimeId, true)));
         bs.writeVarInt64(mUniqueId.id);
         bs.writeUnsignedVarInt64(mRuntimeId.id);
         bs.writeString(mPlatformOnlineId);
@@ -720,7 +715,7 @@ public:
         bs.writeFloat(mHeadYaw);
         bs.writeType(mCarriedItem);
         auto dataItems = mActorData->packAll();
-        auto actor = getRuntimeEntity(mRuntimeId, true);
+        auto actor = Global<Level>->getRuntimeEntity(mRuntimeId, true);
         auto fakeName = getActorFakeName(actor);
         dataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, fakeName));
         dataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, true));
@@ -742,13 +737,13 @@ public:
     }
 };
 constexpr auto a = offsetof(AddPlayerPacket, mCarriedItem);
-static_assert(sizeof(AddPlayerPacket) == 768);
+static_assert(sizeof(AddPlayerPacket) == 888);
 static_assert(offsetof(AddPlayerPacket, mDataItems) == 208);
 static_assert(offsetof(AddPlayerPacket, mAbilities) == 232);
-static_assert(offsetof(AddPlayerPacket, mDeviceId) == 568);
-static_assert(offsetof(AddPlayerPacket, mBuildPlatform) == 600);
-static_assert(offsetof(AddPlayerPacket, mCarriedItem) == 608);
-static_assert(offsetof(AddPlayerPacket, mActorData) == 760);
+static_assert(offsetof(AddPlayerPacket, mDeviceId) == 688);
+static_assert(offsetof(AddPlayerPacket, mBuildPlatform) == 720);
+static_assert(offsetof(AddPlayerPacket, mCarriedItem) == 728);
+static_assert(offsetof(AddPlayerPacket, mActorData) == 880);
 
 #pragma endregion
 
@@ -1486,7 +1481,7 @@ void refreshActorFakeName(Actor* actor, Player* player = nullptr)
     if (packet.mRuntimeId.id == 0)
         return;
     packet.mDataItems.emplace_back(DataItem::create(ActorDataIDs::NAMETAG, actor->getNameTag()));
-    packet.mDataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, Config::globalActive));
+    packet.mDataItems.emplace_back(DataItem::create<signed char>(ActorDataIDs::ALWAYS_SHOW_NAMETAG, actor->isPlayer()||Config::globalActive));
     if (!player)
     {
         auto& dim = actor->getDimension();
@@ -1536,7 +1531,7 @@ TInstanceHook(void, "?write@AddActorPacket@@UEBAXAEAVBinaryStream@@@Z",
         SynchedActorData fakeActorData = actorData->_clone();
         if (auto nameItem = findNameItemAndSetAlwayShow(fakeActorData.mItemsArray))
         {
-            auto actor = getRuntimeEntity(runtimeId, true);
+            auto actor = Global<Level>->getRuntimeEntity(runtimeId, true);
             *nameItem = getActorFakeName(actor);
         }
         else
@@ -1565,7 +1560,7 @@ TInstanceHook(void, "?write@AddItemActorPacket@@UEBAXAEAVBinaryStream@@@Z",
         SynchedActorData fakeActorData = actorData->_clone();
         if (auto nameItem = findNameItemAndSetAlwayShow(fakeActorData.mItemsArray))
         {
-            auto actor = getRuntimeEntity(runtimeId, true);
+            auto actor = Global<Level>->getRuntimeEntity(runtimeId, true);
             *nameItem = getActorFakeName(actor);
         }
         else
@@ -1585,7 +1580,7 @@ TInstanceHook(void, "?write@AddPlayerPacket@@UEBAXAEAVBinaryStream@@@Z",
 {
     if (Config::globalActive)
     {
-        constexpr auto OFFSET_ACTOR_DATA = offsetof(std::remove_reference<decltype(*this)>::type, mActorData);
+        constexpr auto OFFSET_ACTOR_DATA = 880;//offsetof(std::remove_reference<decltype(*this)>::type, mActorData);
         constexpr auto OFFSET_RUNTIMEID = offsetof(std::remove_reference<decltype(*this)>::type, mRuntimeId);
         auto& runtimeId = dAccess<ActorRuntimeID>(this, OFFSET_RUNTIMEID);
         auto& actorData = dAccess<SynchedActorData*>(this, OFFSET_ACTOR_DATA); //mActorData;
@@ -1594,7 +1589,7 @@ TInstanceHook(void, "?write@AddPlayerPacket@@UEBAXAEAVBinaryStream@@@Z",
         SynchedActorData fakeActorData = actorData->_clone();
         if (auto nameItem = findNameItemAndSetAlwayShow(fakeActorData.mItemsArray))
         {
-            auto actor = getRuntimeEntity(runtimeId, true);
+            auto actor = Global<Level>->getRuntimeEntity(runtimeId, true);
             nameItem->setData(getActorFakeName(actor));
         }
         else
@@ -1616,7 +1611,7 @@ TInstanceHook(void, "?write@SetActorDataPacket@@UEBAXAEAVBinaryStream@@@Z",
     {
         if (auto item = findNameItemAndSetAlwayShow(mDataItems))
         {
-            auto actor = getRuntimeEntity(mRuntimeId, true);
+            auto actor = Global<Level>->getRuntimeEntity(mRuntimeId, true);
             item->setData(getActorFakeName(actor));
         }
     }
@@ -1654,7 +1649,7 @@ TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacke
 
             if (auto item = findNameItemAndSetAlwayShow(dataItems))
             {
-                auto actor = getRuntimeEntity(runtimeId, true);
+                auto actor = Global<Level>->getRuntimeEntity(runtimeId, true);
                 item->setData(getActorFakeName(actor));
             }
             return original(this, networkID, packet, clientSubID);
@@ -1687,7 +1682,7 @@ TInstanceHook(void, "?send@NetworkHandler@@QEAAXAEBVNetworkIdentifier@@AEBVPacke
             SynchedActorData fakeActorData = actorData->_clone();
             if (auto nameItem = findNameItemAndSetAlwayShow(fakeActorData.mItemsArray))
             {
-                auto actor = getRuntimeEntity(runtimeId, true);
+                auto actor = Global<Level>->getRuntimeEntity(runtimeId, true);
                 nameItem->setData(getActorFakeName(actor));
             }
             actorData = &fakeActorData;
@@ -1752,7 +1747,7 @@ TInstanceHook(float, "?change@HealthAttributeDelegate@@UEAAMMMAEBVAttributeBuff@
     else if (!uniqueIds.empty())
     {
         for (auto& uid : uniqueIds) {
-            refreshActorFakeName(dAccess<Mob*>(this, 32), Level::getPlayer(uid));
+            refreshActorFakeName(dAccess<Mob*>(this, 32), Global<Level>->getPlayer(uid));
         }
     }
     return rtn;

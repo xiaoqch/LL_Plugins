@@ -111,12 +111,9 @@ void EndGatewayCommand::execute(class CommandOrigin const& origin, class Command
 };
 
 void EndGatewayCommand::setup(CommandRegistry& registry)
-{
-    void* ptr = dlsym("?registerCommand@CommandRegistry@@QEAAXAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PEBDW4CommandPermissionLevel@@UCommandFlag@@3@Z");
-    
+{    
     registry.registerCommand("gateway", "End Gateway Helper Command", CommandPermissionLevel::Any, {(CommandFlagValue)0}, {(CommandFlagValue)0x80});
 
-    logger.info("{}", ptr);
     //Get, Set, Edit, FindSpawn, FindExit, FindTallest
     registry.addEnum<Operation>("Gateway_Action_Get", {{"get", Operation::Get}});
     registry.addEnum<Operation>("Gateway_Action_Set", {{"setblock", Operation::Set}});

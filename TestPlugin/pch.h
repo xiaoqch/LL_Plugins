@@ -11,6 +11,7 @@
 #include <iostream>
 #include <Global.h>
 #include <LLAPI.h>
+#include <ServerAPI.h>
 #include "Config.h"
 
 #endif //PCH_H
