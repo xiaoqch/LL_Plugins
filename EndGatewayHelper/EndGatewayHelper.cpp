@@ -722,7 +722,7 @@ TClasslessInstanceHook(Actor*,
     {
         logger.error("Error in hook spawnProjectile");
     }
-    return actor;
+    return projectile;
 }
 
 TClasslessInstanceHook(class HashedString const&,

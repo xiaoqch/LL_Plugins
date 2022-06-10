@@ -165,7 +165,6 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="TestCommandReg.h" />
     <ClInclude Include="TestDBStorage.h" />
     <ClInclude Include="TestDlsym.h" />
-    <ClInclude Include="TestFakeName.h" />
     <ClInclude Include="TestNbt.h" />
     <ClInclude Include="TestRegRecipe.h" />
     <ClInclude Include="version.h" />
@@ -194,7 +193,6 @@ LibraryBuilder.exe -o ..\Lib\
     <ClCompile Include="TestCommandReg.cpp" />
     <ClCompile Include="TestDBStorage.cpp" />
     <ClCompile Include="TestDlsym.cpp" />
-    <ClCompile Include="TestFakeName.cpp" />
     <ClCompile Include="TestNbt.cpp" />
     <ClCompile Include="TestPacket.cpp" />
     <ClCompile Include="TestRegRecipe.cpp" />

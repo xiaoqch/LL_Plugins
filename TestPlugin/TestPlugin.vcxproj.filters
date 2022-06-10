@@ -46,9 +46,6 @@
     <ClInclude Include="TestDBStorage.h">
       <Filter>Test</Filter>
     </ClInclude>
-    <ClInclude Include="TestFakeName.h">
-      <Filter>Test</Filter>
-    </ClInclude>
     <ClInclude Include="TestNbt.h">
       <Filter>Test</Filter>
     </ClInclude>
@@ -85,9 +82,6 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="TestDBStorage.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
-    <ClCompile Include="TestFakeName.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="TestNbt.cpp">
