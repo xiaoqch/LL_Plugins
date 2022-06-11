@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{762b2f65-7b2d-4fdc-91db-9b5f52498b1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Default">
+      <UniqueIdentifier>{c74cb326-a36a-4064-8e4e-05cde8a8309e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{d6d8b7a2-010d-4126-82d0-ec77948a61cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{b8363681-878f-469f-b34e-09fd4d7bda76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HookClass">
+      <UniqueIdentifier>{2d312df6-c51f-444e-935c-6304ee24cb8c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>资源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumGenerator.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestAI.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCommandReg.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDBStorage.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestNbt.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestRegRecipe.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDlsym.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="EnumGenerator.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestAI.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCommandReg.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDBStorage.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestNbt.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestPacket.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestRegRecipe.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="HookServerPlayer.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="HookSimulatedPlayer.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="HookDBStorage.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="HookLevelStorage.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="HookPlayer.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="HookMob.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="HookActor.cpp">
+      <Filter>HookClass</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDlsym.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TestPlugin.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib">
+      <Filter>Lib</Filter>
+    </Library>
+    <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib">
+      <Filter>Lib</Filter>
+    </Library>
+  </ItemGroup>
+</Project>

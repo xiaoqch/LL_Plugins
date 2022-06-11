@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -17,6 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -29,23 +40,83 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\LiteLoader\Header\;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(SolutionDir)\LiteLoaderSDK\Header\third-party\;$(ExternalIncludePath)</ExternalIncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\LiteLoaderSDK\Header\;$(SolutionDir)\LiteLoaderSDK\Header\third-party\;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;TEMPLATE_EXPORTS;_WINDOWS;_USRDLL;_ADM64_;_AMD64_;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;_ADM64_;_AMD64_;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
+    </Link>
+    <PostBuildEvent>
+      <Command>if exist "$(LocalDebuggerWorkingDirectory)plugins\" (
+copy /Y "$(TargetPath)" "$(LocalDebuggerWorkingDirectory)plugins"
+)</Command>
+      <Message>复制插件到本地调试bds目录的插件目录下</Message>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib" goto process
+if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib" goto process
+goto end
+
+:process
+cd /d "$(SolutionDir)\LiteLoaderSDK\Tools\"
+if exist "$(LocalDebuggerWorkingDirectory)\bedrock_server.pdb" (
+LibraryBuilder.exe -o ..\Lib\ "$(LocalDebuggerWorkingDirectory)"
+) else (
+LibraryBuilder.exe -o ..\Lib\
+)
+
+:end
+			</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>DEBUG;_WINDOWS;_USRDLL;_ADM64_;_AMD64_;NOMINMAX;PLUGIN_DEV_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -56,20 +127,20 @@
       <DelayLoadDLLs>bedrock_server.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>if exist $(LocalDebuggerWorkingDirectory)\plugins\ (
-copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins
+      <Command>if exist "$(LocalDebuggerWorkingDirectory)plugins\" (
+copy /Y "$(TargetPath)" "$(LocalDebuggerWorkingDirectory)plugins"
 )</Command>
       <Message>复制插件到本地调试bds目录的插件目录下</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>if not exist $(SolutionDir)LiteLoader\Lib\bedrock_server_api.lib goto process
-if not exist $(SolutionDir)LiteLoader\Lib\bedrock_server_var.lib goto process
+      <Command>if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_api.lib" goto process
+if not exist "$(SolutionDir)LiteLoaderSDK\Lib\bedrock_server_var.lib" goto process
 goto end
 
 :process
-cd /d $(SolutionDir)\LiteLoader\Tools\
-if exist $(LocalDebuggerWorkingDirectory)\bedrock_server.pdb (
-LibraryBuilder.exe -o ..\Lib\ $(LocalDebuggerWorkingDirectory)
+cd /d "$(SolutionDir)\LiteLoaderSDK\Tools\"
+if exist "$(LocalDebuggerWorkingDirectory)\bedrock_server.pdb" (
+LibraryBuilder.exe -o ..\Lib\ "$(LocalDebuggerWorkingDirectory)"
 ) else (
 LibraryBuilder.exe -o ..\Lib\
 )
@@ -84,27 +155,30 @@ LibraryBuilder.exe -o ..\Lib\
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TemplateCommand.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TemplateCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc" />
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\LiteLoader\Lib\bedrock_server_api.lib" />
-    <Library Include="..\LiteLoader\Lib\bedrock_server_var.lib" />
-    <Library Include="..\LiteLoader\Lib\Chakra.lib" />
-    <Library Include="..\LiteLoader\Lib\LiteLoader.lib" />
-    <Library Include="..\LiteLoader\Lib\SymDBHelper.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib" />
+    <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

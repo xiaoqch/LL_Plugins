@@ -19,9 +19,6 @@
     <ClInclude Include="framework.h">
       <Filter>Default</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -29,6 +26,12 @@
       <Filter>资源文件</Filter>
     </ClInclude>
     <ClInclude Include="TemplateCommand.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
@@ -45,26 +48,26 @@
     <ClCompile Include="TemplateCommand.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Template.rc">
+    <ResourceCompile Include="Resource.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\LiteLoader\Lib\bedrock_server_api.lib">
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_api.lib">
       <Filter>Lib</Filter>
     </Library>
-    <Library Include="..\LiteLoader\Lib\bedrock_server_var.lib">
+    <Library Include="..\LiteLoaderSDK\Lib\bedrock_server_var.lib">
       <Filter>Lib</Filter>
     </Library>
-    <Library Include="..\LiteLoader\Lib\Chakra.lib">
+    <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib">
       <Filter>Lib</Filter>
     </Library>
-    <Library Include="..\LiteLoader\Lib\LiteLoader.lib">
-      <Filter>Lib</Filter>
-    </Library>
-    <Library Include="..\LiteLoader\Lib\SymDBHelper.lib">
+    <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib">
       <Filter>Lib</Filter>
     </Library>
   </ItemGroup>

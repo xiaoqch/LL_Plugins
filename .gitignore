@@ -369,3 +369,5 @@ FodyWeavers.xsd
 .vscode/
 /LiteLoader/Lib/bedrock_server_api.lib
 /LiteLoader/Lib/bedrock_server_var.lib
+/LLFakePlayer/vftable_ServerPlayer.txt
+/LLFakePlayer/vftable_SimulatedPlayer.txt
