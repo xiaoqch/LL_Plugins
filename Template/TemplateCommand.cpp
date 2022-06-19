@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TemplateCommand.h"
+#include <MC/ServerPlayer.hpp>
 
 using namespace RegisterCommandHelper;
 

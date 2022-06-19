@@ -182,23 +182,33 @@ inline void sendNetworkPacket(Player& player, class Packet& a0)
 void setPlayerAbility(Player& player, AbilitiesIndex index, bool value)
 {
     ActorUniqueID uid = player.getUniqueID();
-    auto abilities = getPlayerAbilities(uid);
+    auto abilities2 = getPlayerAbilities(uid);
+    auto abilities = &dAccess<Abilities>(&player, 2512);
 #ifdef DEBUG
     auto map = abilities->toMap();
 #endif // DEBUG
     if (index == AbilitiesIndex::Flying && value && player.isOnGround())
     {
         abilities->setAbility(AbilitiesIndex::MayFly, value);
+        abilities2->setAbility(AbilitiesIndex::MayFly, value);
     }
     if (index == AbilitiesIndex::NoClip) {
         //abilities->setAbility(AbilitiesIndex::MayFly, value);
-        //abilities->setAbility(AbilitiesIndex::Flying, true);
+        //abilities->setAbility(AbilitiesIndex::Flying, value);
     }
     abilities->setAbility(index, value);
+    abilities2->setAbility(index, value);
     auto mayfly = abilities->getAbility(AbilitiesIndex::MayFly).getBool();
+    auto mayfly2 = abilities2->getAbility(AbilitiesIndex::MayFly).getBool();
     auto noclip = abilities->getAbility(AbilitiesIndex::NoClip).getBool();
-    if (mayfly || noclip) {
+    auto noclip2 = abilities2->getAbility(AbilitiesIndex::NoClip).getBool();
+    if (mayfly || mayfly2 || noclip || noclip2)
+    {
         player.setCanFly(true);
+    }
+    else
+    {
+        player.setCanFly(false);
     }
 #ifdef DEBUG
     auto map2 = abilities->toMap();
@@ -253,7 +263,7 @@ void AbilityProCommand::execute(class CommandOrigin const& origin, class Command
 
 void AbilityProCommand::setup(CommandRegistry& registry)
 {
-    registry.registerCommand("abilitypro", "Abilities Pro", Config::permission, {CommandFlagValue::None}, {(CommandFlagValue)0x80});
+    registry.registerCommand("abilitypro", "Abilities Pro", CommandPermissionLevel::Any, {CommandFlagValue::None}, {(CommandFlagValue)0x80});
     if (!Config::commandAlias.empty()) {
         registry.registerAlias("abilitypro", Config::commandAlias);
     }
@@ -318,6 +328,13 @@ TInstanceHook(AdventureSettingsPacket&, "??0AdventureSettingsPacket@@QEAA@AEBUAd
 {
     auto map = abilities.toMap();
     return original(this, settings, abilities, uniqueId, unk_0);
+}
+TInstanceHook(bool, "?canUseAbility@Player@@QEBA_NW4AbilitiesIndex@@@Z",
+              Player, enum AbilitiesIndex index)
+{
+    auto rtn = original(this, index);
+    DEBUGW("{} {} use ability {}", getName(), rtn ? "can" : "can not", magic_enum::enum_name(index));
+    return true;
 }
 
 #endif // DEBUG

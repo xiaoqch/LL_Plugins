@@ -13,7 +13,7 @@ namespace AiTest
     }
     void setupCommand(CommandRegistry& registry);
 #else
-void setupCommand(CommandRegistry& registry){};
+inline void setupCommand(CommandRegistry& registry){};
 #endif // ENABLE_TEST_AI
 
 };

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #ifdef DEBUG
+#include <LoggerAPI.h>
 extern class Logger logger;
 inline double ns_time(LARGE_INTEGER begin_time, LARGE_INTEGER end_time, LARGE_INTEGER freq_)
 {

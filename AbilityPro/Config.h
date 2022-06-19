@@ -20,7 +20,7 @@
 enum CommandPermissionLevel;
 namespace Config
 {
-static std::string commandAlias = "";
+static std::string commandAlias = "abi";
 static CommandPermissionLevel permission = (CommandPermissionLevel)1;
 
 bool saveConfig();

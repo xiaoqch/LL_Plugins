@@ -9,8 +9,10 @@
 
 void entry()
 {
-    Event::PlayerJumpEvent::subscribe_ref([](Event::PlayerJumpEvent& ev) {
+    Event::RegCmdEvent::subscribe_ref([](Event::RegCmdEvent& ev) {
+        TemplateCommand::setup(*ev.mCommandRegistry);
         return true;
-        });
+    });
 }
+
 

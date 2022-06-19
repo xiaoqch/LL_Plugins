@@ -25,6 +25,7 @@
 #include <MC/CompoundTag.hpp>
 #include <MC/GameMode.hpp>
 #include <MC/Random.hpp>
+#include "TestAI.h"
 
 //#include <MC/ItemDescriptor.hpp>
 void genBlockActorType()

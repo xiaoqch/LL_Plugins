@@ -7,8 +7,9 @@
 
 Logger aiLogger("AI");
 
-struct GoalDefinition {
-    char filler[5496];
+DECLSPEC_ALIGN(8) struct GoalDefinition {
+    char filler[4588];
+
 public:
     MCAPI GoalDefinition(struct GoalDefinition&&);
     MCAPI GoalDefinition(struct GoalDefinition const&);
@@ -19,77 +20,23 @@ public:
     MCAPI bool parse(struct ConstDeserializeDataParams const&, int);
     MCAPI ~GoalDefinition();
 };
-#include <MC/LeashableComponent.hpp>
-TInstanceHook(bool, "?getInteraction@LeashableComponent@@QEAA_NAEAVActor@@AEAVPlayer@@AEAVActorInteraction@@@Z",
-    LeashableComponent, class Actor& target, class Player& player, class ActorInteraction& interaction) {
-    logger.warn("LeashableComponent::getInteraction");
-    if (target.isSimulatedPlayer())
-        return true;
-    return original(this, target, player, interaction);
+
+TInstanceHook(void, "?aiStep@SimulatedPlayer@@UEAAXXZ",
+    SimulatedPlayer ) {
+    //aiLogger.warn("SimulatedPlayer::aiStep - {}", CommandUtils::getActorName(*this));
+    original(this);
 }
 
-
-//#include <MC/LeashableComponent.hpp>
-//#include <MC/ItemStack.hpp>
-//TInstanceHook(void, "?interact@Player@@QEAA_NAEAVActor@@AEBVVec3@@@Z",
-//    Player, class Actor& target, class Vec3 const& pos) {
-//    if (target.isSimulatedPlayer()) {
-//        logger.warn("Player({})::interact({}, ({}))", getNameTag(), target.getNameTag(), pos.toString());
-//        if (getSelectedItem().getTypeName() == "minecraft:lead") {
-//            static auto leashableComponent = (LeashableComponent*)dlsym("?instance@?1???$_singleEmptyTypeInstance@VLeashableComponent@@X@EntityContextBase@@KAAEAVLeashableComponent@@XZ@4V2@A");
-//            leashableComponent->leash(target, *this);
-//        }
-//    }
-//    return original(this, target, pos);
-//}
-
-//TInstanceHook(void, "?setLeashHolder@Actor@@QEAAXUActorUniqueID@@@Z",
-//    Actor, struct ActorUniqueID uniqueID) {
-//    logger.warn("Actor::setLeashHolder");
-//    return original(this, uniqueID);
-//}
-
-//#include <MC/LeadItem.hpp>
-//THook(bool, "?canBindPlayerMobs@LeadItem@@SA_NAEBVActor@@AEBVBlockPos@@@Z",
-//    class Actor const& target, class BlockPos const& position) {
-//    logger.warn("LeadItem::canBindPlayerMobs");
-//    if (target.isSimulatedPlayer())
-//        return true;
-//    return original(target, position);
-//}
-//THook(bool, "?bindPlayerMobs@LeadItem@@SA_NAEAVActor@@HHHPEAVItemInstance@@@Z",
-//    class Actor& target, int x, int y, int z, class ItemInstance* item) {
-//    logger.warn("LeadItem::bindPlayerMobs");
-//    if (target.isSimulatedPlayer())
-//        return true;
-//    return original(target, x, y, z, item);
-//}
-//
-//TInstanceHook(bool, "?_useOn@LeadItem@@EEBA_NAEAVItemStack@@AEAVActor@@VBlockPos@@EMMM@Z",
-//    LeadItem, class ItemStack& item, class Actor& target, class BlockPos bpos, unsigned char face, float offsetX, float offsetY, float offsetZ) {
-//    logger.warn("LeadItem::_useOn");
-//    if (target.isSimulatedPlayer())
-//        return true;
-//    return original(this, item, target, bpos, face, offsetX, offsetY, offsetZ);
-//}
-
-//TInstanceHook(void, "?aiStep@SimulatedPlayer@@UEAAXXZ",
-//    SimulatedPlayer ) {
-//    aiLogger.warn("SimulatedPlayer::aiStep - {}", CommandUtils::getActorName(*this));
-//    original(this);
-//}
-
 TInstanceHook(void, "?createAI@Mob@@QEAAXV?$vector@UGoalDefinition@@V?$allocator@UGoalDefinition@@@std@@@std@@@Z",
-    Mob, std::vector<struct GoalDefinition> goals) {
+    Mob, std::vector<struct GoalDefinition>& goals) {
     aiLogger.warn("Mob::createAI - {} - goals.size(): {}", CommandUtils::getActorName(*this), goals.size());
     original(this, goals);
 }
 
 TInstanceHook(bool, "?createAIGoals@Mob@@UEAA_NXZ",
     Mob) {
-    aiLogger.warn("Mob::createAIGoals - {}", CommandUtils::getActorName(*this));
     auto rtn = original(this);
-    aiLogger.warn("Mob::createAIGoals -> {}", rtn);
+    aiLogger.warn("Mob({})::createAIGoals -> {}", CommandUtils::getActorName(*this), rtn);
     return rtn;
 }
 
@@ -116,14 +63,6 @@ TInstanceHook(void, "?updateAi@Mob@@MEAAXXZ",
 //    aiLogger.warn("Mob::newServerAiStep - {}", CommandUtils::getActorName(*this));
 //    original(this);
 //}
-
-struct ScriptNavigationResult {
-public:
-    bool mIsFullPath;
-    std::vector<BlockPos> mPath;
-public:
-    MCAPI ~ScriptNavigationResult();
-};
 
 THook(void, "?onStartDestroyBlock@ServerPlayerBlockUseHandler@@YAXAEAVServerPlayer@@AEBVBlockPos@@H@Z",
     class ServerPlayer& sp, class BlockPos const& bpos, int face) {
@@ -157,7 +96,7 @@ TInstanceHook(bool, "?_hurt@Player@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
             auto attackDamage = item.getAttackDamage();
             if (attackDamage > maxDagame) {
                 maxDagame = attackDamage;
-                fp->simulateSelectSlot(slot);
+                fp->setSelectedSlot(slot);
             }
         }
         auto& sourceActor = *Global<Level>->fetchEntity(ads.getDamagingEntityUniqueID(), true);
@@ -213,7 +152,9 @@ TInstanceHook(bool, "?_hurt@Player@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
 // GoalSelectorComponent::addGoal(__int64 a1, int a2, Goal **a3)
 #include <MC/GoalSelectorComponent.hpp>
 //#include <MC/Goal.hpp>
-class Goal {
+DECLSPEC_ALIGN(8)
+class Goal
+{
     // Goal - size = 56
     char filler8[48];
 
@@ -297,55 +238,59 @@ TInstanceHook(LookAtActorGoal*, "?addGoal@GoalSelectorComponent@@QEAAXHV?$unique
 //bedrock_server_mod.exe!`anonymous namespace'::DefaultEntitySystemsCollection::foreachTickingSystem()
 //bedrock_server_mod.exe!EntitySystems::tick(class EntityRegistry &)
 
-#define HookGoalStart(goal)\
-TClasslessInstanceHook(void, "?start@"#goal"@@UEAAXXZ") {\
-    logGoalStart(this, #goal);\
-    original(this);\
-}
+#define HookGoalStart(goal)                                   \
+    TClasslessInstanceHook(void, "?start@" #goal "@@UEAAXXZ")                 \
+    {                                                                         \
+        logGoalFunc(this, #goal, "start");                                    \
+        original(this);                                                       \
+    }                                                                         \
+    TClasslessInstanceHook(bool, "?canUse@" #goal "@@UEAA_NXZ")               \
+    {                                                                         \
+        auto rtn = original(this);                                            \
+        logGoalFunc(this, #goal, "canUse", rtn ? "true" : "false");           \
+        return rtn;                                                           \
+    }                                                                         \
+    TClasslessInstanceHook(bool, "?canContinueToUse@" #goal "@@UEAA_NXZ")     \
+    {                                                                         \
+        auto rtn = original(this);                                            \
+        logGoalFunc(this, #goal, "canContinueToUse", rtn ? "true" : "false"); \
+        return rtn;                                                           \
+    }                                                                         \
+    TClasslessInstanceHook(void, "?stop@" #goal "@@UEAAXXZ")                  \
+    {                                                                         \
+        logGoalFunc(this, #goal, "stop");                                     \
+        original(this);                                                       \
+    }\
+    TClasslessInstanceHook(void, "?tick@" #goal "@@UEAAXXZ")                  \
+    {                                                                         \
+        logGoalFunc(this, #goal, "tick");                                     \
+        original(this);                                                       \
+    }\
 
 // for debug break
-void logGoalStart(void* goal, std::string const& name) {
-    aiLogger.warn("{}::start()", name);
+void logGoalFunc(void* goal, std::string const& name, std::string const& func, std::string const& rtn = "void")
+{
+    aiLogger.warn("{}::{}() -> {}", name, func, rtn);
 }
 
-HookGoalStart(AdmireItemGoal);
+
 HookGoalStart(AvoidBlockGoal);
 HookGoalStart(AvoidMobTypeGoal);
 HookGoalStart(SneezeGoal);
 HookGoalStart(StalkAndPounceOnTargetGoal);
-HookGoalStart(StompAttackGoal);
-HookGoalStart(StompBlockGoal);
-HookGoalStart(SwellGoal);
-HookGoalStart(SwimIdleGoal);
-HookGoalStart(SwimWanderGoal);
-HookGoalStart(SwimWithEntityGoal);
-HookGoalStart(SwoopAttackGoal);
 HookGoalStart(TakeFlowerGoal);
-HookGoalStart(TargetWhenPushedGoal);
 HookGoalStart(TemptGoal);
 HookGoalStart(TradeInterestGoal);
-HookGoalStart(TradeWithPlayerGoal);
-HookGoalStart(WitherRandomAttackPosGoal);
 HookGoalStart(WorkGoal);
-HookGoalStart(PlayDeadGoal);
 HookGoalStart(RamAttackGoal);
 HookGoalStart(FindMountGoal);
 HookGoalStart(FindUnderwaterTreasureGoal);
 HookGoalStart(FollowCaravanGoal);
-HookGoalStart(FollowMobGoal);
 HookGoalStart(FollowOwnerGoal);
-HookGoalStart(FollowTargetCaptainGoal);
 HookGoalStart(GoHomeGoal);
 HookGoalStart(GuardianAttackGoal);
-HookGoalStart(OcelotSitOnBlockGoal);
-HookGoalStart(HideGoal);
 HookGoalStart(HoldGroundGoal);
-HookGoalStart(HoverGoal);
 HookGoalStart(KnockbackRoarGoal);
-HookGoalStart(LayDownGoal);
-HookGoalStart(LayEggGoal);
-HookGoalStart(LeapAtTargetGoal);
-HookGoalStart(LookAtActorGoal);
 HookGoalStart(MakeLoveGoal);
 HookGoalStart(MeleeAttackGoal);
 HookGoalStart(MingleGoal);
@@ -353,12 +298,7 @@ HookGoalStart(BaseMoveToGoal);
 HookGoalStart(BegGoal);
 HookGoalStart(BreakDoorGoal);
 HookGoalStart(ChargeAttackGoal);
-HookGoalStart(CircleAroundAnchorGoal);
-HookGoalStart(ControlledByPlayerGoal);
-HookGoalStart(DefendVillageTargetGoal);
-HookGoalStart(DoorInteractGoal);
 HookGoalStart(DragonChargePlayerGoal);
-HookGoalStart(DragonDeathGoal);
 HookGoalStart(DragonFlamingGoal);
 HookGoalStart(DragonHoldingPatternGoal);
 HookGoalStart(DragonLandingGoal);
@@ -366,61 +306,145 @@ HookGoalStart(DragonScanningGoal);
 HookGoalStart(DragonStrafePlayerGoal);
 HookGoalStart(DragonTakeoffGoal);
 HookGoalStart(DropItemForGoal);
-HookGoalStart(EatBlockGoal);
 HookGoalStart(EatCarriedItemGoal);
 HookGoalStart(ExploreOutskirtsGoal);
 HookGoalStart(MoveIndoorsGoal);
-HookGoalStart(MoveThroughVillageGoal);
 HookGoalStart(MoveToBlockGoal);
 HookGoalStart(MoveToRandomBlockGoal);
-HookGoalStart(MoveToVillageGoal);
-HookGoalStart(MoveTowardsRestrictionGoal);
-HookGoalStart(MoveTowardsTargetGoal);
-HookGoalStart(NapGoal);
 HookGoalStart(OpenDoorGoal);
-HookGoalStart(OwnerHurtByTargetGoal);
-HookGoalStart(PanicGoal);
-HookGoalStart(PetSleepWithOwnerGoal);
 HookGoalStart(PickupItemsGoal);
 HookGoalStart(PlayGoal);
-HookGoalStart(RaidGardenGoal);
 HookGoalStart(RaiderCelebrationGoal);
-HookGoalStart(RandomBreachingGoal);
 HookGoalStart(RandomLookAroundAndSitGoal);
-HookGoalStart(RandomLookAroundGoal);
-HookGoalStart(RandomSitGoal);
 HookGoalStart(RangedAttackGoal);
-HookGoalStart(RestrictOpenDoorGoal);
-HookGoalStart(RestrictSunGoal);
 HookGoalStart(RollGoal);
 HookGoalStart(ScaredGoal);
 HookGoalStart(ShareItemsGoal);
 HookGoalStart(ShulkerPeekGoal);
 HookGoalStart(SleepGoal);
-HookGoalStart(SlimeAttackGoal);
 HookGoalStart(SnackGoal);
 HookGoalStart(JumpToBlockGoal);
-HookGoalStart(AgentCommandExecutionGoal);
-HookGoalStart(BreatheAirGoal);
 HookGoalStart(ChargeHeldItemGoal);
-HookGoalStart(DefendTrustedTargetGoal);
-HookGoalStart(FindCoverGoal);
 HookGoalStart(FollowFlockGoal);
-HookGoalStart(HurtByTargetGoal);
 HookGoalStart(OfferFlowerGoal);
-HookGoalStart(RandomHoverGoal);
 HookGoalStart(RandomStrollGoal);
-//HookGoalStart(RiverFollowingGoal);
+HookGoalStart(RiverFollowingGoal);
 HookGoalStart(SendEventGoal);
 HookGoalStart(SummonActorGoal);
-HookGoalStart(SilverfishMergeWithStoneGoal);
-HookGoalStart(NearestAttackableTargetGoal);
-HookGoalStart(TargetGoal);
-HookGoalStart(VexCopyOwnerTargetGoal);
-HookGoalStart(SquidDiveGoal);
-HookGoalStart(SquidIdleGoal);
-HookGoalStart(SquidMoveAwayFromGroundGoal);
-HookGoalStart(SquidOutOfWaterGoal);
+
+//HookGoalStart(AdmireItemGoal);
+//HookGoalStart(AvoidBlockGoal);
+//HookGoalStart(AvoidMobTypeGoal);
+//HookGoalStart(SneezeGoal);
+//HookGoalStart(StalkAndPounceOnTargetGoal);
+//HookGoalStart(StompAttackGoal);
+//HookGoalStart(StompBlockGoal);
+//HookGoalStart(SwellGoal);
+//HookGoalStart(SwimIdleGoal);
+//HookGoalStart(SwimWanderGoal);
+//HookGoalStart(SwimWithEntityGoal);
+//HookGoalStart(SwoopAttackGoal);
+//HookGoalStart(TakeFlowerGoal);
+//HookGoalStart(TargetWhenPushedGoal);
+//HookGoalStart(TemptGoal);
+//HookGoalStart(TradeInterestGoal);
+//HookGoalStart(TradeWithPlayerGoal);
+//HookGoalStart(WitherRandomAttackPosGoal);
+//HookGoalStart(WorkGoal);
+//HookGoalStart(PlayDeadGoal);
+//HookGoalStart(RamAttackGoal);
+//HookGoalStart(FindMountGoal);
+//HookGoalStart(FindUnderwaterTreasureGoal);
+//HookGoalStart(FollowCaravanGoal);
+//HookGoalStart(FollowMobGoal);
+//HookGoalStart(FollowOwnerGoal);
+//HookGoalStart(FollowTargetCaptainGoal);
+//HookGoalStart(GoHomeGoal);
+//HookGoalStart(GuardianAttackGoal);
+//HookGoalStart(OcelotSitOnBlockGoal);
+//HookGoalStart(HideGoal);
+//HookGoalStart(HoldGroundGoal);
+//HookGoalStart(HoverGoal);
+//HookGoalStart(KnockbackRoarGoal);
+//HookGoalStart(LayDownGoal);
+//HookGoalStart(LayEggGoal);
+//HookGoalStart(LeapAtTargetGoal);
+//HookGoalStart(LookAtActorGoal);
+//HookGoalStart(MakeLoveGoal);
+//HookGoalStart(MeleeAttackGoal);
+//HookGoalStart(MingleGoal);
+//HookGoalStart(BaseMoveToGoal);
+//HookGoalStart(BegGoal);
+//HookGoalStart(BreakDoorGoal);
+//HookGoalStart(ChargeAttackGoal);
+//HookGoalStart(CircleAroundAnchorGoal);
+//HookGoalStart(ControlledByPlayerGoal);
+//HookGoalStart(DefendVillageTargetGoal);
+//HookGoalStart(DoorInteractGoal);
+//HookGoalStart(DragonChargePlayerGoal);
+//HookGoalStart(DragonDeathGoal);
+//HookGoalStart(DragonFlamingGoal);
+//HookGoalStart(DragonHoldingPatternGoal);
+//HookGoalStart(DragonLandingGoal);
+//HookGoalStart(DragonScanningGoal);
+//HookGoalStart(DragonStrafePlayerGoal);
+//HookGoalStart(DragonTakeoffGoal);
+//HookGoalStart(DropItemForGoal);
+//HookGoalStart(EatBlockGoal);
+//HookGoalStart(EatCarriedItemGoal);
+//HookGoalStart(ExploreOutskirtsGoal);
+//HookGoalStart(MoveIndoorsGoal);
+//HookGoalStart(MoveThroughVillageGoal);
+//HookGoalStart(MoveToBlockGoal);
+//HookGoalStart(MoveToRandomBlockGoal);
+//HookGoalStart(MoveToVillageGoal);
+//HookGoalStart(MoveTowardsRestrictionGoal);
+//HookGoalStart(MoveTowardsTargetGoal);
+//HookGoalStart(NapGoal);
+//HookGoalStart(OpenDoorGoal);
+//HookGoalStart(OwnerHurtByTargetGoal);
+//HookGoalStart(PanicGoal);
+//HookGoalStart(PetSleepWithOwnerGoal);
+//HookGoalStart(PickupItemsGoal);
+//HookGoalStart(PlayGoal);
+//HookGoalStart(RaidGardenGoal);
+//HookGoalStart(RaiderCelebrationGoal);
+//HookGoalStart(RandomBreachingGoal);
+//HookGoalStart(RandomLookAroundAndSitGoal);
+//HookGoalStart(RandomLookAroundGoal);
+//HookGoalStart(RandomSitGoal);
+//HookGoalStart(RangedAttackGoal);
+//HookGoalStart(RestrictOpenDoorGoal);
+//HookGoalStart(RestrictSunGoal);
+//HookGoalStart(RollGoal);
+//HookGoalStart(ScaredGoal);
+//HookGoalStart(ShareItemsGoal);
+//HookGoalStart(ShulkerPeekGoal);
+//HookGoalStart(SleepGoal);
+//HookGoalStart(SlimeAttackGoal);
+//HookGoalStart(SnackGoal);
+//HookGoalStart(JumpToBlockGoal);
+//HookGoalStart(AgentCommandExecutionGoal);
+//HookGoalStart(BreatheAirGoal);
+//HookGoalStart(ChargeHeldItemGoal);
+//HookGoalStart(DefendTrustedTargetGoal);
+//HookGoalStart(FindCoverGoal);
+//HookGoalStart(FollowFlockGoal);
+//HookGoalStart(HurtByTargetGoal);
+//HookGoalStart(OfferFlowerGoal);
+//HookGoalStart(RandomHoverGoal);
+//HookGoalStart(RandomStrollGoal);
+//HookGoalStart(RiverFollowingGoal);
+//HookGoalStart(SendEventGoal);
+//HookGoalStart(SummonActorGoal);
+//HookGoalStart(SilverfishMergeWithStoneGoal);
+//HookGoalStart(NearestAttackableTargetGoal);
+//HookGoalStart(TargetGoal);
+//HookGoalStart(VexCopyOwnerTargetGoal);
+//HookGoalStart(SquidDiveGoal);
+//HookGoalStart(SquidIdleGoal);
+//HookGoalStart(SquidMoveAwayFromGroundGoal);
+//HookGoalStart(SquidOutOfWaterGoal);
 
 
 
@@ -466,7 +490,212 @@ public:
 };
 
 namespace AiTest {
+inline std::string getSym_canUse(std::string const& name)
+{
+    return "?canUse@" + name + "@@UEAA_NXZ";
+}
+inline std::string getSym_canContinueToUse(std::string const& name)
+{
+    return "?canContinueToUse@" + name + "@@UEAA_NXZ";
+}
+inline std::string getSym_canBeInterrupted(std::string const& name)
+{
+    return "?canBeInterrupted@" + name + "@@UEAA_NXZ";
+}
+
+inline std::string getSym_start(std::string const& name)
+{
+    return "?start@" + name + "@@UEAAXXZ";
+}
+inline std::string getSym_stop(std::string const& name)
+{
+    return "?stop@" + name + "@@UEAAXXZ";
+}
+inline std::string getSym_tick(std::string const& name)
+{
+    return "?tick@" + name + "@@UEAAXXZ";
+}
+inline bool isUnique(std::string const& sym)
+{
+    auto ptr = dlsym_real(sym.c_str());
+    if (!ptr)
+        return false;
+    auto syms = dlsym_reverse((int)ptr);
+    return syms.size() == 2;
+}
+
+
     void setupCommand(CommandRegistry& registry) {
+        std::vector<std::string> allAiGoals{
+            "AdmireItemGoal",
+            "AvoidBlockGoal",
+            "AvoidMobTypeGoal",
+            "SneezeGoal",
+            "StalkAndPounceOnTargetGoal",
+            "StompAttackGoal",
+            "StompBlockGoal",
+            "SwellGoal",
+            "SwimIdleGoal",
+            "SwimWanderGoal",
+            "SwimWithEntityGoal",
+            "SwoopAttackGoal",
+            "TakeFlowerGoal",
+            "TargetWhenPushedGoal",
+            "TemptGoal",
+            "TradeInterestGoal",
+            "TradeWithPlayerGoal",
+            "WitherRandomAttackPosGoal",
+            "WorkGoal",
+            "PlayDeadGoal",
+            "RamAttackGoal",
+            "FindMountGoal",
+            "FindUnderwaterTreasureGoal",
+            "FollowCaravanGoal",
+            "FollowMobGoal",
+            "FollowOwnerGoal",
+            "FollowTargetCaptainGoal",
+            "GoHomeGoal",
+            "GuardianAttackGoal",
+            "OcelotSitOnBlockGoal",
+            "HideGoal",
+            "HoldGroundGoal",
+            "HoverGoal",
+            "KnockbackRoarGoal",
+            "LayDownGoal",
+            "LayEggGoal",
+            "LeapAtTargetGoal",
+            "LookAtActorGoal",
+            "MakeLoveGoal",
+            "MeleeAttackGoal",
+            "MingleGoal",
+            "BaseMoveToGoal",
+            "BegGoal",
+            "BreakDoorGoal",
+            "ChargeAttackGoal",
+            "CircleAroundAnchorGoal",
+            "ControlledByPlayerGoal",
+            "DefendVillageTargetGoal",
+            "DoorInteractGoal",
+            "DragonChargePlayerGoal",
+            "DragonDeathGoal",
+            "DragonFlamingGoal",
+            "DragonHoldingPatternGoal",
+            "DragonLandingGoal",
+            "DragonScanningGoal",
+            "DragonStrafePlayerGoal",
+            "DragonTakeoffGoal",
+            "DropItemForGoal",
+            "EatBlockGoal",
+            "EatCarriedItemGoal",
+            "ExploreOutskirtsGoal",
+            "MoveIndoorsGoal",
+            "MoveThroughVillageGoal",
+            "MoveToBlockGoal",
+            "MoveToRandomBlockGoal",
+            "MoveToVillageGoal",
+            "MoveTowardsRestrictionGoal",
+            "MoveTowardsTargetGoal",
+            "NapGoal",
+            "OpenDoorGoal",
+            "OwnerHurtByTargetGoal",
+            "PanicGoal",
+            "PetSleepWithOwnerGoal",
+            "PickupItemsGoal",
+            "PlayGoal",
+            "RaidGardenGoal",
+            "RaiderCelebrationGoal",
+            "RandomBreachingGoal",
+            "RandomLookAroundAndSitGoal",
+            "RandomLookAroundGoal",
+            "RandomSitGoal",
+            "RangedAttackGoal",
+            "RestrictOpenDoorGoal",
+            "RestrictSunGoal",
+            "RollGoal",
+            "ScaredGoal",
+            "ShareItemsGoal",
+            "ShulkerPeekGoal",
+            "SleepGoal",
+            "SlimeAttackGoal",
+            "SnackGoal",
+            "JumpToBlockGoal",
+            "AgentCommandExecutionGoal",
+            "BreatheAirGoal",
+            "ChargeHeldItemGoal",
+            "DefendTrustedTargetGoal",
+            "FindCoverGoal",
+            "FollowFlockGoal",
+            "HurtByTargetGoal",
+            "OfferFlowerGoal",
+            "RandomHoverGoal",
+            "RandomStrollGoal",
+            "RiverFollowingGoal",
+            "SendEventGoal",
+            "SummonActorGoal",
+            "SilverfishMergeWithStoneGoal",
+            "NearestAttackableTargetGoal",
+            "TargetGoal",
+            "VexCopyOwnerTargetGoal",
+            "SquidDiveGoal",
+            "SquidIdleGoal",
+            "SquidMoveAwayFromGroundGoal",
+            "SquidOutOfWaterGoal",
+        };
+        std::set<std::string> removeAiGoals;
+        for (auto& name : allAiGoals) {
+            if (!isUnique(getSym_canUse(name)))
+            {
+                removeAiGoals.insert(name);
+                logger.warn("{}::canUse not unique",name);
+                continue;
+            }
+            if (!isUnique(getSym_canContinueToUse(name)))
+            {
+                removeAiGoals.insert(name);
+                logger.warn("{}::canContinueToUse not unique",name);
+                continue;
+            }
+            //if (!isUnique(getSym_canBeInterrupted(name)))
+            //{
+            //    removeAiGoals.insert(name);
+            //    continue;
+            //}
+            if (!isUnique(getSym_start(name)))
+            {
+                removeAiGoals.insert(name);
+                logger.warn("{}::start not unique",name);
+                continue;
+            }
+            if (!isUnique(getSym_stop(name)))
+            {
+                removeAiGoals.insert(name);
+                logger.warn("{}::stop not unique",name);
+                continue;
+            }
+            if (!isUnique(getSym_tick(name)))
+            {
+                removeAiGoals.insert(name);
+                logger.warn("{}::tick not unique",name);
+                continue;
+            }
+            
+
+        }
+        allAiGoals.erase(std::remove_if(allAiGoals.begin(), allAiGoals.end(), [&removeAiGoals](std::string const& name) {
+            return removeAiGoals.find(name) != removeAiGoals.end();
+        }), allAiGoals.end());
+
+        logger.error("Removed:");
+        for (auto& name : removeAiGoals)
+        {
+            logger.warn("{}", name);
+        }
+        logger.error("All:");
+        for (auto& name : allAiGoals)
+        {
+            logger.warn("{}", name);
+        }
+        Schedule::repeat([]() { logger.info("tick"); }, 1);
         TestAICommand::setup(registry);
     }
 } // namespace AiTest

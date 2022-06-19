@@ -64,9 +64,38 @@ inline void switchGlobal(class CommandOutput& output)
     refreshAllFakeName();
     uniqueIds.clear();
 }
-
+#include <MC/LevelStorage.hpp>
+#include <MC/CompoundTag.hpp>
 void ActorDebugCommand::execute(class CommandOrigin const& origin, class CommandOutput& output) const
 {
+    size_t dig_count = 0;
+    size_t chunk_count = 0;
+    size_t actor_count = 0;
+    Global<LevelStorage>->forEachKeyWithPrefix("digp", (DBHelpers::Category)4, [&](gsl::cstring_span<-1> suffix, gsl::cstring_span<-1> data) {
+        chunk_count++;
+        dig_count += data.size() / sizeof(ActorUniqueID);
+    });
+    Global<LevelStorage>->forEachKeyWithPrefix("actorprefix", (DBHelpers::Category)4, [&](gsl::cstring_span<-1> suffix, gsl::cstring_span<-1> data) {
+        actor_count++;
+    });
+    output.success(fmt::format("chunk: {}, digp: {}, actor: {}",
+                               chunk_count, dig_count, actor_count));
+    if (actor_count < 100000)
+    {
+        std::unordered_map<std::string, size_t> countMap;
+        Global<LevelStorage>->forEachKeyWithPrefix("actorprefix", (DBHelpers::Category)4, [&](gsl::cstring_span<-1> suffix, gsl::cstring_span<-1> data) {
+            auto tag = CompoundTag::fromBinaryNBT((void*)data.data(), data.size());
+            std::string type = tag->getString("identifier");
+            if (countMap.find(type) == countMap.end())
+                countMap[type] = 1;
+            else
+                countMap[type]++;
+        });
+        for (auto& [type, count] : countMap)
+        {
+            output.success(fmt::format("{} - {}", type, count));
+        }
+    }
     if (mPlayer_isSet)
     {
         auto players = mPlayer.results(origin);
