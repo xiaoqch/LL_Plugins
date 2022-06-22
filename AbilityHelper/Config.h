@@ -22,6 +22,8 @@ namespace Config
 {
 static std::string commandAlias = "abi";
 static CommandPermissionLevel permission = (CommandPermissionLevel)1;
+static bool fixFlying = true;
+static bool fixLoadNbt = true;
 
 bool saveConfig();
 bool initConfig();

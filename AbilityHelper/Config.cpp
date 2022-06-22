@@ -53,6 +53,7 @@ std::string serialize()
     nlohmann::json json;
 
     SerializeVaule(commandAlias);
+    SerializeVaule(fixFlying);
     SerializeEnumVaule(permission);
 
     return json.dump(4);
@@ -64,6 +65,7 @@ bool deserialize(std::string const& jsonStr)
     bool needUpdate = false;
 
     DeserializeVaule(commandAlias);
+    DeserializeVaule(fixFlying);
     DeserializeEnumVaule(permission);
 
     return !needUpdate;

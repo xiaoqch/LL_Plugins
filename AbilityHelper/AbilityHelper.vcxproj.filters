@@ -25,13 +25,16 @@
     <ClInclude Include="resource.h">
       <Filter>资源文件</Filter>
     </ClInclude>
-    <ClInclude Include="AbilityProCommand.h">
+    <ClInclude Include="AbilityHelperCommand.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Default</Filter>
     </ClInclude>
     <ClInclude Include="version.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilityHelper.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
@@ -42,18 +45,18 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="AbilityProCommand.cpp">
+    <ClCompile Include="AbilityHelperCommand.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="AbilityHelper.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="AbilityPro.rc">
+    <ResourceCompile Include="AbilityHelper.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

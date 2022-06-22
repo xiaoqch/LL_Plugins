@@ -25,7 +25,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestRemoteCall", "TestRemot
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EndGatewayHelper", "EndGatewayHelper\EndGatewayHelper.vcxproj", "{71A2993D-B9BE-4818-82B2-E556409B2D6B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbilityPro", "AbilityPro\AbilityPro.vcxproj", "{D7074EC5-8977-498A-B708-0C7FA248B5F3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbilityHelper", "AbilityHelper\AbilityHelper.vcxproj", "{D7074EC5-8977-498A-B708-0C7FA248B5F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,7 @@
 #define PLUGIN_VERSION_RELEASE 2
 
 // Plugin Information, used in dllmain.cpp for register plugin
-#define PLUGIN_NAME                 "Template"
+#define PLUGIN_NAME                 "FixActorDie"
 #define PLUGIN_INTRODUCTION         "LiteLoader Plugin Template"
 #define PLUGIN_AUTHOR               "xiaoqch"
 #define PLUGIN_VERSION_MAJOR        0

@@ -58,6 +58,9 @@
     <ClInclude Include="TestDlsym.h">
       <Filter>Test</Filter>
     </ClInclude>
+    <ClInclude Include="TestFeatureGen.h">
+      <Filter>Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -115,6 +118,9 @@
       <Filter>HookClass</Filter>
     </ClCompile>
     <ClCompile Include="TestDlsym.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFeatureGen.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
