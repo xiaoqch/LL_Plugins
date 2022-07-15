@@ -10,7 +10,7 @@ inline void logAABB(class AABB const& aabb)
     try
     {
         logger.error("BlockSource::addUnloadedChunksAABBs crash! - AABB: {}, {}",
-            aabb.pointA.toString(), aabb.pointB.toString());
+            aabb.max.toString(), aabb.min.toString());
     }
     catch (...)
     {
@@ -33,7 +33,7 @@ TInstanceHook(void, "?addUnloadedChunksAABBs@BlockSource@@IEAAXAEBVAABB@@@Z",
 {
     try
     {
-        if (!validPosition(aabb.pointA) || !validPosition(aabb.pointB))
+        if (!validPosition(aabb.min) || !validPosition(aabb.max))
         {
             logger.error("Error in BlockSource::addUnloadedChunksAABBs: Invaild AABB");
             logAABB(aabb);

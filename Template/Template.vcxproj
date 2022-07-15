@@ -180,6 +180,9 @@ LibraryBuilder.exe -o ..\Lib\
     <Library Include="..\LiteLoaderSDK\Lib\LiteLoader.lib" />
     <Library Include="..\LiteLoaderSDK\Lib\SymDBHelper.lib" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

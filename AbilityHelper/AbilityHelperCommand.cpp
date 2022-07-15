@@ -2,12 +2,14 @@
 #include "AbilityHelperCommand.h"
 #include <MC/Level.hpp>
 
+#ifndef DISABLE_COMMAND
 using namespace RegisterCommandHelper;
 #include <MC/ByteTag.hpp>
 void AbilityHelperCommand::execute(class CommandOrigin const& origin, class CommandOutput& output) const
 {
     auto players = mPlayer.results(origin);
-    if (players.empty()) {
+    if (players.empty())
+    {
         return output.error("%commands.generic.noTargetMatch");
     }
     if (!mIndex_isSet)
@@ -20,7 +22,7 @@ void AbilityHelperCommand::execute(class CommandOrigin const& origin, class Comm
         tag->getCompound("abilities")->putByte("noclip", true);
         player->setNbt(tag.get());
         logger.warn(player->getNbt()->toSNBT(4));
-        auto abilities = &dAccess<Abilities>(player, 2512);
+        auto abilities = &dAccess<Abilities>(player, 2508);
         bool flying = abilities->getAbility(AbilitiesIndex::Flying).getBool();
         AdventureSettingsPacket pkt(Global<Level>->getAdventureSettings(), *abilities, player->getUniqueID(), false);
         pkt.mFlag &= ~static_cast<unsigned int>(AdventureFlag::Flying);
@@ -31,15 +33,16 @@ void AbilityHelperCommand::execute(class CommandOrigin const& origin, class Comm
         return;
     }
     std::string names = "";
-    if (!mIndex_isSet) {
+    if (!mIndex_isSet)
+    {
         return output.success("optional abilities: build, mine, doorandswitches, opencontainers, attackplayers, attackmobs, teleport, invulnerable, flying, mayfly, instabuild, lightning, mute, noclip");
     }
     if (!mSwitch_isSet)
     {
         for (auto player : players)
         {
-            output.success(fmt::format("{}: {} = {}", 
-                player->getName(), magic_enum::enum_name(mIndex), AbilitiesHelper::getPlayerAbility(*player, mIndex)));
+            output.success(fmt::format("{}: {} = {}",
+                                       player->getName(), magic_enum::enum_name(mIndex), AbilitiesHelper::getPlayerAbility(*player, mIndex)));
         }
         return;
     }
@@ -62,7 +65,8 @@ void AbilityHelperCommand::execute(class CommandOrigin const& origin, class Comm
 void AbilityHelperCommand::setup(CommandRegistry& registry)
 {
     registry.registerCommand("abilityhelper", "Abilities Pro", CommandPermissionLevel::Any, {CommandFlagValue::None}, {(CommandFlagValue)0x80});
-    if (!Config::commandAlias.empty()) {
+    if (!Config::commandAlias.empty())
+    {
         registry.registerAlias("abilityhelper", Config::commandAlias);
     }
     registry.addEnum<AbilitiesIndex>(
@@ -128,4 +132,7 @@ inline void registerNoClipCommand()
 }
 
 inline auto noclip = Schedule::nextTick(registerNoClipCommand);
+#endif // !DISABLE_COMMAND
+
+
 

@@ -1,6 +1,26 @@
 #include "pch.h"
 #include "EndGatewayCommand.h"
 
+
+class ItemRegistryRef
+{
+    class std::weak_ptr<class ItemRegistry> mRegistry;
+
+public:
+#ifdef ENABLE_VIRTUAL_FAKESYMBOL_ITEMREGISTRYREF
+#endif
+    MCAPI ItemRegistryRef(class ItemRegistryRef const&);
+    MCAPI ItemRegistryRef(class std::weak_ptr<class ItemRegistry>);
+    MCAPI class WeakPtr<class Item> lookupByName(int&, int&, std::string const&) const;
+    MCAPI class WeakPtr<class Item> lookupByName(int&, std::string const&) const;
+    MCAPI class WeakPtr<class Item> lookupByName(class HashedString const&) const;
+    MCAPI class WeakPtr<class Item> lookupByNameNoAlias(std::string const&) const;
+    MCAPI class WeakPtr<class Item> lookupByNameNoAlias(class HashedString const&) const;
+    MCAPI class WeakPtr<class Item> lookupByNameNoParsing(int&, class HashedString const&) const;
+    MCAPI class WeakPtr<class Item> lookupByNameNoParsing(class HashedString const&) const;
+    MCAPI ~ItemRegistryRef();
+};
+
 using namespace RegisterCommandHelper;
 
 void EndGatewayCommand::execute(class CommandOrigin const& origin, class CommandOutput& output) const
@@ -11,7 +31,7 @@ void EndGatewayCommand::execute(class CommandOrigin const& origin, class Command
             if (auto sp = getPlayerFromOrigin(origin))
             {
                 auto count = mCount_isSet ? mCount : 1;
-                ItemStack item(*ItemRegistry::lookupByName("minecraft:end_gateway"), count);
+                ItemStack item(*Global<Level>->getItemRegistry().lookupByName("minecraft:end_gateway"), count);
                 if (sp->add(item))
                 {
                     output.success(fmt::format("get {} {}", count, item.getName()));

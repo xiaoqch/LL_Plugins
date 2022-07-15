@@ -1,6 +1,7 @@
 // dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
 #include "Config.h"
+#include <LoggerAPI.h>
 
 Logger logger(PLUGIN_NAME);
 

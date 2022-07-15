@@ -5,14 +5,14 @@
 #define PLUGIN_VERSION_RELEASE 2
 
 // Plugin Information, used in dllmain.cpp for register plugin
-#define PLUGIN_NAME                 "FixActorDie"
+#define PLUGIN_NAME                 "BanEntityChangeDim"
 #define PLUGIN_INTRODUCTION         "LiteLoader Plugin Template"
 #define PLUGIN_AUTHOR               "xiaoqch"
 #define PLUGIN_VERSION_MAJOR        0
 #define PLUGIN_VERSION_MINOR        0
-#define PLUGIN_VERSION_REVISION     1
+#define PLUGIN_VERSION_REVISION     3
 #define PLUGIN_VERSION_BUILD        0
-#define PLUGIN_VERSION_STATUS       PLUGIN_VERSION_DEV
+#define PLUGIN_VERSION_STATUS       PLUGIN_VERSION_RELEASE
 
 // File Version Information, used in Resource.rc
 #define __TO_VERSION_STRING(ver) #ver

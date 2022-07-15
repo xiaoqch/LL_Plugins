@@ -10,10 +10,12 @@
 #include <EventAPI.h>
 void entry()
 {
+#ifndef DISABLE_COMMAND
     Event::RegCmdEvent::subscribe_ref([](Event::RegCmdEvent ev) {
         AbilityHelperCommand::setup(*ev.mCommandRegistry);
         return true;
     });
+#endif // !DISABLE_COMMAND
 }
 
 // static_assert(offsetof(AdventureSettingsPacket, mCustomStoredPermissions) == 76);
@@ -53,7 +55,7 @@ void _updateAbility(Player& player, AbilitiesIndex index, bool value)
 
 Abilities* AbilitiesHelper::getAbilities(Player& player)
 {
-    return &dAccess<Abilities>(&player, 2512);
+    return &dAccess<Abilities>(&player, 2508);
 }
 
 void AbilitiesHelper::setPlayerAbility(Player& player, AbilitiesIndex index, bool value)
@@ -84,7 +86,7 @@ void AbilitiesHelper::setPlayerAbility(Player& player, AbilitiesIndex index, boo
     auto map2 = abilities->toMap();
 #endif // DEBUG
     flying = abilities->getAbility(AbilitiesIndex::Flying).getBool();
-    AdventureSettingsPacket pkt(level->getAdventureSettings(), *abilities, uid, false);
+    AdventureSettingsPacket pkt(level->getAdventureSettings(), *(LayeredAbilities*)abilities, uid);
 
     pkt.mFlag &= ~static_cast<unsigned int>(AdventureFlag::Flying);
     if (flying)
@@ -140,7 +142,7 @@ TInstanceHook(void, "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@A
             auto abilities = AbilitiesHelper::getAbilities(*sp);
             auto mayFly = abilities->getAbility(AbilitiesIndex::MayFly).getBool();
             flying = flying && mayFly;
-            AdventureSettingsPacket pkt(Global<Level>->getAdventureSettings(), *abilities, sp->getUniqueID(), false);
+            AdventureSettingsPacket pkt(Global<Level>->getAdventureSettings(), *(LayeredAbilities*)abilities, sp->getUniqueID());
             pkt.mFlag &= ~static_cast<unsigned int>(AdventureFlag::Flying);
             if (flying)
                 pkt.mFlag |= static_cast<unsigned int>(AdventureFlag::Flying);

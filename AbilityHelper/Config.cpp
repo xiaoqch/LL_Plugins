@@ -3,6 +3,7 @@
 #include <third-party/Nlohmann/json.hpp>
 #include <filesystem>
 #include <MC/Command.hpp>
+#include <LoggerAPI.h>
 
 #pragma region Config
 

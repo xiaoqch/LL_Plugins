@@ -2,6 +2,8 @@
 #include <RegCommandAPI.h>
 #include "AbilityHelper.h"
 
+#define DISABLE_COMMAND
+#ifndef DISABLE_COMMAND
 class AbilityHelperCommand : public Command
 {
     AbilitiesIndex mIndex;
@@ -15,3 +17,5 @@ class AbilityHelperCommand : public Command
 public:
     static void setup(CommandRegistry& registry);
 };
+#endif // DISABLE_COMMAND
+

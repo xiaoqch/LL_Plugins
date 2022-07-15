@@ -52,7 +52,12 @@ std::string serialize()
 {
     nlohmann::json json;
 
-    //SerializeVaule(commandAlias);
+    SerializeVaule(TypeList_0_1);
+    SerializeVaule(TypeList_1_0);
+    SerializeVaule(TypeList_0_2);
+    SerializeVaule(TypeList_2_0);
+    SerializeVaule(TypeList_1_2);
+    SerializeVaule(TypeList_2_1);
 
     return json.dump(4);
 }
@@ -62,7 +67,12 @@ bool deserialize(std::string const& jsonStr)
     auto json = nlohmann::json::parse(jsonStr, nullptr, false, true);
     bool needUpdate = false;
 
-    //DeserializeVaule(commandAlias);
+    DeserializeVaule(TypeList_0_1);
+    DeserializeVaule(TypeList_1_0);
+    DeserializeVaule(TypeList_0_2);
+    DeserializeVaule(TypeList_2_0);
+    DeserializeVaule(TypeList_1_2);
+    DeserializeVaule(TypeList_2_1);
 
     return !needUpdate;
 }

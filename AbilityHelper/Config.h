@@ -15,7 +15,7 @@
 
 // Switch
 #define ENABLE_LOG_FILE false
-#define ENABLE_CONFIG true
+#define ENABLE_CONFIG false
 
 enum CommandPermissionLevel;
 namespace Config

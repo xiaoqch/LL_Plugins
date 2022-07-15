@@ -4,11 +4,31 @@
 #include <MC/ServerPlayer.hpp>
 #include <MC/ServerNetworkHandler.hpp>
 #include <MC/BlockSource.hpp>
+#include <MC/HashedString.hpp>
 #include <PlayerInfoAPI.h>
 #include <ScheduleAPI.h>
 
+template <int from, int to>
+inline std::set<HashedString> typeHashList = {};
+
+#define LoadList(from, to)                                \
+    for (auto& type : Config::TypeList_##from##_##to)                   \
+    {                                                     \
+        if (type.find(':') == std::string::npos)          \
+            typeHashList<from,to>.insert("minecraft:" + type); \
+        else                                              \
+            typeHashList<from, to>.insert(type);                \
+    }
+
 void entry()
 {
+    LoadList(0, 1);
+    LoadList(1, 0);
+    LoadList(0, 2);
+    LoadList(2, 0);
+    LoadList(1, 2);
+    LoadList(2, 1);
+#if false
     std::filesystem::create_directory(PLUGIN_DIR);
     logger.fileLevel = logger.debug.level;
     logger.consoleLevel = logger.info.level;
@@ -17,6 +37,7 @@ void entry()
             TemplateCommand::setup(*ev.mCommandRegistry);
             return true;
         });
+#endif
 }
 
 #include <MC/StackResultStorageEntity.hpp>
@@ -24,7 +45,10 @@ void entry()
 #include <MC/Level.hpp>
 #include <MC/Block.hpp>
 #include <MC/StructureTemplate.hpp>
+#include <MC/CommandUtils.hpp>
+#include <MC/Dimension.hpp>
 
+#if false
 
 void logActorInfo(Actor* actor, std::string const& func)
 {
@@ -129,3 +153,55 @@ THook(void, "?_onActorDie@MobGameEventSystem@@CAXAEAUActorDieEvent@@@Z",
         logActorInfo(actor, "MobGameEventSystem::onActorDie");
     }
 }
+
+#endif
+
+#define OLD_BDS
+
+#ifdef OLD_BDS
+
+#define ShouldBan(f, t, type) \
+    if (from == f && to == t) \
+        return typeHashList<f, t>.find(type) != typeHashList<f, t>.end();
+inline bool shouldBan(int from, int to, HashedString const& type)
+{
+    ShouldBan(0, 1, type);
+    ShouldBan(1, 0, type);
+    ShouldBan(0, 2, type);
+    ShouldBan(2, 0, type);
+    ShouldBan(1, 2, type);
+    ShouldBan(2, 1, type);
+    return false;
+}
+
+TInstanceHook(void, "?changeDimension@Actor@@UEAAXV?$AutomaticID@VDimension@@H@@_N@Z",
+              Actor,
+              class AutomaticID<class Dimension, int> to, bool unk)
+{
+#ifdef DEBUG
+    logger.warn("Entity {} try change dimension: {} -> {}",
+                CommandUtils::getActorName(*this), (int)getDimensionId(), (int)dimid);
+#endif // DEBUG
+    int from = getDimension().getDimensionId();
+
+    auto& typeHash = getActorIdentifier().getCanonicalHash();
+    if (shouldBan(from, to, typeHash))
+        return;
+    return original(this, to, unk);
+}
+#else
+
+TInstanceHook(void, "?changeDimension@Actor@@UEAAXV?$AutomaticID@VDimension@@H@@@Z",
+              Actor, class AutomaticID<class Dimension, int> dimid)
+{
+    auto& typeHash = getActorIdentifier().getCanonicalHash();
+    if (typeHashList.find(typeHash) != typeHashList.end())
+        return;
+    return original(this, dimid);
+}
+
+#endif // OLD_BDS
+
+
+
+

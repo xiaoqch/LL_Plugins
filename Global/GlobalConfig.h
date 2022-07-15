@@ -1,9 +1,12 @@
 #pragma once
 #include <third-party/magic_enum/magic_enum.hpp>
+#include <LoggerAPI.h>
+#include <Utils/FileHelper.h>
+
 // Global Info
-#define TARGET_BDS_VERSION "1.19.1.01"
-#define TARGET_LITELOADER_VERSION "2.3.0"
-#define TARGET_PROTOCOL_VERSION 527
+#define TARGET_BDS_VERSION "1.19.10.03"
+#define TARGET_LITELOADER_VERSION "2.4.0"
+#define TARGET_PROTOCOL_VERSION 534
 #define GITHUB_LINK "https://github.com/xiaoqch/LL_Plugins/"
 
 #define PLUGIN_WEBSIDE GITHUB_LINK PLUGIN_NAME

@@ -10,6 +10,7 @@
 
 #include <MC/FallingBlock.hpp>
 #include <MC/VanillaBlockTypes.hpp>
+#include <MC/VanillaBlockTypeIds.hpp>
 #include <MC/EndGatewayBlock.hpp>
 #include <MC/BedrockBlockTypes.hpp>
 #include <MC/BedrockBlocks.hpp>
@@ -86,11 +87,11 @@ class BlockPos findValidSpawnAround(class BlockSource& region, class BlockPos co
 #endif // DEBUG
         if (!::findNextTopSolidBlockUnder(region, currentPos))
             continue;
-        auto blockLegacy = &region.getBlock(currentPos).getLegacyBlock();
-        if (blockLegacy == VanillaBlockTypes::mBedrock.get())
+        auto& blockName = region.getBlock(currentPos).getName();
+        if (blockName == VanillaBlockTypeIds::Bedrock)
         {
             auto expectedGatewayPos = currentPos - BlockPos{0, 2, 0};
-            if (&region.getBlock(expectedGatewayPos).getLegacyBlock() == VanillaBlockTypes::mEndGateway.get())
+            if (region.getBlock(expectedGatewayPos).getName() == VanillaBlockTypeIds::EndGateway)
             {
                 currentPos.y -= 2;
 #ifdef DEBUG
@@ -108,7 +109,7 @@ class BlockPos findValidSpawnAround(class BlockSource& region, class BlockPos co
         else
         {
             if (searchForEndStoneOnly)
-                validBlock = blockLegacy == VanillaBlockTypes::mEndStone.get();
+                validBlock = blockName == VanillaBlockTypeIds::EndGateway;
             else
                 validBlock = ::_hasRoomForPlayer(region, currentPos);
         }
@@ -169,7 +170,7 @@ BlockPos findTallestBlock(class BlockSource& region, class BlockPos const& aroun
                     auto& block = region.getBlock(pos);
                     if (block.isSolidBlockingBlock())
                     {
-                        if (allowBedrock || &block.getLegacyBlock() != VanillaBlockTypes::mBedrock.get())
+                        if (allowBedrock || block.getName() != VanillaBlockTypeIds::Bedrock)
                         {
                             tallest = pos;
                             break;

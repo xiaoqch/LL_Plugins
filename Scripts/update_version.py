@@ -150,8 +150,8 @@ def update_actions(bds_version):
 if __name__ == '__main__':
     # bds_version = input("BDS version: ")
     # ll_version = input("LiteLoader version: ")
-    bds_version = "1.19.1.01"
-    ll_version = "2.3.0"
+    bds_version = "1.19.10.03"
+    ll_version = "2.4.0"
     global_path = 'Global\GlobalConfig.h'
     sdk_dir = 'LiteLoaderSDK'
 

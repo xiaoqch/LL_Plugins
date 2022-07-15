@@ -175,6 +175,7 @@ struct AdventureSettings;
 
 class AdventureSettingsPacket : public Packet
 {
+
 public:
     unsigned int mFlag;                             // 48
     CommandPermissionLevel mCommandPermissionLevel; // 52
@@ -184,15 +185,22 @@ public:
     int unk72;                                      // 72
     unsigned int mCustomStoredPermissions;          // 76
 
+public:
     /*0*/ virtual ~AdventureSettingsPacket();
     /*1*/ virtual enum MinecraftPacketIds getId() const;
     /*2*/ virtual std::string getName() const;
     /*3*/ virtual void write(class BinaryStream&) const;
-    /*4*/ virtual bool disallowBatching() const;
-    /*5*/ virtual enum StreamReadResult _read(class ReadOnlyBinaryStream&);
-    MCAPI AdventureSettingsPacket(struct AdventureSettings const&, class Abilities const&, struct ActorUniqueID, bool);
-};
+    /*6*/ virtual enum StreamReadResult _read(class ReadOnlyBinaryStream&);
 
+    MCAPI AdventureSettingsPacket(struct AdventureSettings const&, class LayeredAbilities const&, struct ActorUniqueID);
+    MCAPI AdventureSettingsPacket();
+
+    MCAPI void _initAbilitiesData(class Abilities const&);
+    MCAPI void _initCustomCacheData(class Abilities const&);
+
+
+private:
+};
 
 namespace AbilitiesHelper
 {

@@ -80,7 +80,7 @@ TInstanceHook(bool, "?initialize@Level@@UEAA_NAEBV?$basic_string@DU?$char_traits
 TInstanceHook(void, "?forEachKeyWithPrefix@DBStorage@@UEBAXV?$basic_string_span@$$CBD$0?0@gsl@@W4Category@DBHelpers@@AEBV?$function@$$A6AXV?$basic_string_span@$$CBD$0?0@gsl@@0@Z@std@@@Z", 
     DBStorage, gsl::cstring_span<-1>& prefix, enum DBHelpers::Category category, class std::function<void(gsl::cstring_span<-1>, gsl::cstring_span<-1>)> const& callback)
 {
-    //logger.info("prefix: {}, category: {}", prefix.data(), (int)category);
+    logger.info("prefix: {}, category: {}", prefix.data(), (int)category);
     return original(this, prefix, category, callback);
 }
 

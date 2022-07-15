@@ -14,12 +14,17 @@
 #define PLUGIN_DATA_PATH PLUGIN_DIR PLUGIN_NAME ".json"
 
 // Switch
-#define ENABLE_LOG_FILE true
-#define ENABLE_CONFIG false
+#define ENABLE_LOG_FILE false
+#define ENABLE_CONFIG true
 
 namespace Config
 {
-//static bool test = true;
+inline std::vector<std::string> TypeList_0_1;
+inline std::vector<std::string> TypeList_1_0;
+inline std::vector<std::string> TypeList_0_2;
+inline std::vector<std::string> TypeList_2_0;
+inline std::vector<std::string> TypeList_1_2;
+inline std::vector<std::string> TypeList_2_1;
 
 bool saveConfig();
 bool initConfig();
